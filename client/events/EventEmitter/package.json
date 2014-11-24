@@ -1,0 +1,16 @@
+{
+    "name": "EventEmitter",
+    "description": "A counterpart of Node.js' event.EventEmitter class for the sake of the use in browsers.",
+    "version": "0.0.1",
+    "authors": [
+        "Kevin Li<klx211@gmail.com>"
+    ],
+    "devDependencies": {
+        "gulp": "^3.8.10",
+        "gulp-jasmine": "^1.0.1",
+        "gulp-rename": "^1.2.0",
+        "gulp-uglify": "^1.0.1",
+        "jquery": "^2.1.1",
+        "jsdom": "^1.3.1"
+    }
+}

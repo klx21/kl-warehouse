@@ -26,3 +26,14 @@ node_modules
 
 # Users Environment Variables
 .lock-wscript
+
+# WebStorm project config files
+.idea
+
+# Bower retrieved library files
+vendor
+bower_component
+
+# Distribution folders
+dist
+build
