@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+    Remove this if you use the .htaccess -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>scroll_bar</title>
+    <meta name="description" content="" />
+    <meta name="author" content="Huan Li" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link type="text/css" rel="stylesheet" href="css/k-scroll.css" />
+    <style type="text/css">
+      .text {
+        border: 1px solid #000000;
+        height: 400px;
+        overflow: auto;
+        width: 500px;
+      }
+    </style>
+    <script type="text/javascript" src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../../lib/pointer.js"></script>
+    <script type="text/javascript" src="js/k-scroll.js"></script>
+    <script type="text/javascript">
+      var sb;
+      $(function() {
+        var lowercase = 'abcdefghijklmnopqrstuvwxyz', uppercase = lowercase.toUpperCase(), longString = ['<ul>'], content = $('#target'), i, j, numBarSize = 6, bDragging = false, bScrolling = false, bDraggingScrollBar = false, bResizing = false;
+        for ( j = 0; j < 20; j += 1) {
+          longString.push('<li>');
+          for ( i = 0; i < 10; i += 1) {
+            if (i % 2 === 0) {
+              longString.push(lowercase);
+            } else {
+              longString.push(uppercase);
+            }
+          }
+          longString.push('</li>');
+        }
+        longString.push('</ul>');
+        content.css('border', 'none').html(longString.join('')).width('auto');
+        sb = KScroll.makeScrollable('target', {
+          'bAutoHide': true,
+          'numHowToMove': 2,
+          'numWrapperHeight': 200,
+          'numWrapperWidth': 800,
+          'bDraggable': true,
+          'bFlipXY': false,
+          'bPageMode': false,
+          'bSmooth': false,
+          'bHorizontalScrollable': true,
+          'bVerticalScrollable': true
+        });
+      });
+
+      function moveRight(number) {
+        sb.scrollRight(number);
+      }
+      function moveLeft(number) {
+        sb.scrollLeft(number);
+      }
+      function moveUp(number) {
+        sb.scrollUp(number);
+      }
+      function moveDown(number) {
+        sb.scrollDown(number);
+      }
+      function moveToNthChild(order) {
+        if(isNaN(order) || order < 1 || order > $('#target li').size()) {
+          order = 1;
+        }
+        sb.scrollToElement($('#target li:nth-child(' + order + ')'));
+      }
+
+    </script>
+  </head>
+  <body>
+    <div>
+      <header></header>
+      <nav></nav>
+      <div>
+        <div id="target" class="text" style=""></div>
+      </div>
+      <div id="buttons">
+        <button onclick="moveRight(prompt('How many pixels you\'d like to move the wrapped element to the right?'))">Move right</button>
+        <button onclick="moveLeft(prompt('How many pixels you\'d like to move the wrapped element to the left?'))">Move left</button>
+        <button onclick="moveUp(prompt('How many pixels you\'d like to move the wrapped element to the up?'))">Move up</button>
+        <button onclick="moveDown(prompt('How many pixels you\'d like to move the wrapped element to the down?'))">Move down</button>
+        <button onclick="moveToNthChild(prompt('What is the ordinal number of the child element to which you\'d like to move?'))">Move to nth child</button>
+      </div>
+      <footer></footer>
+    </div>
+  </body>
+</html>
