@@ -1,7 +1,7 @@
 {
     "name": "EventEmitter",
     "description": "A counterpart of Node.js' event.EventEmitter class for the sake of the use in browsers.",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "authors": [
         "Kevin Li<klx211@gmail.com>"
     ],
