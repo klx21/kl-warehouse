@@ -319,3 +319,8 @@ var EventEmitter = (function () {
     };
 }());
 
+if(module) {
+    module.exports = EventEmitter;
+} else if(exports) {
+    exports = EventEmitter;
+}

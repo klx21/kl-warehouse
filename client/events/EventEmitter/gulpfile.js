@@ -1,15 +1,15 @@
-var EventEmitter = require('./js/EventEmitter.js'),
-    gulp = require('gulp'),
+var gulp = require('gulp'),
     gJasmine = require('gulp-jasmine'),
     gRename = require('gulp-rename'),
     gUglify = require('gulp-uglify'),
     jsdom = require('jsdom'),
-    jquery = require('jquery')(jsdom.jsdom().parentWindow);
+    jquery = require('jquery')(jsdom.jsdom().parentWindow),
+    EventEmitter = require('./js/EventEmitter.js');
 
 gulp.task('test', function () {
     global.$ = jquery;
     global.EventEmitter = EventEmitter;
-    gulp.src('test/**/*.spec.js')
+    gulp.src('./test/**/*.spec.js')
         .pipe(gJasmine());
 });
 
