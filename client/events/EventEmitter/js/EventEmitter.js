@@ -41,6 +41,7 @@ var EventEmitter = (function () {
          *
          * @author Kevin Li<klx211@gmail.com>
          * @private
+         * @constructor
          * @type {Function}
          */
         konstructor = function () {
@@ -87,12 +88,13 @@ var EventEmitter = (function () {
                  *
                  * @author Kevin Li<klx211@gmail.com>
                  * @private
+                 * @param {String} sEventType The event type for which the listeners are checked.
                  * @param {Function} fListener The original function.
                  * @param {Function} fWrapped The wrapper function
                  * @returns {Boolean} True if the wrapper function is wrapping around the original function. False otherwise.
                  */
-                isWrapped = function (fListener, fWrapped) {
-                    var sListener = serialize(wrapForOnce(fListener)),
+                isWrapped = function (sEventType, fListener, fWrapped) {
+                    var sListener = serialize(wrapForOnce(sEventType, fListener)),
                         sWrapped = serialize(fWrapped);
                     return sListener === sWrapped;
                 },
@@ -185,7 +187,7 @@ var EventEmitter = (function () {
                                 var i,
                                     aListeners = oRegistry[sEventType];
                                 for (i = 0; i < aListeners.length; i++) {
-                                    if (aListeners[i] === fListener || isWrapped(fListener, aListeners[i])) {
+                                    if (aListeners[i] === fListener || isWrapped(sEventType, fListener, aListeners[i])) {
                                         aListeners.splice(i, 1);
                                         break;
                                     }
@@ -298,7 +300,7 @@ var EventEmitter = (function () {
          */
         listenerCount: function (oEventEmitter, sEventType) {
             var ret = 0;
-            if (this.isEventEmitter(oEventEmitter) && typeof sEventType === 'string') {
+            if (this.isInstanceOf(oEventEmitter) && typeof sEventType === 'string') {
                 ret = oEventEmitter.listeners(sEventType);
             }
             return ret;
