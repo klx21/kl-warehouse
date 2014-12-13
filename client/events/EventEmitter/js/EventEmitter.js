@@ -129,12 +129,15 @@ var EventEmitter = (function () {
                  * @returns {Function} The wrapper function.
                  */
                 wrapForOnce = function (sEventType, fListener) {
-                    return function () {
-                        // DO NOT DELETE THESE COMMENTS
-                        // ThisIsAOnceWrapper
+
+                    var fWrapped = function () {
                         fListener.apply(this, Array.prototype.slice.apply(arguments));
                         this.removeListener(sEventType, fListener);
-                    }
+                    };
+                    // This is just a flag to tell apart the wrapped listener and the original listener.
+                    fWrapped.sFlag = 'ThisIsAOnceWrapper';
+
+                    return fWrapped;
                 };
 
             $.extend(this, {
@@ -187,7 +190,8 @@ var EventEmitter = (function () {
                                 var i,
                                     aListeners = oRegistry[sEventType];
                                 for (i = 0; i < aListeners.length; i++) {
-                                    if (aListeners[i] === fListener || isWrapped(sEventType, fListener, aListeners[i])) {
+                                    if (aListeners[i] === fListener ||
+                                        isWrapped(sEventType, fListener, aListeners[i])) {
                                         aListeners.splice(i, 1);
                                         break;
                                     }
@@ -321,8 +325,8 @@ var EventEmitter = (function () {
     };
 }());
 
-if(module) {
+if (module) {
     module.exports = EventEmitter;
-} else if(exports) {
+} else if (exports) {
     exports = EventEmitter;
 }

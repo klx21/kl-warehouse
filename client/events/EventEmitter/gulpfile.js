@@ -1,10 +1,17 @@
-var gulp = require('gulp'),
+var del = require('del'),
+    gulp = require('gulp'),
     gJasmine = require('gulp-jasmine'),
     gRename = require('gulp-rename'),
     gUglify = require('gulp-uglify'),
     jsdom = require('jsdom'),
     jquery = require('jquery')(jsdom.jsdom().parentWindow),
     EventEmitter = require('./js/EventEmitter.js');
+
+gulp.task('clean', function() {
+    del('dist/*.js', {
+        force: true
+    });
+});
 
 gulp.task('test', function () {
     global.$ = jquery;
@@ -13,7 +20,7 @@ gulp.task('test', function () {
         .pipe(gJasmine());
 });
 
-gulp.task('build', ['test'], function() {
+gulp.task('build', ['clean', 'test'], function() {
     gulp.src('js/*.js')
         .pipe(gUglify({
             compress: {},

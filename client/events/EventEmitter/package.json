@@ -6,6 +6,7 @@
         "Kevin Li<klx211@gmail.com>"
     ],
     "devDependencies": {
+        "del": "1.1.x",
         "gulp": "^3.8.10",
         "gulp-jasmine": "^1.0.1",
         "gulp-rename": "^1.2.0",
