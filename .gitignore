@@ -36,4 +36,6 @@ bower_component
 
 # Distribution folders
 dist
-build
+client/dist
+client/build
+client/bower_components

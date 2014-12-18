@@ -44,7 +44,7 @@ describe('An EventEmitter', function() {
         expect(eventEmitter.listeners(sTemporaryEvent)).toBe(0);
     });
 
-    it('can add listener with shortcut on()', function() {
+    it('can add listener with alias on()', function() {
         eventEmitter.on(sShortcutEvent, fShortcutListener);
         expect(eventEmitter.listeners(sPermanentEvent)).toBe(1);
         expect(eventEmitter.listeners(sShortcutEvent)).toBe(1);

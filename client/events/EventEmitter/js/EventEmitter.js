@@ -56,13 +56,13 @@ var EventEmitter = (function () {
             var oRegistry = {},
                 /**
                  * The number of maximum listeners for a specific event type.
-                 * If the value is less than 0 it means no limit.
                  *
                  * @author Kevin Li<klx211@gmail.com>
                  * @private
                  * @type {Number}
+                 * @default Number.POSITIVE_INFINITY
                  */
-                nLimits = -1,
+                nLimit = Number.POSITIVE_INFINITY,
                 /**
                  * Add a listener for a specific event type.
                  *
@@ -73,11 +73,11 @@ var EventEmitter = (function () {
                  * @returns {EventEmitter} The instance of EventEmitter so that method calls can be chained.
                  */
                 addListener = function (sEventType, fListener) {
-                    if (nLimits !== 0 && typeof sEventType === 'string' && typeof fListener === 'function') {
+                    if (nLimit > 0 && typeof sEventType === 'string' && typeof fListener === 'function') {
                         if (typeof oRegistry[sEventType] === 'undefined') {
                             oRegistry[sEventType] = [];
                         }
-                        if (nLimits < 0 || oRegistry[sEventType].length < nLimits) {
+                        if (oRegistry[sEventType].length < nLimit) {
                             oRegistry[sEventType].push(fListener);
                         }
                     }
@@ -105,18 +105,36 @@ var EventEmitter = (function () {
                  *
                  * @author Kevin Li<klx211@gmail.com>
                  * @private
-                 * @param {Array|Boolean|Function|Object|String} xTarget A JavaScript object.
-                 * @returns {String} A string that is returned by the toString() method and that got all spaces, tabs, carriage
-                 * returns and line feeds removed.
+                 * @param {Function} fTarget A JavaScript function.
+                 * @returns {String} A string that is returned by the toString() method and got all spaces, tabs,
+                 * carriage returns and line feeds removed.
                  */
-                serialize = function (xTarget) {
-                    var ret = typeof xTarget !== 'undefined'
-                        && typeof xTarget.toString === 'function'
-                        && xTarget.toString();
+                serialize = function (fTarget) {
+                    var ret = typeof fTarget !== 'undefined'
+                        && typeof fTarget.toString === 'function'
+                        && fTarget.toString();
                     if (ret) {
                         ret = ret.replace(/[\t\s\r\n]+/g, '');
                     }
                     return ret || '';
+                },
+                /**
+                 * Cut out extra listeners for every event type. Older ones are kept and newer ones are removed.
+                 *
+                 * @author Kevin Li<klx211@gmail.com>
+                 * @private
+                 */
+                trimExtraListeners = function () {
+                    var p,
+                        aListeners;
+                    for (p in oRegistry) {
+                        if (oRegistry.hasOwnProperty(p)) {
+                            aListeners = oRegistry[p];
+                            if (aListeners.length > nLimit) {
+                                aListeners.splice(nLimit);
+                            }
+                        }
+                    }
                 },
                 /**
                  * Wrap the original listener function for a specific event and return the wrapper function so that after
@@ -135,6 +153,7 @@ var EventEmitter = (function () {
                         this.removeListener(sEventType, fListener);
                     };
                     // This is just a flag to tell apart the wrapped listener and the original listener.
+                    // Assigning it as an attribute of "fWrapped" is to keep this flag even if the code is minified.
                     fWrapped.sFlag = 'ThisIsAOnceWrapper';
 
                     return fWrapped;
@@ -166,15 +185,7 @@ var EventEmitter = (function () {
                      * @returns {EventEmitter} The instance of EventEmitter so that method calls can be chained.
                      */
                     once: function (sEventType, fListener) {
-                        if (nLimits !== 0 && typeof sEventType === 'string' && typeof fListener === 'function') {
-                            if (typeof oRegistry[sEventType] === 'undefined') {
-                                oRegistry[sEventType] = [];
-                            }
-                            if (nLimits < 0 || oRegistry[sEventType].length < nLimits) {
-                                oRegistry[sEventType].push(wrapForOnce(sEventType, fListener));
-                            }
-                        }
-                        return this;
+                        return addListener(sEventType, wrapForOnce(sEventType, fListener));
                     },
                     /**
                      * Remove a listener for a specific event type.
@@ -186,16 +197,30 @@ var EventEmitter = (function () {
                      */
                     removeListener: function (sEventType, fListener) {
                         if (typeof sEventType === 'string' && typeof fListener === 'function') {
-                            if (typeof oRegistry[sEventType] !== 'undefined') {
-                                var i,
-                                    aListeners = oRegistry[sEventType];
-                                for (i = 0; i < aListeners.length; i++) {
-                                    if (aListeners[i] === fListener ||
-                                        isWrapped(sEventType, fListener, aListeners[i])) {
-                                        aListeners.splice(i, 1);
-                                        break;
+                            var aListeners = oRegistry[sEventType],
+                                nIndex = -1,
+                                i;
+
+                            if (Array.isArray(aListeners)) {
+                                nIndex = aListeners.indexOf(fListener);
+
+                                // The unwrapped fListener is not found in the listeners array.
+                                // Try wrapped fListener.
+                                if (nIndex < 0) {
+                                    for(i = 0; i < aListeners.length; i += 1) {
+                                        if(isWrapped(sEventType, fListener, aListeners[i])) {
+                                            nIndex = i;
+                                            break;
+                                        }
                                     }
                                 }
+
+                                // Either an unwrapped or a wrapped fListener has been found.
+                                if(nIndex >= 0) {
+                                    aListeners.splice(nIndex, 1);
+                                }
+
+                                // When the array is empty just remove it.
                                 if (aListeners.length === 0) {
                                     delete oRegistry[sEventType];
                                 }
@@ -205,7 +230,7 @@ var EventEmitter = (function () {
                     },
                     /**
                      * Remove all listeners for a specific event type. If the event type is not specified all listeners for
-                     * all event type will be purged.
+                     * all event types will be purged.
                      *
                      * @author Kevin Li<klx211@gmail.com>
                      * @param {String} sEventType The event type for which all listeners are to be removed. This parameter is
@@ -230,9 +255,11 @@ var EventEmitter = (function () {
                      * @returns {EventEmitter} The instance of EventEmitter so that method calls can be chained.
                      */
                     setMaxListeners: function (nMaxListeners) {
-                        // TODO: cut out extra listeners, only keep newer ones
                         if (typeof nMaxListeners === 'number') {
-                            nLimits = nMaxListeners;
+                            if (nMaxListeners < nLimit) {
+                                setTimeout(trimExtraListeners);
+                            }
+                            nLimit = nMaxListeners;
                         }
                         return this;
                     },
