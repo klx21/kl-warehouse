@@ -22,9 +22,9 @@
  *         hold the specified types of data ***
  */
 
-'use strict';
-
 var KScroll = (function () {
+
+    'use strict';
 
     /**
      * An array containing all instances of KScroll.
@@ -2704,7 +2704,7 @@ var KScroll = (function () {
                     setBarsPosition(oWrappeePosition, oNewMovement);
                 };
 
-            $.extend(this, EventEmitter.newInstance(), {
+            $.extend(this, KEventEmitter.newInstance(), {
 
                 /**
                  * Get how the elements in the web page are moved.
@@ -3214,4 +3214,5 @@ var KScroll = (function () {
             return instance;
         }
     };
+
 }());

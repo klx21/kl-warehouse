@@ -22,7 +22,7 @@
  *         hold the specified types of data ***
  */
 
-describe('An EventEmitter', function() {
+describe('A KEventEmitter', function() {
     var nPermanent = 0,
         nTemporary = 0,
         sPermanentEvent = 'permanent_event',
@@ -35,7 +35,7 @@ describe('An EventEmitter', function() {
             return ++nTemporary;
         },
         fShortcutListener = function() {},
-        eventEmitter = EventEmitter.newInstance();
+        eventEmitter = KEventEmitter.newInstance();
 
     it('can add listener', function() {
         eventEmitter.addListener(sPermanentEvent, fPermanentListener);

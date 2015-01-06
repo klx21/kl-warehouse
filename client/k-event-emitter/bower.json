@@ -1,5 +1,5 @@
 {
-    "name": "EventEmitter",
+    "name": "KEventEmitter",
     "description": "A counterpart of Node.js' event.EventEmitter class for the sake of the use in browsers.",
     "version": "0.0.1",
     "dependencies": {

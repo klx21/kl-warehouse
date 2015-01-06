@@ -39,3 +39,6 @@ dist
 client/dist
 client/build
 client/bower_components
+
+# experiment folders
+lab

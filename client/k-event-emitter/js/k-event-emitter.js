@@ -27,7 +27,9 @@
  *
  * @class
  */
-var EventEmitter = (function () {
+var KEventEmitter = (function () {
+    'use strict';
+
     /**
      * An array containing all instances of EventEmitter.
      *
@@ -44,7 +46,7 @@ var EventEmitter = (function () {
          * @constructor
          * @type {Function}
          */
-        konstructor = function () {
+        Konstructor = function () {
 
             /**
              * An object containing all event/listeners pairs.
@@ -70,7 +72,7 @@ var EventEmitter = (function () {
                  * @private
                  * @param {String} sEventType The event type for which a listener is to be added.
                  * @param {Function} fListener The listener that is added for a specific event type.
-                 * @returns {EventEmitter} The instance of EventEmitter so that method calls can be chained.
+                 * @returns {KEventEmitter} The instance of EventEmitter so that method calls can be chained.
                  */
                 addListener = function (sEventType, fListener) {
                     if (nLimit > 0 && typeof sEventType === 'string' && typeof fListener === 'function') {
@@ -167,7 +169,7 @@ var EventEmitter = (function () {
                      * @type {Function}
                      * @param {String} sEventType The event type for which a listener is to be added.
                      * @param {Function} fListener The listener that is added for a specific event type.
-                     * @returns {EventEmitter} The instance of EventEmitter so that method calls can be chained.
+                     * @returns {KEventEmitter} The instance of EventEmitter so that method calls can be chained.
                      */
                     addListener: addListener,
                     /**
@@ -182,7 +184,7 @@ var EventEmitter = (function () {
                      * @author Kevin Li<klx211@gmail.com>
                      * @param {String} sEventType The event type for which a listener that runs only once is to be added.
                      * @param {Function} fListener The listener that is added for a specific event type and will run only once.
-                     * @returns {EventEmitter} The instance of EventEmitter so that method calls can be chained.
+                     * @returns {KEventEmitter} The instance of EventEmitter so that method calls can be chained.
                      */
                     once: function (sEventType, fListener) {
                         return addListener(sEventType, wrapForOnce(sEventType, fListener));
@@ -193,7 +195,7 @@ var EventEmitter = (function () {
                      * @author Kevin Li<klx211@gmail.com>
                      * @param {String} sEventType The event type for which a listener is to be removed.
                      * @param {Function} fListener The listener that is removed for a specific event type.
-                     * @returns {EventEmitter} The instance of EventEmitter so that method calls can be chained.
+                     * @returns {KEventEmitter} The instance of EventEmitter so that method calls can be chained.
                      */
                     removeListener: function (sEventType, fListener) {
                         if (typeof sEventType === 'string' && typeof fListener === 'function') {
@@ -235,7 +237,7 @@ var EventEmitter = (function () {
                      * @author Kevin Li<klx211@gmail.com>
                      * @param {String} sEventType The event type for which all listeners are to be removed. This parameter is
                      * optional. If it's omitted all listeners for all event types will be purged.
-                     * @returns {EventEmitter} The instance of EventEmitter so that method calls can be chained.
+                     * @returns {KEventEmitter} The instance of EventEmitter so that method calls can be chained.
                      */
                     removeAllListeners: function (sEventType) {
                         if (typeof sEventType === 'string') {
@@ -252,7 +254,7 @@ var EventEmitter = (function () {
                      *
                      * @author Kevin Li<klx211@gmail.com>
                      * @param {Number} nMaxListeners
-                     * @returns {EventEmitter} The instance of EventEmitter so that method calls can be chained.
+                     * @returns {KEventEmitter} The instance of EventEmitter so that method calls can be chained.
                      */
                     setMaxListeners: function (nMaxListeners) {
                         if (typeof nMaxListeners === 'number') {
@@ -287,7 +289,7 @@ var EventEmitter = (function () {
                      * @author Kevin Li<klx211@gmail.com>
                      * @param {String} sEventType The event type for which a listener is to be removed.
                      * @param {...} args Any number of arguments to be passed to the listeners.
-                     * @returns {EventEmitter} The instance of EventEmitter so that method calls can be chained.
+                     * @returns {KEventEmitter} The instance of EventEmitter so that method calls can be chained.
                      */
                     emit: function (sEventType) {
                         if (typeof sEventType === 'string' && typeof oRegistry[sEventType] !== 'undefined') {
@@ -324,7 +326,7 @@ var EventEmitter = (function () {
          *
          * @author Kevin Li<klx211@gmail.com>
          * @static
-         * @param {EventEmitter} oEventEmitter An instance of EventEmitter.
+         * @param {KEventEmitter} oEventEmitter An instance of EventEmitter.
          * @param {String} sEventType The event type for which a listener is to be counted.
          * @returns {Number} The number of listeners for the specified event type. If the event type is missing,
          * 0 will be returned.
@@ -342,10 +344,10 @@ var EventEmitter = (function () {
          *
          * @author Kevin Li<klx211@gmail.com>
          * @static
-         * @returns {EventEmitter} An instance of EventEmitter.
+         * @returns {KEventEmitter} An instance of EventEmitter.
          */
         newInstance: function () {
-            var instance = new konstructor();
+            var instance = new Konstructor();
             aInstances.push(instance);
             return instance;
         }
@@ -353,7 +355,7 @@ var EventEmitter = (function () {
 }());
 
 if (module) {
-    module.exports = EventEmitter;
+    module.exports = KEventEmitter;
 } else if (exports) {
-    exports = EventEmitter;
+    exports = KEventEmitter;
 }
