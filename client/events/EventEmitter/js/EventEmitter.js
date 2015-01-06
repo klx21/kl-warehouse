@@ -153,7 +153,7 @@ var EventEmitter = (function () {
                         this.removeListener(sEventType, fListener);
                     };
                     // This is just a flag to tell apart the wrapped listener and the original listener.
-                    // Assigning it as an attribute of "fWrapped" is to keep this flag even if the code is minified.
+                    // Assigning it to "fWrapped" as an attribute is to keep it untouched even if the code is minified.
                     fWrapped.sFlag = 'ThisIsAOnceWrapper';
 
                     return fWrapped;
