@@ -28,7 +28,7 @@
     /**
      * All the event subjects that will be emitted during the process of dragging.
      *
-     * @author Kevin Li<huali@tibco-support.com>
+     * @author Kevin Li<klx211@gmail.com>
      * @type {Object}
      */
     var kDraggableEvents = {
@@ -38,7 +38,7 @@
         /**
          * All the class name constants.
          *
-         * @author Kevin Li<huali@tibco-support.com>
+         * @author Kevin Li<klx211@gmail.com>
          * @type {Object}
          */
         kClassNames = {
@@ -62,7 +62,7 @@
     /**
      * Facotry function of the directive.
      *
-     * @author Kevin Li<huali@tibco-support.com>
+     * @author Kevin Li<klx211@gmail.com>
      * @param {Object} kDE An object containing all the event subjects that will be emitted during the process of
      * dragging.
      * @param {Object} kCN An object containing all the class name constants.
@@ -98,7 +98,7 @@
         /**
          * Register all the necessary listeners for dragging an element.
          *
-         * @author Kevin Li<huali@tibco-support.com>
+         * @author Kevin Li<klx211@gmail.com>
          * @param {Object} oScope The directive's scope object.
          * @param {jQuery} jqDraggableElement The HTML element which is wrapped by jQuery and is to be dragged.
          * @param {jQuery} jqHE The HTML element which is wrapped by jQuery and is the handle for dragging.
@@ -114,28 +114,28 @@
                 /**
                  * The value of left property of the HTML element to be dragged when the mouse button is held down.
                  *
-                 * @author Kevin Li<huali@tibco-support.com>
+                 * @author Kevin Li<klx211@gmail.com>
                  * @type {number}
                  */
                 var nElementLeft = jqDraggableElement.position().left,
                     /**
                      * The value of top property of the HTML element to be dragged when the mouse button is held down.
                      *
-                     * @author Kevin Li<huali@tibco-support.com>
+                     * @author Kevin Li<klx211@gmail.com>
                      * @type {number}
                      */
                     nElementTop = jqDraggableElement.position().top,
                     /**
                      * The X position of the mouse cursor when the mouse button is held down.
                      *
-                     * @author Kevin Li<huali@tibco-support.com>
+                     * @author Kevin Li<klx211@gmail.com>
                      * @type {number}
                      */
                     nMouseX = oEvent.pageX,
                     /**
                      * The Y position of the mouse cursor when the mouse button is held down.
                      *
-                     * @author Kevin Li<huali@tibco-support.com>
+                     * @author Kevin Li<klx211@gmail.com>
                      * @type {number}
                      */
                     nMouseY = oEvent.pageY,
@@ -143,7 +143,7 @@
                      * A counter to tell whether it's the first time to move the mouse after the mouse button is held
                      * down.
                      *
-                     * @author Kevin Li<huali@tibco-support.com>
+                     * @author Kevin Li<klx211@gmail.com>
                      * @type {number}
                      */
                     nCounter = 0;
