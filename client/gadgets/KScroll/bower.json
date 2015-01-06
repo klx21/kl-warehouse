@@ -1,0 +1,8 @@
+{
+    "name": "KScroll",
+    "description": "A small gadget taking care of the scrolling in an HTML element.",
+    "version": "1.0.0",
+    "dependencies": {
+        "jquery": "^1.11.1"
+    }
+}

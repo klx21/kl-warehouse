@@ -203,11 +203,11 @@ var KScroll = (function () {
                 /**
                  * The bar element of the horizontal scroll bar element.
                  */
-                oHBar,
+                dHBar,
                 /**
                  * The horizontal scroll bar element.
                  */
-                oHScrollBar,
+                dHScrollBar,
                 /**
                  * The knob element, which is actually a point and is used to drag to resize the wrapper if resizing is
                  * enabled.
@@ -216,20 +216,20 @@ var KScroll = (function () {
                 /**
                  * The bar element of the vertical scroll bar element.
                  */
-                oVBar,
+                dVBar,
                 /**
                  * The vertical scroll bar element.
                  */
-                oVScrollBar,
+                dVScrollBar,
                 /**
                  * The wrapped element. If the "wrappee" property in the "oConfig" argument is a string, it will be treated
                  * as the id of the element which is to be wrapped.
                  */
-                oWrappee = typeof oConfig.wrappee === 'string' ? $('#' + oConfig.wrappee) : $(oConfig.wrappee),
+                dWrappee = typeof oConfig.wrappee === 'string' ? $('#' + oConfig.wrappee) : $(oConfig.wrappee),
                 /**
                  * The wrapper element.
                  */
-                oWrapper,
+                dWrapper,
                 /**
                  * How will the wrapped element be moved, either by changing the "left" and "top" or by changing the
                  * "transform".
@@ -376,9 +376,9 @@ var KScroll = (function () {
                  * The height and the width including paddings of the wrapped element before it's wrapped into the wrapper
                  * element.
                  */
-                wrappeeOldSizes = {
-                    height: oWrappee.innerHeight(),
-                    width: oWrappee.innerWidth()
+                oWrappeeOldSizes = {
+                    height: dWrappee.innerHeight(),
+                    width: dWrappee.innerWidth()
                 },
                 /**
                  * Add the CSS "transition" property for the ordinary scrolling functionality.
@@ -388,7 +388,7 @@ var KScroll = (function () {
                  * multiple times.
                  */
                 addTransition4Scroll = function (bScrollOnce) {
-                    $([oWrappee, oHBar, oVBar]).each(function (index, elem) {
+                    $([dWrappee, dHBar, dVBar]).each(function (index, elem) {
                         $(elem).css({
                             transitionProperty: noTransform() ? 'left, top' : getBrowserSpecificPrefix() + 'transform',
                             transitionDuration: ( bScrollOnce ? KScroll.SCROLL_ONCE_TRANSITION_DURATION : KScroll.DEFAULT_TRANSITION_DURATION) +
@@ -417,7 +417,7 @@ var KScroll = (function () {
                         oTransition.transitionTimingFunction = getBezierCurve(oOutOfRange.x || oOutOfRange.y);
                     }
                     oTransition.transitionDuration = Math.min(oT.x, oT.y) + 'ms';
-                    $([oWrappee, oHBar, oVBar]).each(function (index, elem) {
+                    $([dWrappee, dHBar, dVBar]).each(function (index, elem) {
                         $(elem).css(oTransition);
                     });
                 },
@@ -427,7 +427,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 addTransition4PageScroll = function () {
-                    $([oWrappee, oHBar, oVBar]).each(function (index, elem) {
+                    $([dWrappee, dHBar, dVBar]).each(function (index, elem) {
                         $(elem).css({
                             transitionProperty: noTransform() ? 'left, top' : getBrowserSpecificPrefix() + 'transform',
                             transitionDuration: KScroll.SCROLL_ONCE_TRANSITION_DURATION + 'ms',
@@ -479,7 +479,7 @@ var KScroll = (function () {
                  */
                 calcBarBound = function (oBar, oCoordinate, oMovement) {
                     var ret = {};
-                    if (oBar.is(oHBar)) {
+                    if (oBar.is(dHBar)) {
                         if (oCoordinate.x + oMovement.x < 0) {
                             ret.x = -oCoordinate.x;
                         } else if (oCoordinate.x + oMovement.x > oBar.parent().width() - oBar.outerWidth(true)) {
@@ -490,7 +490,7 @@ var KScroll = (function () {
                     } else {
                         ret.x = 0;
                     }
-                    if (oBar.is(oVBar)) {
+                    if (oBar.is(dVBar)) {
                         if (oCoordinate.y + oMovement.y < 0) {
                             ret.y = -oCoordinate.y;
                         } else if (oCoordinate.y + oMovement.y > oBar.parent().height() - oBar.outerHeight(true)) {
@@ -522,29 +522,29 @@ var KScroll = (function () {
                     };
                     if (noTransform()) {
                         currentPosition = {
-                            x: oWrappee.position().left,
-                            y: oWrappee.position().top
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
                         };
                     } else {
-                        currentPosition = parseTransform(oWrappee.css('transform'));
+                        currentPosition = parseTransform(dWrappee.css('transform'));
                     }
                     if (_bHorizontalScrollable) {
                         if (currentPosition.x + oS.x > 0 ||
-                            currentPosition.x + oS.x < oWrapper.innerWidth() - oWrappee.outerWidth(true)) {
+                            currentPosition.x + oS.x < dWrapper.innerWidth() - dWrappee.outerWidth(true)) {
                             if (oV0.x > 0) {
                                 oNewS.x = -currentPosition.x;
                             } else {
-                                oNewS.x = oWrapper.innerWidth() - oWrappee.outerWidth(true) - currentPosition.x;
+                                oNewS.x = dWrapper.innerWidth() - dWrappee.outerWidth(true) - currentPosition.x;
                             }
                         }
                     }
                     if (_bVerticalScrollable) {
                         if (currentPosition.y + oS.y > 0 ||
-                            currentPosition.y + oS.y < oWrapper.innerHeight() - oWrappee.outerHeight(true)) {
+                            currentPosition.y + oS.y < dWrapper.innerHeight() - dWrappee.outerHeight(true)) {
                             if (oV0.y > 0) {
                                 oNewS.y = -currentPosition.y;
                             } else {
-                                oNewS.y = oWrapper.innerHeight() - oWrappee.outerHeight(true) - currentPosition.y;
+                                oNewS.y = dWrapper.innerHeight() - dWrappee.outerHeight(true) - currentPosition.y;
                             }
                         }
                     }
@@ -559,12 +559,12 @@ var KScroll = (function () {
                 calcHBarPosition = function () {
                     var ret, nHRatio = getHorizontalMovementRatio();
                     if (isWrappeeOutOfBoundsHorizontally()) {
-                        ret = oHScrollBar.width() - oHBar.outerWidth(true);
+                        ret = dHScrollBar.width() - dHBar.outerWidth(true);
                     } else {
                         if (noTransform()) {
-                            ret = -oWrappee.position().left / nHRatio;
+                            ret = -dWrappee.position().left / nHRatio;
                         } else {
-                            ret = -parseTransform(oWrappee.css('transform')).x / nHRatio;
+                            ret = -parseTransform(dWrappee.css('transform')).x / nHRatio;
                         }
                     }
                     return ret;
@@ -577,9 +577,9 @@ var KScroll = (function () {
                  * @returns {Number} The width of the horizontal bar.
                  */
                 calcHBarWidth = function () {
-                    var ret = oWrapper.width() / oWrappee.outerWidth(true) * oHScrollBar.width();
-                    if (ret > oHScrollBar.width()) {
-                        ret = oHScrollBar.width();
+                    var ret = dWrapper.width() / dWrappee.outerWidth(true) * dHScrollBar.width();
+                    if (ret > dHScrollBar.width()) {
+                        ret = dHScrollBar.width();
                     }
                     return ret;
                 },
@@ -627,11 +627,11 @@ var KScroll = (function () {
                  */
                 calcPageNumber = function () {
                     var oCoordinates = noTransform() ? {
-                        x: oWrappee.position().left,
-                        y: oWrappee.position().top
-                    } : parseTransform(oWrappee.css('transform')), oPageSize = {
-                        x: oWrapper.width(),
-                        y: oWrapper.height()
+                        x: dWrappee.position().left,
+                        y: dWrappee.position().top
+                    } : parseTransform(dWrappee.css('transform')), oPageSize = {
+                        x: dWrapper.width(),
+                        y: dWrapper.height()
                     };
                     return {
                         x: Math.ceil(Math.abs(oCoordinates.x) / oPageSize.x),
@@ -647,12 +647,12 @@ var KScroll = (function () {
                  */
                 calcTotalPageCount = function () {
                     var oPageSize = {
-                        x: oWrapper.width(),
-                        y: oWrapper.height()
+                        x: dWrapper.width(),
+                        y: dWrapper.height()
                     };
                     return {
-                        x: Math.ceil(oWrappee.outerWidth(true) / oPageSize.x),
-                        y: Math.ceil(oWrappee.outerHeight(true) / oPageSize.y)
+                        x: Math.ceil(dWrappee.outerWidth(true) / oPageSize.x),
+                        y: Math.ceil(dWrappee.outerHeight(true) / oPageSize.y)
                     };
                 },
                 /**
@@ -663,9 +663,9 @@ var KScroll = (function () {
                  * @returns {Number} The height of the vertical bar.
                  */
                 calcVBarHeight = function () {
-                    var ret = oWrapper.height() / oWrappee.outerHeight(true) * oVScrollBar.height();
-                    if (ret > oVScrollBar.height()) {
-                        ret = oVScrollBar.height();
+                    var ret = dWrapper.height() / dWrappee.outerHeight(true) * dVScrollBar.height();
+                    if (ret > dVScrollBar.height()) {
+                        ret = dVScrollBar.height();
                     }
                     return ret;
                 },
@@ -678,12 +678,12 @@ var KScroll = (function () {
                 calcVBarPosition = function () {
                     var ret, nVRatio = getVerticalMovementRatio();
                     if (isWrappeeOutOfBoundsVertically()) {
-                        ret = oVScrollBar.height() - oVBar.outerHeight(true);
+                        ret = dVScrollBar.height() - dVBar.outerHeight(true);
                     } else {
                         if (noTransform()) {
-                            ret = -oWrappee.position().top / nVRatio;
+                            ret = -dWrappee.position().top / nVRatio;
                         } else {
-                            ret = -parseTransform(oWrappee.css('transform')).y / nVRatio;
+                            ret = -parseTransform(dWrappee.css('transform')).y / nVRatio;
                         }
                     }
                     return ret;
@@ -705,12 +705,12 @@ var KScroll = (function () {
                  */
                 calcWrappeeBound = function (oCoordinate, oMovement) {
                     var ret = {};
-                    if (oWrappee.outerWidth(true) > oWrapper.width()) {
+                    if (dWrappee.outerWidth(true) > dWrapper.width()) {
                         if (oCoordinate.x + oMovement.x > 0) {
                             ret.x = -oCoordinate.x;
                             bLeftEndReached = true;
-                        } else if (oCoordinate.x + oMovement.x < oWrapper.width() - oWrappee.outerWidth(true)) {
-                            ret.x = Math.abs(oCoordinate.x) + oWrapper.width() - oWrappee.outerWidth(true);
+                        } else if (oCoordinate.x + oMovement.x < dWrapper.width() - dWrappee.outerWidth(true)) {
+                            ret.x = Math.abs(oCoordinate.x) + dWrapper.width() - dWrappee.outerWidth(true);
                             bRightEndReached = true;
                         } else {
                             ret.x = oMovement.x;
@@ -718,12 +718,12 @@ var KScroll = (function () {
                     } else {
                         ret.x = 0;
                     }
-                    if (oWrappee.outerHeight(true) > oWrapper.height()) {
+                    if (dWrappee.outerHeight(true) > dWrapper.height()) {
                         if (oCoordinate.y + oMovement.y > 0) {
                             ret.y = -oCoordinate.y;
                             bTopEndReached = true;
-                        } else if (oCoordinate.y + oMovement.y < oWrapper.height() - oWrappee.outerHeight(true)) {
-                            ret.y = Math.abs(oCoordinate.y) + oWrapper.height() - oWrappee.outerHeight(true);
+                        } else if (oCoordinate.y + oMovement.y < dWrapper.height() - dWrappee.outerHeight(true)) {
+                            ret.y = Math.abs(oCoordinate.y) + dWrapper.height() - dWrappee.outerHeight(true);
                             bBottomEndReached = true;
                         } else {
                             ret.y = oMovement.y;
@@ -755,7 +755,7 @@ var KScroll = (function () {
                  * properties "x" and "y" which stand for how much it moves along the X and the Y axes, respectively.
                  */
                 dragScrollBar = function (oBar, oMovement) {
-                    barsDriveWrappee(oMovement, oBar.is(oVBar));
+                    barsDriveWrappee(oMovement, oBar.is(dVBar));
                 },
                 /**
                  * The wrapped element is dragged to move within the range of the wrapper element and the scroll bars will
@@ -777,23 +777,21 @@ var KScroll = (function () {
                  * the Y axes.
                  */
                 fireEndReached = function (oShift) {
-                    if (typeof _this.onEndReached === 'function') {
-                        _this.onEndReached(KScroll.EVENT_END_REACHED, {
-                            oWrappee: oWrappee,
-                            oWrapper: oWrapper,
-                            oShift: oShift,
-                            oCoordinates: noTransform() ? {
-                                x: oWrappee.position().left,
-                                y: oWrappee.position().top
-                            } : parseTransform(oWrappee.css('transform')),
-                            oWhichEndReached: {
-                                bottom: bBottomEndReached,
-                                left: bLeftEndReached,
-                                right: bRightEndReached,
-                                top: bTopEndReached
-                            }
-                        });
-                    }
+                    _this.emit(KScroll.EVENT_END_REACHED, {
+                        dWrappee: dWrappee,
+                        dWrapper: dWrapper,
+                        oShift: oShift,
+                        oCoordinates: noTransform() ? {
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
+                        } : parseTransform(dWrappee.css('transform')),
+                        oWhichEndReached: {
+                            bottom: bBottomEndReached,
+                            left: bLeftEndReached,
+                            right: bRightEndReached,
+                            top: bTopEndReached
+                        }
+                    });
                 },
                 /**
                  * Invoke the event handler function for handling the event "bottomEndReached" which means the bottom end of
@@ -804,17 +802,15 @@ var KScroll = (function () {
                  * the Y axes.
                  */
                 fireBottomEndReached = function (oShift) {
-                    if (typeof _this.onBottomEndReached === 'function') {
-                        _this.onBottomEndReached(KScroll.EVENT_BOTTOM_END_REACHED, {
-                            oWrappee: oWrappee,
-                            oWrapper: oWrapper,
-                            oShift: oShift,
-                            oCoordinates: noTransform() ? {
-                                x: oWrappee.position().left,
-                                y: oWrappee.position().top
-                            } : parseTransform(oWrappee.css('transform'))
-                        });
-                    }
+                    _this.emit(KScroll.EVENT_BOTTOM_END_REACHED, {
+                        dWrappee: dWrappee,
+                        dWrapper: dWrapper,
+                        oShift: oShift,
+                        oCoordinates: noTransform() ? {
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
+                        } : parseTransform(dWrappee.css('transform'))
+                    });
                 },
                 /**
                  * Invoke the event handler function for handling the event "leftEndReached" which means the left end of the
@@ -825,17 +821,15 @@ var KScroll = (function () {
                  * the Y axes.
                  */
                 fireLeftEndReached = function (oShift) {
-                    if (typeof _this.onLeftEndReached === 'function') {
-                        _this.onLeftEndReached(KScroll.EVENT_LEFT_END_REACHED, {
-                            oWrappee: oWrappee,
-                            oWrapper: oWrapper,
-                            oShift: oShift,
-                            oCoordinates: noTransform() ? {
-                                x: oWrappee.position().left,
-                                y: oWrappee.position().top
-                            } : parseTransform(oWrappee.css('transform'))
-                        });
-                    }
+                    _this.emit(KScroll.EVENT_LEFT_END_REACHED, {
+                        dWrappee: dWrappee,
+                        dWrapper: dWrapper,
+                        oShift: oShift,
+                        oCoordinates: noTransform() ? {
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
+                        } : parseTransform(dWrappee.css('transform'))
+                    });
                 },
                 /**
                  * Invoke the event handler function for handling the event "rightEndReached" which means the right end of
@@ -846,17 +840,15 @@ var KScroll = (function () {
                  * the Y axes.
                  */
                 fireRightEndReached = function (oShift) {
-                    if (typeof _this.onRightEndReached === 'function') {
-                        _this.onRightEndReached(KScroll.EVENT_RIGHT_END_REACHED, {
-                            oWrappee: oWrappee,
-                            oWrapper: oWrapper,
-                            oShift: oShift,
-                            oCoordinates: noTransform() ? {
-                                x: oWrappee.position().left,
-                                y: oWrappee.position().top
-                            } : parseTransform(oWrappee.css('transform'))
-                        });
-                    }
+                    _this.emit(KScroll.EVENT_RIGHT_END_REACHED, {
+                        dWrappee: dWrappee,
+                        dWrapper: dWrapper,
+                        oShift: oShift,
+                        oCoordinates: noTransform() ? {
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
+                        } : parseTransform(dWrappee.css('transform'))
+                    });
                 },
                 /**
                  * Invoke the event handler function for handling the event "topEndReached" which means the top end of the
@@ -867,17 +859,15 @@ var KScroll = (function () {
                  * the Y axes.
                  */
                 fireTopEndReached = function (oShift) {
-                    if (typeof _this.onTopEndReached === 'function') {
-                        _this.onTopEndReached(KScroll.EVENT_TOP_END_REACHED, {
-                            oWrappee: oWrappee,
-                            oWrapper: oWrapper,
-                            oShift: oShift,
-                            oCoordinates: noTransform() ? {
-                                x: oWrappee.position().left,
-                                y: oWrappee.position().top
-                            } : parseTransform(oWrappee.css('transform'))
-                        });
-                    }
+                    _this.emit(KScroll.EVENT_TOP_END_REACHED, {
+                        dWrappee: dWrappee,
+                        dWrapper: dWrapper,
+                        oShift: oShift,
+                        oCoordinates: noTransform() ? {
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
+                        } : parseTransform(dWrappee.css('transform'))
+                    });
                 },
                 /**
                  * Invoke the event handler function for handling the event "scrolled" which means the wrapped element has
@@ -890,18 +880,16 @@ var KScroll = (function () {
                  * done.
                  */
                 fireScrolled = function (oShift, sTriggerAction) {
-                    if (typeof _this.onScrolled === 'function') {
-                        _this.onScrolled(KScroll.EVENT_SCROLLED, {
-                            oWrappee: oWrappee,
-                            oWrapper: oWrapper,
-                            oShift: oShift,
-                            oCoordinates: noTransform() ? {
-                                x: oWrappee.position().left,
-                                y: oWrappee.position().top
-                            } : parseTransform(oWrappee.css('transform')),
-                            sTriggerAction: sTriggerAction
-                        });
-                    }
+                    _this.emit(KScroll.EVENT_SCROLLED, {
+                        dWrappee: dWrappee,
+                        dWrapper: dWrapper,
+                        oShift: oShift,
+                        oCoordinates: noTransform() ? {
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
+                        } : parseTransform(dWrappee.css('transform')),
+                        sTriggerAction: sTriggerAction
+                    });
                 },
                 /**
                  * Get the corresponding Bezier Curve based on whether there will be a bouncing back effect.
@@ -971,8 +959,8 @@ var KScroll = (function () {
                  * distance that the horizontal bar can be moved.
                  */
                 getHorizontalMovementRatio = function () {
-                    return (oWrappee.outerWidth(true) - oWrapper.width()) /
-                        (oHScrollBar.width() - oHBar.outerWidth(true));
+                    return (dWrappee.outerWidth(true) - dWrapper.width()) /
+                        (dHScrollBar.width() - dHBar.outerWidth(true));
                 },
                 /**
                  * Get the height of the horizontal scroll bar. If it's hidden the result will be 0.
@@ -981,7 +969,7 @@ var KScroll = (function () {
                  * @returns {Number} The height of the horizontal scroll bar. 0 will be returned if it's hidden.
                  */
                 getHScrollBarHeight = function () {
-                    return shouldShowHorizontalScrollBar() || _bResizeable ? oHScrollBar.outerHeight(true) : 0;
+                    return shouldShowHorizontalScrollBar() || _bResizeable ? dHScrollBar.outerHeight(true) : 0;
                 },
                 /**
                  * Get the position of an element relative to the wrapped element.
@@ -998,7 +986,7 @@ var KScroll = (function () {
                     }, oPosition, oParentsPosition;
                     if (element) {
                         element = $(element);
-                        if (!$(element).is(oWrappee)) {
+                        if (!$(element).is(dWrappee)) {
                             oParentsPosition = getPositionToWrappee($(element).offsetParent());
                             oPosition = $(element).position();
                             ret = {
@@ -1019,8 +1007,8 @@ var KScroll = (function () {
                  *          distance that the vertical bar can be moved.
                  */
                 getVerticalMovementRatio = function () {
-                    return (oWrappee.outerHeight(true) - oWrapper.height()) /
-                        (oVScrollBar.height() - oVBar.outerHeight(true));
+                    return (dWrappee.outerHeight(true) - dWrapper.height()) /
+                        (dVScrollBar.height() - dVBar.outerHeight(true));
                 },
                 /**
                  * Get the height of the vertical scroll bar. If it's hidden the result will be 0.
@@ -1029,7 +1017,7 @@ var KScroll = (function () {
                  * @returns {Number} The height of the vertical scroll bar. 0 will be returned if it's hidden.
                  */
                 getVScrollBarWidth = function () {
-                    return shouldShowVerticalScrollBar() || _bResizeable ? oVScrollBar.outerWidth(true) : 0;
+                    return shouldShowVerticalScrollBar() || _bResizeable ? dVScrollBar.outerWidth(true) : 0;
                 },
                 /**
                  * Get the X coordinate of the mouse cursor or the touch depending on the device used.
@@ -1290,7 +1278,7 @@ var KScroll = (function () {
                  */
                 handleMouseOverDragWrappee = function (event) {
                     if (_bDraggable) {
-                        oWrappee.addClass(cssClasses.cursorMove);
+                        dWrappee.addClass(cssClasses.cursorMove);
                     }
                 },
                 /**
@@ -1367,12 +1355,12 @@ var KScroll = (function () {
                     evt.preventDefault();
                     bDraggingWrappee = true;
                     if (noTransform()) {
-                        oWrappee.css({
-                            left: oWrappee.position().left,
-                            top: oWrappee.position().top
+                        dWrappee.css({
+                            left: dWrappee.position().left,
+                            top: dWrappee.position().top
                         });
                     } else {
-                        oWrappee.css('transform', toTransformString(parseTransform(oWrappee.css('transform'))));
+                        dWrappee.css('transform', toTransformString(parseTransform(dWrappee.css('transform'))));
                     }
                     removeTransition();
                     if (_bAutoHide) {
@@ -1498,10 +1486,10 @@ var KScroll = (function () {
                 hideScrollBars = function () {
                     timeoutVisibility = window.setTimeout(function () {
                         if (shouldShowHorizontalScrollBar()) {
-                            oHScrollBar.fadeOut('fast');
+                            dHScrollBar.fadeOut('fast');
                         }
                         if (shouldShowVerticalScrollBar()) {
-                            oVScrollBar.fadeOut('fast');
+                            dVScrollBar.fadeOut('fast');
                         }
                         if ((shouldShowHorizontalScrollBar() && shouldShowVerticalScrollBar()) || _bResizeable) {
                             oResizeKnob.fadeOut('fast');
@@ -1540,7 +1528,7 @@ var KScroll = (function () {
                         addTransition4Scroll();
                     }
                     observeTransitionEnd();
-                    prepareCustomEventHandlers();
+                    //prepareCustomEventHandlers();
                 },
                 /**
                  * Tell if the browser that's displaying the web page is on a touchable device.
@@ -1563,12 +1551,12 @@ var KScroll = (function () {
                 isWrappeeOutOfBoundsHorizontally = function () {
                     var ret = false;
                     if (noTransform()) {
-                        if (Math.abs(oWrappee.left) + oWrapper.width() > oWrappee.outerWidth(true)) {
+                        if (Math.abs(dWrappee.left) + dWrapper.width() > dWrappee.outerWidth(true)) {
                             ret = true;
                         }
                     } else {
-                        if (Math.abs(parseTransform(oWrappee.css('transform')).x) + oWrapper.width() >
-                            oWrappee.outerWidth(true)) {
+                        if (Math.abs(parseTransform(dWrappee.css('transform')).x) + dWrapper.width() >
+                            dWrappee.outerWidth(true)) {
                             ret = true;
                         }
                     }
@@ -1586,12 +1574,12 @@ var KScroll = (function () {
                 isWrappeeOutOfBoundsVertically = function () {
                     var ret = false;
                     if (noTransform()) {
-                        if (Math.abs(oWrappee.top) + oWrapper.height() > oWrappee.outerHeight(true)) {
+                        if (Math.abs(dWrappee.top) + dWrapper.height() > dWrappee.outerHeight(true)) {
                             ret = true;
                         }
                     } else {
-                        if (Math.abs(parseTransform(oWrappee.css('transform')).y) + oWrapper.height() >
-                            oWrappee.outerHeight(true)) {
+                        if (Math.abs(parseTransform(dWrappee.css('transform')).y) + dWrapper.height() >
+                            dWrappee.outerHeight(true)) {
                             ret = true;
                         }
                     }
@@ -1653,11 +1641,11 @@ var KScroll = (function () {
                     var ret, oTransform;
                     if (noTransform()) {
                         ret = calcWrappeeBound({
-                            x: oWrappee.position().left,
-                            y: oWrappee.position().top
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
                         }, oMovement);
                     } else {
-                        oTransform = parseTransform(oWrappee.css('transform'));
+                        oTransform = parseTransform(dWrappee.css('transform'));
                         ret = calcWrappeeBound(oTransform, oMovement);
                     }
                     return ret;
@@ -1702,14 +1690,14 @@ var KScroll = (function () {
                  * @param {Number} nXMovement How much the horizontal bar is going to be moved along the X axis.
                  */
                 moveHBar = function (nXMovement) {
-                    var _oMovement = keepBarInBound(oHBar, {
+                    var _oMovement = keepBarInBound(dHBar, {
                         x: nXMovement,
                         y: 0
                     });
                     if (_nHowToMove === KScroll.MOVE_BY_POSITION) {
-                        moveByPosition(oHBar, _oMovement);
+                        moveByPosition(dHBar, _oMovement);
                     } else {
-                        moveByTransform(oHBar, _oMovement);
+                        moveByTransform(dHBar, _oMovement);
                     }
                 },
                 /**
@@ -1719,14 +1707,14 @@ var KScroll = (function () {
                  * @param {Number} nYMovement How much the vertical bar is going to be moved along the Y axis.
                  */
                 moveVBar = function (nYMovement) {
-                    var _oMovement = keepBarInBound(oVBar, {
+                    var _oMovement = keepBarInBound(dVBar, {
                         x: 0,
                         y: nYMovement
                     });
                     if (_nHowToMove === KScroll.MOVE_BY_POSITION) {
-                        moveByPosition(oVBar, _oMovement);
+                        moveByPosition(dVBar, _oMovement);
                     } else {
-                        moveByTransform(oVBar, _oMovement);
+                        moveByTransform(dVBar, _oMovement);
                     }
                 },
                 /**
@@ -1735,8 +1723,9 @@ var KScroll = (function () {
                  * @author Huan Li
                  * @param {Object} oMovement A key-value pair object containing the movement, which is going to be made to
                  * the wrapped element, along the X and the Y axes.
+                 * @param {String} sTriggerAction A string describing the action which has triggered the scroll.
                  */
-                moveWrappee = function (oMovement) {
+                moveWrappee = function (oMovement, sTriggerAction) {
                     if (!_bHorizontalScrollable) {
                         oMovement.x = 0;
                     }
@@ -1744,10 +1733,35 @@ var KScroll = (function () {
                         oMovement.y = 0;
                     }
                     if (noTransform()) {
-                        moveByPosition(oWrappee, oMovement);
+                        moveByPosition(dWrappee, oMovement);
                     } else {
-                        moveByTransform(oWrappee, oMovement);
+                        moveByTransform(dWrappee, oMovement);
                     }
+                    /**
+                     * In order to let the rendering finish first
+                     * these event handler invocations are put into a setTimeout.
+                     */
+                    window.setTimeout(function () {
+                        if (oMovement.x !== 0 || oMovement.y !== 0) {
+                            fireScrolled(oMovement, sTriggerAction);
+                        }
+                        if (bTopEndReached) {
+                            fireTopEndReached(oMovement);
+                        }
+                        if (bRightEndReached) {
+                            fireRightEndReached(oMovement);
+                        }
+                        if (bBottomEndReached) {
+                            fireBottomEndReached(oMovement);
+                        }
+                        if (bLeftEndReached) {
+                            fireLeftEndReached(oMovement);
+                        }
+                        if (bTopEndReached || bRightEndReached || bBottomEndReached || bLeftEndReached) {
+                            fireEndReached(oMovement);
+                            bTopEndReached = bRightEndReached = bBottomEndReached = bLeftEndReached = false;
+                        }
+                    });
                 },
                 /**
                  * Tell if the CSS "transform" property is used to do the movement.
@@ -1789,7 +1803,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 observeDragHBar = function () {
-                    oHBar.mousedown(function (evt) {
+                    dHBar.mousedown(function (evt) {
                         evt.preventDefault();
                         bDraggingScrollBar = true;
                         if (_bSmooth) {
@@ -1821,7 +1835,7 @@ var KScroll = (function () {
                          */
                         handleMoveDragHBar = (function (oPosition, event) {
                             event.preventDefault();
-                            dragScrollBar(oHBar, {
+                            dragScrollBar(dHBar, {
                                 x: event.pageX - oPosition.x,
                                 y: 0
                             });
@@ -1841,7 +1855,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 observeDragVBar = function () {
-                    oVBar.mousedown(function (evt) {
+                    dVBar.mousedown(function (evt) {
                         evt.preventDefault();
                         bDraggingScrollBar = true;
                         if (_bSmooth) {
@@ -1872,7 +1886,7 @@ var KScroll = (function () {
                          */
                         handleMoveDragVBar = (function (oPosition, event) {
                             event.preventDefault();
-                            dragScrollBar(oVBar, {
+                            dragScrollBar(dVBar, {
                                 x: 0,
                                 y: event.pageY - oPosition.y
                             });
@@ -1901,7 +1915,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 observeDragWrappee = function () {
-                    oWrappee.addClass(cssClasses.noUserSelect).on(KScroll.EVENT_MOUSE_OVER, handleMouseOverDragWrappee).on(getEventSubject(KScroll.EVENT_TYPE_START), handleStartDragWrappee);
+                    dWrappee.addClass(cssClasses.noUserSelect).on(KScroll.EVENT_MOUSE_OVER, handleMouseOverDragWrappee).on(getEventSubject(KScroll.EVENT_TYPE_START), handleStartDragWrappee);
                 },
                 /**
                  * Register event handlers to handle the mouse cursor entering and leaving the wrapper element so that at any
@@ -1910,7 +1924,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 observeMouseHoversWrapper = function () {
-                    $(oWrapper).on({
+                    $(dWrapper).on({
                         mouseenter: function (evt) {
                             if (bMouseIn !== true) {
                                 bMouseIn = true;
@@ -1935,7 +1949,7 @@ var KScroll = (function () {
                      * Some browsers fire "wheel" event and some fire "mousewheel" event so here I make it listen to both
                      * events.
                      */
-                    oWrapper.on('wheel mousewheel', function (e) {
+                    dWrapper.on('wheel mousewheel', function (e) {
                         var originalEvent = e.originalEvent,
                             deltaX = originalEvent.wheelDeltaX || -originalEvent.deltaX || 0,
                             deltaY = originalEvent.wheelDeltaY || -originalEvent.deltaY || 0;
@@ -1956,7 +1970,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 observeScrollBarsVisibility = function () {
-                    oWrapper.on({
+                    dWrapper.on({
                         mouseenter: handleMouseEnterScrollBarsVisibility,
                         mouseleave: handleMouseLeaveScrollBarsVisibility
                     });
@@ -1967,7 +1981,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 observeTransitionEnd = function () {
-                    oWrapper.on('transitionend webkitTransitionEnd oTransitionEnd msTransitionEnd', handleTransitionEnd);
+                    dWrapper.on('transitionend webkitTransitionEnd oTransitionEnd msTransitionEnd', handleTransitionEnd);
                 },
                 /**
                  * Get the arguments of the matrix function of the CSS property "transform" and save them as key-value pairs
@@ -2011,16 +2025,16 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 positionHBar = function () {
-                    oHBar.width(calcHBarWidth());
-                    var nPosition = calcHBarPosition(), oTransform = parseTransform(oHBar.css('transform'));
+                    dHBar.width(calcHBarWidth());
+                    var nPosition = calcHBarPosition(), oTransform = parseTransform(dHBar.css('transform'));
                     if (noTransform()) {
-                        oHBar.css('left', nPosition);
+                        dHBar.css('left', nPosition);
                     } else {
                         oTransform.x = nPosition;
-                        oHBar.css('transform', toTransformString(oTransform));
+                        dHBar.css('transform', toTransformString(oTransform));
                     }
                     if (typeof _sScrollBarColor === 'string') {
-                        oHBar.css('backgroundColor', _sScrollBarColor);
+                        dHBar.css('backgroundColor', _sScrollBarColor);
                     }
                 },
                 /**
@@ -2030,16 +2044,16 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 positionVBar = function () {
-                    oVBar.height(calcVBarHeight());
-                    var nPosition = calcVBarPosition(), oTransform = parseTransform(oVBar.css('transform'));
+                    dVBar.height(calcVBarHeight());
+                    var nPosition = calcVBarPosition(), oTransform = parseTransform(dVBar.css('transform'));
                     if (noTransform()) {
-                        oVBar.css('top', nPosition);
+                        dVBar.css('top', nPosition);
                     } else {
                         oTransform.y = nPosition;
-                        oVBar.css('transform', toTransformString(oTransform));
+                        dVBar.css('transform', toTransformString(oTransform));
                     }
                     if (typeof _sScrollBarColor === 'string') {
-                        oVBar.css('backgroundColor', _sScrollBarColor);
+                        dVBar.css('backgroundColor', _sScrollBarColor);
                     }
                 },
                 /**
@@ -2071,7 +2085,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 removeTransition = function () {
-                    $([oWrappee, oHBar, oVBar]).each(function (index, item) {
+                    $([dWrappee, dHBar, dVBar]).each(function (index, item) {
                         $(item).css('transition', 'none');
                     });
                 },
@@ -2091,15 +2105,15 @@ var KScroll = (function () {
                  */
                 renderScrollBars = function () {
                     if (shouldShowHorizontalScrollBar()) {
-                        oHScrollBar.css({
+                        dHScrollBar.css({
                             bottom: 0,
                             left: 0,
-                            width: oWrapper.width() - getVScrollBarWidth()
+                            width: dWrapper.width() - getVScrollBarWidth()
                         });
                     }
                     if (shouldShowVerticalScrollBar()) {
-                        oVScrollBar.css({
-                            height: oWrapper.height() - getHScrollBarHeight(),
+                        dVScrollBar.css({
+                            height: dWrapper.height() - getHScrollBarHeight(),
                             right: 0,
                             top: 0
                         });
@@ -2114,8 +2128,8 @@ var KScroll = (function () {
                  * X and Y axes.
                  */
                 resizeWrapper = function (oMovement) {
-                    var nHeight = oWrapper.height() + oMovement.y,
-                        nWidth = oWrapper.width() + oMovement.x;
+                    var nHeight = dWrapper.height() + oMovement.y,
+                        nWidth = dWrapper.width() + oMovement.x;
                     if (nHeight < _nMinHeight) {
                         nHeight = _nMinHeight;
                     } else if (nHeight > _nMaxHeight) {
@@ -2126,21 +2140,21 @@ var KScroll = (function () {
                     } else if (nWidth > _nMaxWidth) {
                         nWidth = _nMaxWidth;
                     }
-                    oWrapper.css({
+                    dWrapper.css({
                         height: nHeight,
                         width: nWidth
                     });
 
                     /* Take care of the visibility of the scroll bars */
                     if (!shouldShowHorizontalScrollBar()) {
-                        oHScrollBar.fadeOut('fast');
+                        dHScrollBar.fadeOut('fast');
                     } else {
-                        oHScrollBar.fadeIn('fast');
+                        dHScrollBar.fadeIn('fast');
                     }
                     if (!shouldShowVerticalScrollBar()) {
-                        oVScrollBar.fadeOut('fast');
+                        dVScrollBar.fadeOut('fast');
                     } else {
-                        oVScrollBar.fadeIn('fast');
+                        dVScrollBar.fadeIn('fast');
                     }
 
                     /* Start taking care of the positioning of the wrapped element */
@@ -2169,31 +2183,31 @@ var KScroll = (function () {
                         oWrappeeMovement = {x: 0, y: 0};
                     if (noTransform()) {
                         oCoordinates = {
-                            x: oWrappee.position().left,
-                            y: oWrappee.position().top
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
                         };
                     } else {
-                        oCoordinates = parseTransform(oWrappee.css('transform'));
+                        oCoordinates = parseTransform(dWrappee.css('transform'));
                     }
 
                     if (oCoordinates.x !== 0 || oCoordinates.y !== 0) {
-                        if (oWrappee.outerHeight(true) <= oWrapper.height()) {
+                        if (dWrappee.outerHeight(true) <= dWrapper.height()) {
                             oWrappeeMovement.y = 0 - oCoordinates.y;
                         } else {
                             if (oCoordinates.y > 0) {
                                 oWrappeeMovement.y = 0 - oCoordinates.y;
-                            } else if (oCoordinates.y < oWrappee.outerHeight(true) - oWrapper.height()) {
-                                oWrappeeMovement.y = oWrappee.outerHeight(true) - oWrapper.height();
+                            } else if (oCoordinates.y < dWrappee.outerHeight(true) - dWrapper.height()) {
+                                oWrappeeMovement.y = dWrappee.outerHeight(true) - dWrapper.height();
                             }
                         }
 
-                        if (oWrappee.outerWidth(true) <= oWrapper.width()) {
+                        if (dWrappee.outerWidth(true) <= dWrapper.width()) {
                             oWrappeeMovement.x = 0 - oCoordinates.x;
                         } else {
                             if (oCoordinates.x > 0) {
                                 oWrappeeMovement.x = 0 - oCoordinates.x;
-                            } else if (oCoordinates.x < oWrappee.outerWidth(true) - oWrapper.width()) {
-                                oWrappeeMovement.x = oWrappee.outerWidth(true) - oWrapper.width();
+                            } else if (oCoordinates.x < dWrappee.outerWidth(true) - dWrapper.width()) {
+                                oWrappeeMovement.x = dWrappee.outerWidth(true) - dWrapper.width();
                             }
                         }
 
@@ -2225,8 +2239,8 @@ var KScroll = (function () {
                  */
                 scrollByPage = function () {
                     var oShiftInOnePage = shiftWithInOnePage(), oPageSize = {
-                        x: oWrapper.width(),
-                        y: oWrapper.height()
+                        x: dWrapper.width(),
+                        y: dWrapper.height()
                     }, oShiftMoreThanHalfPage = {
                         x: oShiftInOnePage.x > oPageSize.x / 2,
                         y: oShiftInOnePage.y > oPageSize.y / 2
@@ -2314,8 +2328,8 @@ var KScroll = (function () {
                             x: 0,
                             y: 0
                         }, oPageSize = {
-                            x: oWrapper.width(),
-                            y: oWrapper.height()
+                            x: dWrapper.width(),
+                            y: dWrapper.height()
                         }, oShiftWithInOnePage = shiftWithInOnePage(), oNewPageCount = keepPageCountInBound(oPageCount);
                         if (oPageCount.x > 0) {
                             oMovement.x = (oNewPageCount.x - 1) * oPageSize.x + oShiftWithInOnePage.x;
@@ -2352,17 +2366,17 @@ var KScroll = (function () {
                 scrollToElement = function (element) {
                     if (element) {
                         element = $(element);
-                        if ($.contains(oWrappee[0], element[0])) {
+                        if ($.contains(dWrappee[0], element[0])) {
                             var oElementPosition, oWrappeeCoordinates, oMovement;
                             oElementPosition = getPositionToWrappee(element);
                             if (noTransform()) {
-                                oWrappeeCoordinates = oWrappee.position();
+                                oWrappeeCoordinates = dWrappee.position();
                                 oMovement = {
                                     x: -(oElementPosition.x + oWrappeeCoordinates.left),
                                     y: -(oElementPosition.y + oWrappeeCoordinates.top)
                                 };
                             } else {
-                                oWrappeeCoordinates = parseTransform(oWrappee.css('transform'));
+                                oWrappeeCoordinates = parseTransform(dWrappee.css('transform'));
                                 oMovement = {
                                     x: -(oElementPosition.x + oWrappeeCoordinates.x),
                                     y: -(oElementPosition.y + oWrappeeCoordinates.y)
@@ -2402,19 +2416,19 @@ var KScroll = (function () {
                         };
                     if (noTransform()) {
                         if (_bHorizontalScrollable) {
-                            oHBar.css('left', oBarsNewPosition.x);
+                            dHBar.css('left', oBarsNewPosition.x);
                         }
                         if (_bVerticalScrollable) {
-                            oVBar.css('top', oBarsNewPosition.y);
+                            dVBar.css('top', oBarsNewPosition.y);
                         }
                     } else {
                         if (_bHorizontalScrollable) {
-                            oHBar.css('transform', toTransformString({
+                            dHBar.css('transform', toTransformString({
                                 x: oBarsNewPosition.x
                             }));
                         }
                         if (_bVerticalScrollable) {
-                            oVBar.css('transform', toTransformString({
+                            dVBar.css('transform', toTransformString({
                                 y: oBarsNewPosition.y
                             }));
                         }
@@ -2440,16 +2454,16 @@ var KScroll = (function () {
                         x: 0,
                         y: 0
                     }, oWrappeePosition, oPageSize = {
-                        x: oWrapper.width(),
-                        y: oWrapper.height()
+                        x: dWrapper.width(),
+                        y: dWrapper.height()
                     };
                     if (_nHowToMove === KScroll.MOVE_BY_POSITION) {
                         oWrappeePosition = {
-                            x: oWrappee.position().left,
-                            y: oWrappee.position().top
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
                         };
                     } else {
-                        oWrappeePosition = parseTransform(oWrappee.css('transform'));
+                        oWrappeePosition = parseTransform(dWrappee.css('transform'));
                     }
                     ret.x = Math.abs(oWrappeePosition.x) -
                     Math.floor(Math.abs(oWrappeePosition.x) / oPageSize.x) * oPageSize.x;
@@ -2464,7 +2478,7 @@ var KScroll = (function () {
                  * @returns {Boolean} True if it should be displayed based on the configurations. False otherwise.
                  */
                 shouldShowHorizontalScrollBar = function () {
-                    return _bHorizontalBarVisible && oWrappee.outerWidth(true) > oWrapper.width();
+                    return _bHorizontalBarVisible && dWrappee.outerWidth(true) > dWrapper.width();
                 },
                 /**
                  * Determine whether the vertical scroll bar should be displayed based on the configurations.
@@ -2473,7 +2487,7 @@ var KScroll = (function () {
                  * @returns {Boolean} True if it should be displayed based on the configurations. False otherwise.
                  */
                 shouldShowVerticalScrollBar = function () {
-                    return _bVerticalBarVisible && oWrappee.outerHeight(true) > oWrapper.height();
+                    return _bVerticalBarVisible && dWrappee.outerHeight(true) > dWrapper.height();
                 },
                 /**
                  * Show the scroll bars based on the configurations.
@@ -2486,10 +2500,10 @@ var KScroll = (function () {
                         timeoutVisibility = null;
                     }
                     if (shouldShowHorizontalScrollBar()) {
-                        oHScrollBar.fadeIn('fast');
+                        dHScrollBar.fadeIn('fast');
                     }
                     if (shouldShowVerticalScrollBar()) {
-                        oVScrollBar.fadeIn('fast');
+                        dVScrollBar.fadeIn('fast');
                     }
                     if (_bResizeKnobVisible &&
                         ((shouldShowHorizontalScrollBar() && shouldShowVerticalScrollBar()) || _bResizeable)) {
@@ -2502,7 +2516,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 styleWrappee = function () {
-                    oWrappee.css({
+                    dWrappee.css({
                         overflow: 'visible',
                         position: 'absolute'
                     }).addClass('wrappee');
@@ -2513,14 +2527,14 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 styleWrapper = function () {
-                    oWrapper.css({
-                        border: oWrappee.css('border'),
-                        display: oWrappee.css('display') !== 'block' ? 'inline-block' : 'block',
-                        height: typeof _nWrapperHeight !== 'undefined' ? _nWrapperHeight : wrappeeOldSizes.height,
+                    dWrapper.css({
+                        border: dWrappee.css('border'),
+                        display: dWrappee.css('display') !== 'block' ? 'inline-block' : 'block',
+                        height: typeof _nWrapperHeight !== 'undefined' ? _nWrapperHeight : oWrappeeOldSizes.height,
                         overflow: 'hidden',
                         padding: 0,
-                        position: oWrappee.css('position') === 'absolute' ? 'absolute' : 'relative',
-                        width: typeof _nWrapperWidth !== 'undefined' ? _nWrapperWidth : wrappeeOldSizes.width
+                        position: dWrappee.css('position') === 'absolute' ? 'absolute' : 'relative',
+                        width: typeof _nWrapperWidth !== 'undefined' ? _nWrapperWidth : oWrappeeOldSizes.width
                     });
                 },
                 /**
@@ -2591,9 +2605,9 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 unobserveDragWrappee = function () {
-                    oWrappee.off(KScroll.EVENT_MOUSE_OVER, handleMouseOverDragWrappee).off(getEventSubject(KScroll.EVENT_TYPE_START), handleStartDragWrappee);
-                    oWrappee.removeClass(cssClasses.cursorMove);
-                    oWrappee.removeClass(cssClasses.noUserSelect);
+                    dWrappee.off(KScroll.EVENT_MOUSE_OVER, handleMouseOverDragWrappee).off(getEventSubject(KScroll.EVENT_TYPE_START), handleStartDragWrappee);
+                    dWrappee.removeClass(cssClasses.cursorMove);
+                    dWrappee.removeClass(cssClasses.noUserSelect);
                 },
                 /**
                  * Unregister the event handler which scrolls the wrapped element as the mouse wheel scrolls.
@@ -2601,7 +2615,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 unobserveMouseWheel = function () {
-                    oWrapper.off('wheel mousewheel');
+                    dWrapper.off('wheel mousewheel');
                 },
                 /**
                  * Unregister the event handler which shows and hides the scroll bars according to the configurations as the
@@ -2611,7 +2625,7 @@ var KScroll = (function () {
                  * @author Huan Li
                  */
                 unobserveScrollBarsVisibility = function () {
-                    oWrapper.off({
+                    dWrapper.off({
                         mouseenter: handleMouseEnterScrollBarsVisibility,
                         mouseleave: handleMouseLeaveScrollBarsVisibility
                     });
@@ -2656,15 +2670,15 @@ var KScroll = (function () {
                         sResizeKnobId = appendIdSuffix(sResizeKnobIdPrefix),
                         sHBarId = appendIdSuffix(sHBarIdPrefix),
                         sVBarId = appendIdSuffix(sVBarIdPrefix);
-                    oWrapper = oWrappee.wrap($(sHtmlWrapper).attr('id', appendIdSuffix(sWrapperIdPrefix))).parent();
-                    oWrapper.append($(sHtmlHScrollBar).attr('id', sHScrollBarId), $(sHtmlVScrollBar).attr('id', sVScrollBarId), $(sHtmlResizeKnob).attr('id', sResizeKnobId));
+                    dWrapper = dWrappee.wrap($(sHtmlWrapper).attr('id', appendIdSuffix(sWrapperIdPrefix))).parent();
+                    dWrapper.append($(sHtmlHScrollBar).attr('id', sHScrollBarId), $(sHtmlVScrollBar).attr('id', sVScrollBarId), $(sHtmlResizeKnob).attr('id', sResizeKnobId));
                     styleWrapper();
                     styleWrappee();
-                    oHScrollBar = oWrapper.find('#' + sHScrollBarId);
-                    oVScrollBar = oWrapper.find('#' + sVScrollBarId);
-                    oResizeKnob = oWrapper.find('#' + sResizeKnobId);
-                    oHBar = oHScrollBar.append($(sHtmlHBar).attr('id', sHBarId)).find('#' + sHBarId);
-                    oVBar = oVScrollBar.append($(sHtmlVBar).attr('id', sVBarId)).find('#' + sVBarId);
+                    dHScrollBar = dWrapper.find('#' + sHScrollBarId);
+                    dVScrollBar = dWrapper.find('#' + sVScrollBarId);
+                    oResizeKnob = dWrapper.find('#' + sResizeKnobId);
+                    dHBar = dHScrollBar.append($(sHtmlHBar).attr('id', sHBarId)).find('#' + sHBarId);
+                    dVBar = dVScrollBar.append($(sHtmlVBar).attr('id', sVBarId)).find('#' + sVBarId);
                     renderScrollBars();
                     if (!_bResizeKnobVisible) {
                         oResizeKnob.hide();
@@ -2681,39 +2695,16 @@ var KScroll = (function () {
                  */
                 wrappeeDrivesBars = function (oMovement, sTriggerAction) {
                     var oWrappeePosition = noTransform() ? {
-                            x: oWrappee.position().left,
-                            y: oWrappee.position().top
-                        } : parseTransform(oWrappee.css('transform')),
+                            x: dWrappee.position().left,
+                            y: dWrappee.position().top
+                        } : parseTransform(dWrappee.css('transform')),
                         oNewMovement;
                     oNewMovement = keepWrappeeInBound(oMovement);
                     moveWrappee(oNewMovement, sTriggerAction);
                     setBarsPosition(oWrappeePosition, oNewMovement);
-                    /* In order to let the rendering finish first these event handler invocations are put into a setTimeout.
-                     * */
-                    window.setTimeout(function () {
-                        if (oNewMovement.x !== 0 || oNewMovement.y !== 0) {
-                            fireScrolled(oNewMovement, sTriggerAction);
-                        }
-                        if (bTopEndReached) {
-                            fireTopEndReached(oNewMovement);
-                        }
-                        if (bRightEndReached) {
-                            fireRightEndReached(oNewMovement);
-                        }
-                        if (bBottomEndReached) {
-                            fireBottomEndReached(oNewMovement);
-                        }
-                        if (bLeftEndReached) {
-                            fireLeftEndReached(oNewMovement);
-                        }
-                        if (bTopEndReached || bRightEndReached || bBottomEndReached || bLeftEndReached) {
-                            fireEndReached(oNewMovement);
-                            bTopEndReached = bRightEndReached = bBottomEndReached = bLeftEndReached = false;
-                        }
-                    });
                 };
 
-            $.extend(this, {
+            $.extend(this, EventEmitter.newInstance(), {
 
                 /**
                  * Get how the elements in the web page are moved.
@@ -3127,7 +3118,7 @@ var KScroll = (function () {
                 setWrapperHeight: function (nWrapperHeight) {
                     if (typeof nWrapperHeight === 'number') {
                         _nWrapperHeight = nWrapperHeight;
-                        oWrapper.height(_nWrapperHeight);
+                        dWrapper.height(_nWrapperHeight);
                         refresh();
                     }
                 },
@@ -3142,7 +3133,7 @@ var KScroll = (function () {
                 setWrapperWidth: function (nWrapperWidth) {
                     if (typeof nWrapperWidth === 'number') {
                         _nWrapperWidth = nWrapperWidth;
-                        oWrapper.width(_nWrapperWidth);
+                        dWrapper.width(_nWrapperWidth);
                         refresh();
                     }
                 }
