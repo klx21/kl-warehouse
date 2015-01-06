@@ -1,0 +1,9 @@
+{
+    "name": "ng-draggable",
+    "version": "1.0.0",
+    "description": "AngularJS version of draggable",
+    "dependencies": {
+        "angular": "1.3.x",
+        "jquery": "2.1.x"
+    }
+}
