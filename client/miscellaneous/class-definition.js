@@ -34,19 +34,23 @@ var ClassName = (function() {
          * The constructor function.
          *
          * @constructor
+         * @param {...} args Any number of arguments.
          */
-        Konstructor = function() {
+        Konstructor = function () {
 
-        /////////////////////////////////////////////////
-        // Here goes the private members of the class. //
-        /////////////////////////////////////////////////
+            var oInstance = {};
 
-            $.extend(this, /* Other instances */ {
+            /////////////////////////////////////////////////
+            // Here goes the private members of the class. //
+            /////////////////////////////////////////////////
+
+            $.extend(oInstance, /* Other instances */ {
                 ////////////////////////////////////////////////
                 // Here goes the public members of the class. //
                 ////////////////////////////////////////////////
-            }
-        );
+            });
+
+            return oInstance;
     };
 
     return {
@@ -67,7 +71,7 @@ var ClassName = (function() {
          * @param {...} args Any number of arguments can be passed in.
          */
         newInstance: function () {
-            var instance = new Konstructor();
+            var instance = Konstructor.apply(null, Array.prototype.slice.call(arguments, 0));
             aInstances.push(instance);
             return instance;
         }

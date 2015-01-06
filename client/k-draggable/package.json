@@ -29,9 +29,7 @@
         "karma-firefox-launcher": "0.1.x",
         "karma-jasmine": "0.3.x",
         "karma-ng-html2js-preprocessor": "0.1.x",
-        "karma-phantomjs-launcher": "0.1.x",
         "karma-spec-reporter": "0.0.x",
-        "phantomjs": "1.9.x",
         "rimraf": "2.2.x"
     }
 }

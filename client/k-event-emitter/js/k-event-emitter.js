@@ -28,6 +28,7 @@
  * @class
  */
 var KEventEmitter = (function () {
+
     'use strict';
 
     /**
@@ -48,14 +49,15 @@ var KEventEmitter = (function () {
          */
         Konstructor = function () {
 
-            /**
-             * An object containing all event/listeners pairs.
-             *
-             * @author Kevin Li<klx211@gmail.com>
-             * @private
-             * @type {Object}
-             */
-            var oRegistry = {},
+            var oInstance = {},
+                /**
+                 * An object containing all event/listeners pairs.
+                 *
+                 * @author Kevin Li<klx211@gmail.com>
+                 * @private
+                 * @type {Object}
+                 */
+                oRegistry = {},
                 /**
                  * The number of maximum listeners for a specific event type.
                  *
@@ -112,9 +114,9 @@ var KEventEmitter = (function () {
                  * carriage returns and line feeds removed.
                  */
                 serialize = function (fTarget) {
-                    var ret = typeof fTarget !== 'undefined'
-                        && typeof fTarget.toString === 'function'
-                        && fTarget.toString();
+                    var ret = typeof fTarget !== 'undefined' &&
+                        typeof fTarget.toString === 'function' &&
+                        fTarget.toString();
                     if (ret) {
                         ret = ret.replace(/[\t\s\r\n]+/g, '');
                     }
@@ -161,7 +163,7 @@ var KEventEmitter = (function () {
                     return fWrapped;
                 };
 
-            $.extend(this, {
+            $.extend(oInstance, {
                     /**
                      * Add a listener for a specific event type.
                      *
@@ -209,8 +211,8 @@ var KEventEmitter = (function () {
                                 // The unwrapped fListener is not found in the listeners array.
                                 // Try wrapped fListener.
                                 if (nIndex < 0) {
-                                    for(i = 0; i < aListeners.length; i += 1) {
-                                        if(isWrapped(sEventType, fListener, aListeners[i])) {
+                                    for (i = 0; i < aListeners.length; i += 1) {
+                                        if (isWrapped(sEventType, fListener, aListeners[i])) {
                                             nIndex = i;
                                             break;
                                         }
@@ -218,7 +220,7 @@ var KEventEmitter = (function () {
                                 }
 
                                 // Either an unwrapped or a wrapped fListener has been found.
-                                if(nIndex >= 0) {
+                                if (nIndex >= 0) {
                                     aListeners.splice(nIndex, 1);
                                 }
 
@@ -302,8 +304,9 @@ var KEventEmitter = (function () {
                         }
                         return this;
                     }
-                }
-            );
+                });
+
+            return oInstance;
         };
 
     return {
@@ -347,7 +350,7 @@ var KEventEmitter = (function () {
          * @returns {KEventEmitter} An instance of EventEmitter.
          */
         newInstance: function () {
-            var instance = new Konstructor();
+            var instance = Konstructor.apply(null, Array.prototype.slice.call(arguments, 0));
             aInstances.push(instance);
             return instance;
         }
