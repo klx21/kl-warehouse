@@ -16,6 +16,12 @@
     -ms-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
 }
 
+@mixin cursor($cursor) {
+    cursor: $cursor;
+    cursor: -webkit- + $cursor;
+    cursor: -moz- + $cursor;
+}
+
 .k-draggable {
     @include transition(box-shadow 100ms);
     position: absolute;
@@ -26,5 +32,13 @@
 }
 
 .k-handle {
-    cursor: move;
+    @include cursor(grab);
+}
+
+.k-dragging .k-handle {
+    @include cursor(grabbing);
+}
+
+.k-dragging.k-handle {
+    @include cursor(grabbing);
 }
