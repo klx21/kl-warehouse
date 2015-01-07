@@ -47,7 +47,7 @@ var KEventEmitter = (function () {
          * @constructor
          * @type {Function}
          */
-        Konstructor = function () {
+        factory = function () {
 
             var oInstance = {},
                 /**
@@ -163,7 +163,7 @@ var KEventEmitter = (function () {
                     return fWrapped;
                 };
 
-            $.extend(oInstance, {
+            Object.assign(oInstance, {
                     /**
                      * Add a listener for a specific event type.
                      *
@@ -350,7 +350,7 @@ var KEventEmitter = (function () {
          * @returns {KEventEmitter} An instance of EventEmitter.
          */
         newInstance: function () {
-            var instance = Konstructor.apply(null, Array.prototype.slice.call(arguments, 0));
+            var instance = factory.apply(null, Array.prototype.slice.call(arguments, 0));
             aInstances.push(instance);
             return instance;
         }

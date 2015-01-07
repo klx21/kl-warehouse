@@ -24,13 +24,13 @@
 
 'use strict';
 
+require('./lib/object-assign.js');
+
 var del = require('del'),
     gulp = require('gulp'),
     gJasmine = require('gulp-jasmine'),
     gRename = require('gulp-rename'),
     gUglify = require('gulp-uglify'),
-    jsdom = require('jsdom'),
-    jquery = require('jquery')(jsdom.jsdom().parentWindow),
     KEventEmitter = require('./js/k-event-emitter.js');
 
 gulp.task('clean', function () {
@@ -42,7 +42,6 @@ gulp.task('clean', function () {
 
 gulp.task('test', function () {
 
-    global.$ = jquery;
     global.KEventEmitter = KEventEmitter;
 
     return gulp.src('./test/**/*.spec.js')
