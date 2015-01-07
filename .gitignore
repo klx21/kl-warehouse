@@ -40,5 +40,8 @@ client/dist
 client/build
 client/bower_components
 
-# experiment folders
+# Experiment folders
 lab
+
+# Compiled CSS files
+**/assets/*.css

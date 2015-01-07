@@ -28,20 +28,21 @@
 
     angular
         .module('kl.cardsBox')
-        .directive('cardsBox', cardsBox);
+        .directive('kCardsBox', kCardsBox);
 
-    cardsBox.$inject = [
+    kCardsBox.$inject = [
         'kCardsBoxEvents',
-        'kCardsBoxDefaults'
+        'kCardsBoxDefaults',
+        'kCardsBoxClassNames'
     ];
 
-    function cardsBox(kCardsBoxEvents, kCardsBoxDefaults) {
+    function kCardsBox(kCBE, kCBD, kCBCN) {
 
         return {
-            controller: 'CardsBoxController',
+            controller: 'KCardsBoxController',
             link: function (scope, element, attrs, controller) {
 
-                checkScopeProperties(scope, element, kCardsBoxDefaults);
+                checkScopeProperties(scope, element);
 
                 scope.oCardStyles = {
                     height: scope.nCardHeight + 'px',
@@ -49,9 +50,11 @@
                     width: scope.nCardWidth + 'px'
                 };
 
+                registerEventListeners(scope, element);
+
                 scope.$watch('aCards', function(newValue, oldValue) {
 
-                    scope.$emit(kCardsBoxEvents.LOADING);
+                    scope.$emit(kCBE.LOADING);
 
                 }, true);
             },
@@ -75,18 +78,17 @@
          * @author Kevin Li<huali@tibco-support.com>
          * @param {Object} scope The directive's scope object.
          * @param {jQuery} element An HTML element or an array of HTML elements wrapped by jQuery.
-         * @param {Object} kCardsBoxDefaults An object containing constant values.
          */
-        function checkScopeProperties(scope, element, kCardsBoxDefaults) {
+        function checkScopeProperties(scope, element) {
 
             if (!angular.isNumber(scope.nColumnCount)) {
-                scope.nColumnCount = kCardsBoxDefaults.COLUMN_COUNT;
+                scope.nColumnCount = kCBD.COLUMN_COUNT;
             }
             if (!angular.isNumber(scope.nCardSpacing)) {
-                scope.nCardSpacing = kCardsBoxDefaults.CARD_SPACING;
+                scope.nCardSpacing = kCBD.CARD_SPACING;
             }
             if (!angular.isNumber(scope.nCardRatio)) {
-                scope.nCardRatio = kCardsBoxDefaults.CARD_RATIO;
+                scope.nCardRatio = kCBD.CARD_RATIO;
             }
             if (angular.isNumber(scope.nRowHeight)) {
                 scope.nCardHeight = scope.nRowHeight - scope.nCardSpacing;
@@ -94,6 +96,19 @@
             scope.nCardsBoxWidth = element.find('ul').width();
             scope.nCardWidth = scope.nCardsBoxWidth / scope.nColumnCount - scope.nCardSpacing;
             scope.nCardHeight = scope.nCardHeight || (scope.nCardWidth / scope.nCardRatio);
+        }
+
+        function registerEventListeners(oScope, jqElement) {
+
+            oScope.$on(kCBE.DATA_LOADING, function() {
+
+                jqElement.find('.' + kCBCN.LOADING_MASK + ', .' + kCBCN.LOADING_ICON).show();
+            });
+
+            oScope.$on(kCBE.DATA_LOADED, function() {
+
+                jqElement.find('.' + kCBCN.LOADING_MASK + ', .' + kCBCN.LOADING_ICON).hide();
+            });
         }
     }
 

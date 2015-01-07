@@ -27,22 +27,27 @@
     'use strict';
 
     var kCardsBoxEvents = {
-            BEFORE_UNLOAD: 'cardsBoxBeforeUnload',
-            BOTTOM_REACHED: 'cardsBoxBottomReached',
-            DIALOG_CLOSE: 'cardsBoxDialogClose',
-            DIALOG_OPEN: 'cardsBoxDialogOpen',
-            LOADED: 'cardsBoxLoaded',
-            LOADING: 'cardsBoxLoading'
+            BEFORE_UNLOAD: 'kCardsBoxBeforeUnload',
+            BOTTOM_REACHED: 'kCardsBoxBottomReached',
+            DATA_LOADED: 'kCardsBoxDataLoaded',
+            DATA_LOADING: 'kCardsBoxDataLoading',
+            DIALOG_CLOSE: 'kCardsBoxDialogClose',
+            DIALOG_OPEN: 'kCardsBoxDialogOpen'
         },
         kCardsBoxDefaults = {
             COLUMN_COUNT: 3,
             CARD_SPACING: 30,
             CARD_RATIO: 3 // width / height ratio
+        },
+        kCardsBoxClassNames = {
+            LOADING_MASK: 'loading-mask',
+            LOADING_ICON: 'loading-icon'
         };
 
     angular
         .module('kl.cardsBox')
         .constant('kCardsBoxEvents', kCardsBoxEvents)
-        .constant('kCardsBoxDefaults', kCardsBoxDefaults);
+        .constant('kCardsBoxDefaults', kCardsBoxDefaults)
+        .constant('kCardsBoxClassNames', kCardsBoxClassNames);
 
 }());

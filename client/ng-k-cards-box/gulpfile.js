@@ -44,10 +44,10 @@
                 fallback: 'demo/index.html',
                 livereload: {
                     enable: true,
-                    port: 8889
+                    port: 9998
                 },
                 open: true,
-                port: 8888
+                port: 9999
             }));
     });
 

@@ -28,39 +28,23 @@
 
     angular
         .module('kl.cardsBox')
-        .directive('card', card);
+        .directive('kCard', kCard);
 
-    card.$inject = [
-        'kCardsBoxEvents',
-        '$modal'
+    kCard.$inject = [
+        'kCardsBoxEvents'
     ];
 
-    function card(kCardsBoxEvents, $modal) {
+    function kCard(kCBE) {
 
         return {
             link: function (scope, element, attrs, controller) {
 
-                var oModalInstance,
-                    oConf = {
-                        backdrop: 'static',
-                        scope: scope,
-                        size: 'lg',
-                        templateUrl: scope.$parent.$parent.sDlgTplUrl
-                    };
-
-                if(!angular.isUndefined(scope.$parent.$parent.oDlgController)) {
-                    oConf.controller = scope.$parent.$parent.oDlgController;
-                    oConf.controllerAs = 'dc';
-                }
-
                 element.on('click', function (oEvent) {
 
-                    oModalInstance = $modal.open(oConf);
-
-                    scope.$emit(kCardsBoxEvents.DIALOG_OPEN, scope);
+                    scope.$emit(kCBE.DIALOG_OPEN, scope);
                 });
             },
-            require: '^^cardsBox',
+            require: '^^kCardsBox',
             restrict: 'A',
             scope: {
                 oData: '=cardData'

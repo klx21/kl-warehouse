@@ -28,18 +28,18 @@
 
     angular
         .module('kl.cardsBox')
-        .controller('CardsBoxController', CardsBoxController);
+        .controller('KCardsBoxController', KCardsBoxController);
 
-    CardsBoxController.$inject = [
+    KCardsBoxController.$inject = [
         '$scope',
-        'cardsBoxService'
+        'kCardsBoxService'
     ];
 
-    function CardsBoxController($scope, cardsBoxService) {
+    function KCardsBoxController($scope, kCardsBoxService) {
 
         $scope.oCardClasses = {};
 
-        cardsBoxService.setScope($scope);
+        kCardsBoxService.setScope($scope);
     }
 
 }());

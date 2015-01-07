@@ -28,9 +28,9 @@
 
     angular
         .module('kl.cardsBox')
-        .factory('cardsBoxService', cardsBoxService);
+        .factory('kCardsBoxService', kCardsBoxService);
 
-    function cardsBoxService() {
+    function kCardsBoxService() {
 
         var oScope = null;
 
@@ -67,7 +67,7 @@
 
                 } else {
 
-                    throw 'The scope object has already been set for the cardsBoxService.';
+                    throw 'The scope object has already been set for the kCardsBoxService.';
                 }
             }
         }

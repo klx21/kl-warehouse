@@ -28,8 +28,7 @@
 
     angular
         .module('kl.cardsBox', [
-            'ng',
-            'ui.bootstrap'
+            'ng'
         ]);
 
 }());
