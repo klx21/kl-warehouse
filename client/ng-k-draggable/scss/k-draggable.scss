@@ -28,7 +28,7 @@
 }
 
 .k-dragging {
-    @include default-box-shadow(#888, 10px, 10px);
+    @include default-box-shadow(#888, 15px, 15px);
 }
 
 .k-handle {
