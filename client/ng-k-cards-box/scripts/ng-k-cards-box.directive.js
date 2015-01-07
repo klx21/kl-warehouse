@@ -67,7 +67,7 @@
                 nRowHeight: '@rowHeight',
                 nCardSpacing: '@cardSpacing',
                 nCardRatio: '@cardRatio', // width / height ratio
-                oDlgController: '@dlgController'
+                sDlgController: '@dlgController'
             },
             templateUrl: '../templates/ng-k-cards-box.tpl.html'
         };
@@ -81,21 +81,13 @@
          */
         function checkScopeProperties(scope, element) {
 
-            if (!angular.isNumber(scope.nColumnCount)) {
-                scope.nColumnCount = kCBD.COLUMN_COUNT;
-            }
-            if (!angular.isNumber(scope.nCardSpacing)) {
-                scope.nCardSpacing = kCBD.CARD_SPACING;
-            }
-            if (!angular.isNumber(scope.nCardRatio)) {
-                scope.nCardRatio = kCBD.CARD_RATIO;
-            }
-            if (angular.isNumber(scope.nRowHeight)) {
-                scope.nCardHeight = scope.nRowHeight - scope.nCardSpacing;
-            }
             scope.nCardsBoxWidth = element.find('ul').width();
+            scope.nColumnCount = parseInt(scope.nColumnCount, 10) || kCBD.COLUMN_COUNT;
+            scope.nCardSpacing = parseFloat(scope.nCardSpacing, 10) || kCBD.CARD_SPACING;
+            scope.nCardRatio = parseFloat(scope.nCardRatio, 10) || kCBD.CARD_RATIO;
+            scope.nRowHeight = parseFloat(scope.nRowHeight, 10);
             scope.nCardWidth = scope.nCardsBoxWidth / scope.nColumnCount - scope.nCardSpacing;
-            scope.nCardHeight = scope.nCardHeight || (scope.nCardWidth / scope.nCardRatio);
+            scope.nCardHeight = (scope.nRowHeight - scope.nCardSpacing) || (scope.nCardWidth / scope.nCardRatio);
         }
 
         function registerEventListeners(oScope, jqElement) {
