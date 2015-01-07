@@ -92,7 +92,7 @@
 
                 registerListeners(scope, element, jqHandleElement);
             },
-            restrict: 'A',
+            restrict: 'AC',
             scope: {}
         };
 
