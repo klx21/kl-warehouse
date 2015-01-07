@@ -112,6 +112,8 @@
 
             function onMousedown(oEvent) {
 
+                oEvent.stopPropagation();
+                oEvent.preventDefault();
                 /**
                  * The value of left property of the HTML element to be dragged when the mouse button is held down.
                  *
