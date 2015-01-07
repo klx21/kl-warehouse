@@ -132,7 +132,7 @@ var KScroll = (function () {
          * }
          * </pre>
          */
-        konstructor = function (oConfig) {
+        Konstructor = function (oConfig) {
             if (typeof oConfig === 'undefined' || typeof oConfig.wrappee === 'undefined') {
                 throw 'The "wrappee", which is the wrapped element, MUST be provided!';
             }
@@ -3209,7 +3209,7 @@ var KScroll = (function () {
         makeScrollable: function (dWrappee, oConfig) {
             oConfig = oConfig || {};
             oConfig.wrappee = dWrappee;
-            var instance = new konstructor(oConfig);
+            var instance = new Konstructor(oConfig);
             aInstances.push(instance);
             return instance;
         }
