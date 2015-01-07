@@ -29,7 +29,7 @@
 .k-card:hover {
     @include default-box-shadow(#888, 5px, 5px);
 
-    .k-card-buttons-bar {
+    .k-card-toolbar {
         bottom: 0;
     }
 }
@@ -42,7 +42,7 @@
     top: 10px;
 }
 
-.k-card-buttons-bar {
+.k-card-toolbar {
     @include transition(bottom 200ms);
     background-color: #AAA;
     bottom: -30px;
@@ -77,3 +77,32 @@
     }
     z-index: 1501;
 }
+
+/* Cards animation start */
+.k-card.ng-enter {
+    @extend .ng-animation-transition;
+    opacity: 0;
+}
+
+.k-card.ng-enter.ng-enter-active {
+    opacity: 1;
+}
+
+.k-card.ng-leave {
+    @extend .ng-animation-transition;
+    opacity: 1;
+}
+
+.k-card.ng-leave.ng-leave-active {
+    opacity: 0;
+}
+
+.k-card.ng-move {
+    @extend .ng-animation-transition;
+    opacity: 0;
+}
+
+.k-card.ng-move.ng-move-active {
+    opacity: 1;
+}
+/* Cards animation end */

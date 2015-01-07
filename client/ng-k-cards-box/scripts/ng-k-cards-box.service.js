@@ -30,9 +30,14 @@
         .module('kl.cardsBox')
         .factory('kCardsBoxService', kCardsBoxService);
 
-    function kCardsBoxService() {
+    kCardsBoxService.$inject = [
+        'kCardsBoxDefaults'
+    ];
 
-        var oScope = null;
+    function kCardsBoxService(kCBD) {
+
+        var oScope = null,
+            nDblClickTimeout = kCBD.DOUBLE_CLICK_TIMEOUT;
 
         return {
             setScope: setScope,
@@ -40,11 +45,17 @@
             setCardTplUrl: setCardTplUrl,
             setDlgTplUrl: setDlgTplUrl,
             appendCard: appendCard,
+            appendCards: appendCards,
             prependCard: prependCard,
+            prependCards: prependCards,
             insertCard: insertCard,
+            insertCards: insertCards,
             removeCard: removeCard,
-            removeAllCard: removeAllCards,
-            changeCard: changeCard
+            removeCards: removeCards,
+            removeAllCards: removeAllCards,
+            changeCard: changeCard,
+            setDblClickTimeout: setDblClickTimeout,
+            getDblClickTimeout: getDblClickTimeout
         };
 
         /**
@@ -104,11 +115,27 @@
             }
         }
 
+        function appendCards(aCards) {
+
+            if(angular.isArray(aCards)) {
+
+                Array.prototype.push.apply(oScope.aCards, aCards);
+            }
+        }
+
         function prependCard(oCard) {
 
             if(!angular.isUndefined(oCard)) {
 
                 oScope.aCards.unshift(oCard);
+            }
+        }
+
+        function prependCards(aCards) {
+
+            if(angular.isArray(aCards)) {
+
+                Array.prototype.unshift.apply(oScope.aCards, aCards);
             }
         }
 
@@ -135,6 +162,29 @@
             }
         }
 
+        function insertCards(aCards, nStartIndex) {
+
+            if(angular.isArray(aCards)) {
+
+                if(!angular.isNumber(nStartIndex) || nStartIndex >= oScope.aCards.length) {
+
+                    appendCards(aCards);
+
+                } else if(nStartIndex === 0) {
+
+                    prependCards(aCards);
+
+                } else if(nStartIndex < 0) {
+
+                    insertCard(aCards, oScope.aCards.length + nStartIndex);
+
+                } else {
+
+                    Array.prototype.splice.apply(oScope.aCards, aCards.unshift(nStartIndex, 0));
+                }
+            }
+        }
+
         function removeCard(nIndex) {
 
             if(angular.isNumber(nIndex)) {
@@ -148,6 +198,14 @@
                     removeCard(oScope.aCards.length + nIndex);
                 }
             }
+        }
+
+        function removeCards(aIndexes) {
+
+            aIndexes.forEach(function(nIndex) {
+
+                removeCard(nIndex);
+            });
         }
 
         function removeAllCards() {
@@ -168,6 +226,19 @@
                     changeCard(oCard, oScope.aCards.length + nIndex);
                 }
             }
+        }
+
+        function setDblClickTimeout(nTimeout) {
+
+            if(angular.isNumber(nTimeout) && nTimeout > 0) {
+
+                nDblClickTimeout = nTimeout;
+            }
+        }
+
+        function getDblClickTimeout() {
+
+            return nDblClickTimeout;
         }
     }
 

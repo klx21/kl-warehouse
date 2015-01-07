@@ -44,7 +44,7 @@
                 fallback: 'demo/index.html',
                 livereload: {
                     enable: true,
-                    port: 9998
+                    port: 10000
                 },
                 open: true,
                 port: 9999

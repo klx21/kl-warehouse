@@ -1,5 +1,9 @@
 @charset "UTF-8";
 
+.ng-animation-transition {
+    transition: 500ms;
+}
+
 @mixin transition($transition...) {
     transition: $transition;
     -webkit-transition: $transition;
@@ -47,4 +51,3 @@
     right: 0;
     top: 0;
 }
-

@@ -28,7 +28,8 @@
 
     angular
         .module('kl.cardsBox', [
-            'ng'
+            'ng',
+            'ngAnimate'
         ]);
 
 }());
