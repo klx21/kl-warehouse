@@ -1,0 +1,97 @@
+@charset "UTF-8";
+
+@mixin transition($transition...) {
+    transition: $transition;
+    -webkit-transition: $transition;
+    -moz-transition: $transition;
+    -o-transition: $transition;
+    -ms-transition: $transition;
+}
+
+@mixin border-all-radius($radius) {
+    border-bottom-left-radius: $radius;
+    border-bottom-right-radius: $radius;
+    border-top-left-radius: $radius;
+    border-top-right-radius: $radius;
+    -moz-border-radius-bottomleft: $radius;
+    -moz-border-radius-bottomright: $radius;
+    -moz-border-radius-topleft: $radius;
+    -moz-border-radius-topright: $radius;
+    -webkit-border-bottom-left-radius: $radius;
+    -webkit-border-bottom-right-radius: $radius;
+    -webkit-border-top-left-radius: $radius;
+    -webkit-border-top-right-radius: $radius;
+    -o-border-bottom-left-radius: $radius;
+    -o-border-bottom-right-radius: $radius;
+    -o-border-top-left-radius: $radius;
+    -o-border-top-right-radius: $radius;
+    -ms-border-bottom-left-radius: $radius;
+    -ms-border-bottom-right-radius: $radius;
+    -ms-border-top-left-radius: $radius;
+    -ms-border-top-right-radius: $radius;
+}
+
+@mixin default-box-shadow($color: #000000, $spread-radius: 0, $blur-radius: 0, $offset-x: 0, $offset-y: 0) {
+    box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
+    -webkit-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
+    -moz-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
+    -o-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
+    -ms-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
+}
+
+.k-cards-box {
+    padding: 0;
+}
+
+.k-header-bar {
+
+}
+
+.k-cards-list {
+    list-style: none;
+    padding: 15px;
+}
+
+.k-card {
+    @include border-all-radius(3px);
+    @include transition(box-shadow 200ms);
+    @include default-box-shadow(#888, 1px, 1px);
+    display: inline-block;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+}
+
+.k-card:hover {
+    @include default-box-shadow(#888, 5px, 5px);
+
+    .k-card-buttons-bar {
+        bottom: 0;
+    }
+}
+
+.k-card-container {
+    bottom: 10px;
+    left: 10px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.k-card-buttons-bar {
+    @include transition(bottom 200ms);
+    background-color: #AAA;
+    bottom: -30px;
+    display: inline-block;
+    height: 30px;
+    left: 0;
+    opacity: 0.5;
+    padding: 3px;
+    position: absolute;
+    right: 0;
+    z-index: 10;
+}
+
+.k-footer-bar {
+
+}

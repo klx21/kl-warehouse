@@ -1,0 +1,41 @@
+{
+    "name": "Angular-version-cards-box",
+    "version": "1.0.0",
+    "description": "AnguarJS version of cards box.",
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "keywords": [
+        "AngularJS"
+    ],
+    "author": "Kevin Li <klx211@gmail.com>",
+    "license": "MIT",
+    "devDependencies": {
+        "del": "1.1.x",
+        "gulp": "3.8.x",
+        "gulp-angular-templatecache": "1.4.x",
+        "gulp-concat": "2.4.x",
+        "gulp-if": "1.2.x",
+        "gulp-jasmine": "1.x",
+        "gulp-jshint": "1.9.x",
+        "gulp-jshint-html-reporter": "0.1.x",
+        "gulp-karma": "0.x",
+        "gulp-minify-css": "0.3.x",
+        "gulp-protractor": "0.0.x",
+        "gulp-rename": "1.2.x",
+        "gulp-sass": "1.1.x",
+        "gulp-uglify": "1.0.x",
+        "gulp-webserver": "0.9.x",
+        "karma": "0.12.x",
+        "karma-chrome-launcher": "0.1.x",
+        "karma-firefox-launcher": "0.1.x",
+        "karma-jasmine": "0.3.x",
+        "karma-ng-html2js-preprocessor": "0.1.x",
+        "karma-phantomjs-launcher": "0.1.x",
+        "karma-spec-reporter": "0.0.x",
+        "lazypipe": "0.2.x",
+        "phantomjs": "1.9.x",
+        "rimraf": "2.2.x"
+    }
+}
