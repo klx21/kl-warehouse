@@ -37,7 +37,7 @@ var ClassName = (function() {
          * @constructor
          * @param {...} args Any number of arguments.
          */
-        Konstructor = function () {
+        factory = function () {
 
             var oInstance = {};
 
@@ -45,7 +45,7 @@ var ClassName = (function() {
             // Here goes the private members of the class. //
             /////////////////////////////////////////////////
 
-            $.extend(oInstance, /* Other instances */ {
+            Object.assign(oInstance, /* Other instances */ {
                 ////////////////////////////////////////////////
                 // Here goes the public members of the class. //
                 ////////////////////////////////////////////////
@@ -72,7 +72,7 @@ var ClassName = (function() {
          * @param {...} args Any number of arguments can be passed in.
          */
         newInstance: function () {
-            var instance = Konstructor.apply(null, Array.prototype.slice.call(arguments, 0));
+            var instance = factory.apply(null, Array.prototype.slice.call(arguments, 0));
             aInstances.push(instance);
             return instance;
         }
