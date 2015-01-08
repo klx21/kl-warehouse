@@ -26,6 +26,10 @@
 
     'use strict';
 
+    if (typeof jQuery === 'undefined') {
+
+        throw 'k-draggable: jQuery must be present in order for the k-draggable directive to work correctly.';
+    }
     /**
      * All the event subjects that will be emitted during the process of dragging.
      *
@@ -42,7 +46,7 @@
          * @author Kevin Li<klx211@gmail.com>
          * @type {Object}
          */
-        kClassNames = {
+        kDraggableClassNames = {
             DRAGGABLE: 'k-draggable',
             DRAGGING: 'k-dragging',
             HANDLE: 'k-handle'
@@ -51,43 +55,120 @@
     angular
         .module('kl.draggable', [])
         .constant('kDraggableEvents', kDraggableEvents)
-        .constant('kClassNames', kClassNames)
+        .constant('kDraggableClassNames', kDraggableClassNames)
+        .factory('kDraggableService', kDraggableService)
         .directive('kDraggable', kDraggable);
+
+    kDraggableService.$inject = [
+        '$compile'
+    ];
 
     kDraggable.$inject = [
         'kDraggableEvents',
-        'kClassNames',
+        'kDraggableClassNames',
         '$document'
     ];
 
-    /**
-     * Facotry function of the directive.
-     *
-     * @author Kevin Li<klx211@gmail.com>
-     * @param {Object} kDE An object containing all the event subjects that will be emitted during the process of
-     * dragging.
-     * @param {Object} kCN An object containing all the class name constants.
-     * @param {jQuery} $document A jQuery wrapper for the browser's window.document object.
-     * @returns {Object} The directive's definition object.
-     */
-    function kDraggable(kDE, kCN, $document) {
+    function kDraggableService($compile) {
+
+        return {
+            makeDraggable: makeDraggable
+        };
+
+        /**
+         * Make an HTML element draggable based on the configuration provided.
+         *
+         * @author Kevin Li<klx211@gmail.com>
+         * @param {Object} oConfig A configuration object to make an HTML element draggable.
+         * {
+         *     xDraggable: {string|jQuery|Node}, Required. The jQuery selector of the target draggable HTML element, or
+         *                                      a jQuery wrapper object of the target draggable HTML element, or the
+         *                                      target draggable HTML element itself.
+         *     sHandleSelector: {string}, Optional. The jQuery selector for the handle HTML element.
+         *     bWithAlt: {boolean} Optional. Whether the Alt key should be held down during dragging.
+         * }
+         * @throws Will throw an error if the configuration object is absent.
+         * @throws Will throw an error if the target draggable element's selector or itself is absent in the
+         * configuration object.
+         * @throws Will throw an error if the target draggable element selector or the jQuery object did not match any
+         * element or matched more than one elements.
+         */
+        function makeDraggable(oConfig) {
+
+            if (!angular.isObject(oConfig)) {
+
+                throw 'k-draggable: The configuration object must be provided.';
+
+            } else if (!angular.isString(oConfig.xDraggable) && !(oConfig.xDraggable instanceof jQuery) &&
+                oConfig.xDraggable.nodeType !== Node.ELEMENT_NODE) {
+                // A valid target draggable selector is absent,
+                // it's not a jQuery object,
+                // it's not a regular HTML element.
+
+                throw 'k-draggable: The selector for selecting the target draggable HTML element, or a jQuery ' +
+                'wrapper object of the target draggable HTML element, or the target draggable HTML element itself ' +
+                'must be provided.';
+
+            } else {
+
+                var jqDraggable = angular.element(oConfig.xDraggable),
+                    sHandleSelector = angular.isString(oConfig.sHandleSelector) && oConfig.sHandleSelector.length > 0 ?
+                        oConfig.sHandleSelector : '';
+
+                if (jqDraggable.length !== 1) {
+
+                    throw 'k-draggable: No draggable element or more than one draggable elements were found.';
+
+                } else {
+
+                    jqDraggable.attr('k-draggable', sHandleSelector);
+
+                    if (oConfig.bWithAlt === true) {
+
+                        jqDraggable.attr('with-alt', '');
+                    }
+                    $compile(jqDraggable)(jqDraggable.scope());
+                }
+
+            }
+        }
+    }
+
+    function kDraggable(kDE, kDCN, $document) {
 
         return {
             link: function (scope, element, attrs) {
 
-                attrs.$addClass(kCN.DRAGGABLE);
+                scope.bWithAlt = !angular.isUndefined(attrs.withAlt);
 
-                var sSelector = attrs.kDraggable,
+                element.addClass(kDCN.DRAGGABLE);
+
+                var sHandleSelector = attrs.kDraggable,
                     jqHandleElement;
 
-                if (angular.isString(sSelector) && sSelector.length > 0) {
+                if (angular.isString(sHandleSelector) && sHandleSelector.length > 0) {
 
-                    jqHandleElement = element.find(sSelector);
-                    jqHandleElement.addClass(kCN.HANDLE);
+                    jqHandleElement = element.find(sHandleSelector);
 
+                    if (jqHandleElement.length > 0) {
+
+                        if (!scope.bWithAlt) {
+
+                            jqHandleElement.addClass(kDCN.HANDLE);
+                        }
+
+                    } else {
+
+                        throw 'k-draggable: The selector `' + sHandleSelector +
+                        '` does not match any HTML element who is a descendant of ' +
+                        element;
+                    }
                 } else {
 
-                    attrs.$addClass(kCN.HANDLE);
+                    if (!scope.bWithAlt) {
+
+                        element.addClass(kDCN.HANDLE);
+                    }
                 }
 
                 registerListeners(scope, element, jqHandleElement);
@@ -97,7 +178,7 @@
         };
 
         /**
-         * Register all the necessary listeners for dragging an element.
+         * Register all the necessary listeners for dragging an HTML element.
          *
          * @author Kevin Li<klx211@gmail.com>
          * @param {Object} oScope The directive's scope object.
@@ -108,80 +189,148 @@
 
             jqHE = jqHE || jqDraggableElement;
 
-            jqHE.on('mousedown', onMousedown);
+            if (oScope.bWithAlt) {
 
+                $document
+                    .on('keydown', function (oEvent) {
+
+                        if (oEvent.keyCode === 18) {
+                            // The Alt key
+                            jqHE.addClass(kDCN.HANDLE);
+                        }
+                    })
+                    .on('keyup', function (oEvent) {
+
+                        if (oEvent.keyCode === 18) {
+                            // The Alt key
+                            jqHE.removeClass(kDCN.HANDLE);
+                        }
+                    });
+            }
+            jqHE.on('mousedown', onMousedown);
+            /**
+             * The event handler of the mousedown event.
+             *
+             * @author Kevin Li<klx211@gmail.com>
+             * @param {Object} oEvent The jQuery's event object.
+             */
             function onMousedown(oEvent) {
 
-                oEvent.stopPropagation();
-                oEvent.preventDefault();
-                /**
-                 * The value of left property of the HTML element to be dragged when the mouse button is held down.
-                 *
-                 * @author Kevin Li<klx211@gmail.com>
-                 * @type {number}
-                 */
-                var nElementLeft = jqDraggableElement.position().left,
-                    /**
-                     * The value of top property of the HTML element to be dragged when the mouse button is held down.
-                     *
-                     * @author Kevin Li<klx211@gmail.com>
-                     * @type {number}
-                     */
-                    nElementTop = jqDraggableElement.position().top,
-                    /**
-                     * The X position of the mouse cursor when the mouse button is held down.
-                     *
-                     * @author Kevin Li<klx211@gmail.com>
-                     * @type {number}
-                     */
-                    nMouseX = oEvent.pageX,
-                    /**
-                     * The Y position of the mouse cursor when the mouse button is held down.
-                     *
-                     * @author Kevin Li<klx211@gmail.com>
-                     * @type {number}
-                     */
-                    nMouseY = oEvent.pageY,
-                    /**
-                     * A counter to tell whether it's the first time to move the mouse after the mouse button is held
-                     * down.
-                     *
-                     * @author Kevin Li<klx211@gmail.com>
-                     * @type {number}
-                     */
-                    nCounter = 0;
+                if (oEvent.target === this ||
+                    jqHE === jqDraggableElement && jqDraggableElement.find(oEvent.target).length > 0) {
+                    // The HTML element on which the mousedown event is triggered must be the handle element itself,
+                    // instead of any children of the handle element.
+                    // If the handle element is just the draggable element itself, the HTML element on which the
+                    // mousedown event is triggered must be a descendant of the draggable element.
 
-                // Add box shadows so that it looks like the HTML element has just been lifted up.
-                jqDraggableElement.addClass(kCN.DRAGGING);
+                    if (oScope.bWithAlt && oEvent.altKey || !oScope.bWithAlt) {
+                        // The Alt key must be held down in order to start dragging,
+                        // and the Alt key is indeed held down,
+                        // or the Alt key is not required to start dragging.
 
-                $document.on('mousemove', onMousemove);
-                $document.on('mouseup', onMouseup);
+                        oEvent.stopPropagation();
+                        oEvent.preventDefault();
+                        /**
+                         * The value of left property of the HTML element to be dragged when the mouse button is held
+                         * down.
+                         *
+                         * @author Kevin Li<klx211@gmail.com>
+                         * @type {number}
+                         */
+                        var nElementLeft = jqDraggableElement.position().left,
+                            /**
+                             * The value of top property of the HTML element to be dragged when the mouse button is held
+                             * down.
+                             *
+                             * @author Kevin Li<klx211@gmail.com>
+                             * @type {number}
+                             */
+                            nElementTop = jqDraggableElement.position().top,
+                            /**
+                             * The X position of the mouse cursor when the mouse button is held down.
+                             *
+                             * @author Kevin Li<klx211@gmail.com>
+                             * @type {number}
+                             */
+                            nMouseX = oEvent.pageX,
+                            /**
+                             * The Y position of the mouse cursor when the mouse button is held down.
+                             *
+                             * @author Kevin Li<klx211@gmail.com>
+                             * @type {number}
+                             */
+                            nMouseY = oEvent.pageY,
+                            /**
+                             * A counter to tell whether it's the first time to move the mouse after the mouse button is
+                             * held down.
+                             *
+                             * @author Kevin Li<klx211@gmail.com>
+                             * @type {number}
+                             */
+                            nCounter = 0,
+                            /**
+                             * The event handler of the mousemove event.
+                             *
+                             * @author Kevin Li<klx211@gmail.com>
+                             * @param {Object} oEvent The jQuery's event object.
+                             */
+                            onMousemove = function (oEvent) {
 
-                function onMousemove(oEvent) {
+                                if (nCounter === 0) {
 
-                    if (nCounter === 0) {
+                                    // This is the first move of the mouse after the mouse button is held down.
+                                    nCounter += 1;
+                                    oScope.$emit(kDE.DRAG_START);
+                                }
 
-                        // This is the first move of the mouse after the mouse button is held down.
-                        nCounter += 1;
-                        oScope.$emit(kDE.DRAG_START);
+                                jqDraggableElement.css({
+                                    left: nElementLeft + (oEvent.pageX - nMouseX),
+                                    top: nElementTop + (oEvent.pageY - nMouseY)
+                                });
+                            },
+                            /**
+                             * The event handler of the mouseup event.
+                             *
+                             * @author Kevin Li<klx211@gmail.com>
+                             * @param {Object} oEvent The jQuery's event object.
+                             */
+                            onMouseup = function (oEvent) {
+
+                                $document
+                                    .off('mousemove', onMousemove)
+                                    .off('mouseup', onMouseup);
+
+                                // Remove the box shadows so that it looks like the HTML element has just been put down.
+                                jqDraggableElement.removeClass(kDCN.DRAGGING);
+
+                                // Reset the counter when the mouse button is released.
+                                nCounter = 0;
+                                oScope.$emit(kDE.DRAG_END);
+                            },
+                            onKeyup = function (oEvent) {
+
+                                oEvent.preventDefault();
+                                oEvent.stopPropagation();
+
+                                if (oEvent.keyCode === 18) {
+                                    // The Alt key
+                                    $document
+                                        .trigger(jQuery.Event('mouseup'))
+                                        .off('keyup', onKeyup);
+                                }
+                            };
+
+                        if (oScope.bWithAlt) {
+                            // The Alt key must be held down in order to start dragging,
+                            $document.on('keyup', onKeyup);
+                        }
+                        // Add box shadows so that it looks like the HTML element has just been lifted up.
+                        jqDraggableElement.addClass(kDCN.DRAGGING);
+
+                        $document
+                            .on('mousemove', onMousemove)
+                            .on('mouseup', onMouseup);
                     }
-
-                    jqDraggableElement.css({
-                        left: nElementLeft + (oEvent.pageX - nMouseX),
-                        top: nElementTop + (oEvent.pageY - nMouseY)
-                    });
-                }
-
-                function onMouseup() {
-
-                    $document.off('mousemove', onMousemove);
-                    $document.off('mouseup', onMouseup);
-
-                    // Remove the box shadows so that it looks like the HTML element has just been put down.
-                    jqDraggableElement.removeClass(kCN.DRAGGING);
-
-                    nCounter = 0; // Reset the counter when the mouse button is released.
-                    oScope.$emit(kDE.DRAG_END);
                 }
             }
         }

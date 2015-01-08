@@ -1,26 +1,6 @@
 @charset "UTF-8";
 
-@mixin transition($transition...) {
-    transition: $transition;
-    -webkit-transition: $transition;
-    -moz-transition: $transition;
-    -o-transition: $transition;
-    -ms-transition: $transition;
-}
-
-@mixin default-box-shadow($color: #000000, $spread-radius: 0, $blur-radius: 0, $offset-x: 0, $offset-y: 0) {
-    box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
-    -webkit-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
-    -moz-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
-    -o-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
-    -ms-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
-}
-
-@mixin cursor($cursor) {
-    cursor: $cursor;
-    cursor: -webkit- + $cursor;
-    cursor: -moz- + $cursor;
-}
+@import 'includes/mixins';
 
 .k-draggable {
     @include transition(box-shadow 100ms);

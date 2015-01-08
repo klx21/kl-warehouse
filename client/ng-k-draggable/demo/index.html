@@ -9,14 +9,28 @@
     <script type="text/javascript" src="../scripts/k-draggable.js"></script>
     <script type="text/javascript">
         angular
-            .module('app', ['kl.draggable']);
+            .module('app', [
+                'kl.draggable'
+            ])
+            .controller('TestController', TestController);
+
+        TestController.$inject = [
+            'kDraggableService'
+        ];
+
+        function TestController(kDS) {
+
+            window.kDS = kDS;
+        }
     </script>
 </head>
 <body>
-<div>
+<div ng-controller="TestController">
     <article k-draggable=".head" style="border: 1px solid #000; display: inline-block;">
-        <div class="head" style="height: 50px; width: 400px;"></div>
-        <div class="body" style="height: 350px; width: 400px;"></div>
+        <div class="head" style="height: 50px; width: 200px;">
+            <a href="http://www.baidu.com" target="_blank">hyper link</a>
+        </div>
+        <div class="body" style="height: 150px; width: 200px;"></div>
     </article>
 </div>
 </body>
