@@ -23,7 +23,6 @@
  */
 
 (function () {
-
     'use strict';
 
     angular

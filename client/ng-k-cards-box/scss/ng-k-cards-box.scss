@@ -63,7 +63,7 @@
 .loading-mask {
     @include loading-mask();
     background-color: #FFFFFF;
-    opacity: 0.5;
+    opacity: 1;
     z-index: 1500;
 }
 
@@ -72,6 +72,7 @@
     background: {
         color: transparent;
         image: url('images/loading.png');
+        size: 40px 40px;
         position: 50%;
         repeat: no-repeat;
     }

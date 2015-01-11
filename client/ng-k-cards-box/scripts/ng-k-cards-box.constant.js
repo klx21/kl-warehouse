@@ -23,16 +23,14 @@
  */
 
 (function () {
-
     'use strict';
 
     var kCardsBoxEvents = {
-            BEFORE_UNLOAD: 'kCardsBoxBeforeUnload',
             BOTTOM_REACHED: 'kCardsBoxBottomReached',
-            DATA_LOADED: 'kCardsBoxDataLoaded',
-            DATA_LOADING: 'kCardsBoxDataLoading',
-            DIALOG_CLOSE: 'kCardsBoxDialogClose',
-            DIALOG_OPEN: 'kCardsBoxDialogOpen'
+            CARDS_BOX_DATA_LOADED: 'kCardsBoxDataLoaded',
+            CARDS_BOX_DATA_LOADING: 'kCardsBoxDataLoading',
+            CARD_DATA_LOADED: 'kCardDataLoaded',
+            CARD_DATA_LOADING: 'kCardDataLoading'
         },
         kCardsBoxDefaults = {
             COLUMN_COUNT: 3,
@@ -41,6 +39,11 @@
             DOUBLE_CLICK_TIMEOUT: 200
         },
         kCardsBoxClassNames = {
+            CARDS_BOX: 'k-cards-box',
+            CARDS_LIST: 'k-cards-list',
+            CARD: 'k-card',
+            FOOTER_BAR: 'k-footer-bar',
+            HEADER_BAR: 'k-header-bar',
             LOADING_MASK: 'loading-mask',
             LOADING_ICON: 'loading-icon'
         };
