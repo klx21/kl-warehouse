@@ -84,7 +84,7 @@
          *     xDraggable: {string|jQuery|Node}, Required. The jQuery selector of the target draggable HTML element, or
          *                                      a jQuery wrapper object of the target draggable HTML element, or the
          *                                      target draggable HTML element itself.
-         *     sHandleSelector: {string}, Optional. The jQuery selector for the handle HTML element.
+         *     sDragHandle: {string}, Optional. The jQuery selector for the handle HTML element.
          *     bWithAlt: {boolean} Optional. Whether the Alt key should be held down during dragging.
          * }
          * @throws Will throw an error if the configuration object is absent.
@@ -99,9 +99,10 @@
 
                 throw 'k-draggable: The configuration object must be provided.';
 
-            } else if (!angular.isString(oConfig.xDraggable) && !(oConfig.xDraggable instanceof jQuery) &&
+            } else if (!angular.isString(oConfig.xDraggable) &&
+                !(oConfig.xDraggable instanceof jQuery) &&
                 oConfig.xDraggable.nodeType !== Node.ELEMENT_NODE) {
-                // A valid target draggable selector is absent,
+                // It's not a string,
                 // it's not a jQuery object,
                 // it's not a regular HTML element.
 
@@ -112,8 +113,8 @@
             } else {
 
                 var jqDraggable = angular.element(oConfig.xDraggable),
-                    sHandleSelector = angular.isString(oConfig.sHandleSelector) && oConfig.sHandleSelector.length > 0 ?
-                        oConfig.sHandleSelector : '';
+                    sDragHandle = angular.isString(oConfig.sDragHandle) && oConfig.sDragHandle.length > 0 ?
+                        oConfig.sDragHandle : '';
 
                 if (jqDraggable.length !== 1) {
 
@@ -121,7 +122,7 @@
 
                 } else {
 
-                    jqDraggable.attr('k-draggable', sHandleSelector);
+                    jqDraggable.attr('k-draggable', sDragHandle);
 
                     if (oConfig.bWithAlt === true) {
 
@@ -143,12 +144,12 @@
 
                 element.addClass(kDCN.DRAGGABLE);
 
-                var sHandleSelector = attrs.kDraggable,
+                var sDragHandle = attrs.kDraggable,
                     jqHandleElement;
 
-                if (angular.isString(sHandleSelector) && sHandleSelector.length > 0) {
+                if (angular.isString(sDragHandle) && sDragHandle.length > 0) {
 
-                    jqHandleElement = element.find(sHandleSelector);
+                    jqHandleElement = element.find(sDragHandle);
 
                     if (jqHandleElement.length > 0) {
 
@@ -159,7 +160,7 @@
 
                     } else {
 
-                        throw 'k-draggable: The selector `' + sHandleSelector +
+                        throw 'k-draggable: The selector `' + sDragHandle +
                         '` does not match any HTML element who is a descendant of ' +
                         element;
                     }
