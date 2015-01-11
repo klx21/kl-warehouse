@@ -23,7 +23,6 @@
  */
 
 (function () {
-
     'use strict';
 
     angular
@@ -53,9 +52,7 @@
             removeCard: removeCard,
             removeCards: removeCards,
             removeAllCards: removeAllCards,
-            changeCard: changeCard,
-            setDblClickTimeout: setDblClickTimeout,
-            getDblClickTimeout: getDblClickTimeout
+            replaceCard: replaceCard
         };
 
         /**
@@ -213,7 +210,7 @@
             oScope.aCards = [];
         }
 
-        function changeCard(oCard, nIndex) {
+        function replaceCard(oCard, nIndex) {
 
             if(!angular.isUndefined(oCard) && angular.isNumber(nIndex)) {
 
@@ -223,22 +220,9 @@
 
                 } else if(nIndex < 0) {
 
-                    changeCard(oCard, oScope.aCards.length + nIndex);
+                    replaceCard(oCard, oScope.aCards.length + nIndex);
                 }
             }
-        }
-
-        function setDblClickTimeout(nTimeout) {
-
-            if(angular.isNumber(nTimeout) && nTimeout > 0) {
-
-                nDblClickTimeout = nTimeout;
-            }
-        }
-
-        function getDblClickTimeout() {
-
-            return nDblClickTimeout;
         }
     }
 

@@ -23,7 +23,6 @@
  */
 
 (function () {
-
     'use strict';
 
     angular
@@ -36,8 +35,6 @@
     ];
 
     function KCardsBoxController($scope, kCardsBoxService) {
-
-        $scope.oCardClasses = {};
 
         kCardsBoxService.setScope($scope);
     }

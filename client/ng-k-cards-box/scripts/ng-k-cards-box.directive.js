@@ -23,7 +23,6 @@
  */
 
 (function () {
-
     'use strict';
 
     angular
@@ -40,7 +39,7 @@
 
         return {
             controller: 'KCardsBoxController',
-            link: function (scope, element, attrs, controller) {
+            link: function (scope, element) {
 
                 checkScopeProperties(scope, element);
 
@@ -51,12 +50,6 @@
                 };
 
                 registerEventListeners(scope, element);
-
-                scope.$watch('aCards', function(newValue, oldValue) {
-
-                    scope.$emit(kCBE.LOADING);
-
-                }, true);
             },
             restrict: 'EA',
             scope: {
@@ -67,7 +60,8 @@
                 nRowHeight: '@rowHeight',
                 nCardSpacing: '@cardSpacing',
                 nCardRatio: '@cardRatio', // width / height ratio
-                sDlgController: '@dlgController'
+                sDlgController: '@dlgController',
+                sBottomReachedNotification: '@bottomReachedNotification'
             },
             templateUrl: '../templates/ng-k-cards-box.tpl.html'
         };
@@ -76,31 +70,108 @@
          * Calculate the numbers regarding the cards layout.
          *
          * @author Kevin Li<huali@tibco-support.com>
-         * @param {Object} scope The directive's scope object.
-         * @param {jQuery} element An HTML element or an array of HTML elements wrapped by jQuery.
+         * @param {Object} oScope The directive's scope object.
+         * @param {jQuery} jqElement An HTML element or an array of HTML elements wrapped by jQuery.
          */
-        function checkScopeProperties(scope, element) {
+        function checkScopeProperties(oScope, jqElement) {
 
-            scope.nCardsBoxWidth = element.find('ul').width();
-            scope.nColumnCount = parseInt(scope.nColumnCount, 10) || kCBD.COLUMN_COUNT;
-            scope.nCardSpacing = parseFloat(scope.nCardSpacing, 10) || kCBD.CARD_SPACING;
-            scope.nCardRatio = parseFloat(scope.nCardRatio, 10) || kCBD.CARD_RATIO;
-            scope.nRowHeight = parseFloat(scope.nRowHeight, 10);
-            scope.nCardWidth = scope.nCardsBoxWidth / scope.nColumnCount - scope.nCardSpacing;
-            scope.nCardHeight = (scope.nRowHeight - scope.nCardSpacing) || (scope.nCardWidth / scope.nCardRatio);
+            oScope.nCardsBoxWidth = jqElement.find('.' + kCBCN.CARDS_LIST).width();
+            oScope.nColumnCount = parseInt(oScope.nColumnCount, 10) || kCBD.COLUMN_COUNT;
+            oScope.nCardSpacing = parseFloat(oScope.nCardSpacing, 10) || kCBD.CARD_SPACING;
+            oScope.nCardRatio = parseFloat(oScope.nCardRatio, 10) || kCBD.CARD_RATIO;
+            oScope.nRowHeight = parseFloat(oScope.nRowHeight, 10);
+            oScope.nCardWidth = oScope.nCardsBoxWidth / oScope.nColumnCount - oScope.nCardSpacing;
+            oScope.nCardHeight = (oScope.nRowHeight - oScope.nCardSpacing) || (oScope.nCardWidth / oScope.nCardRatio);
         }
 
         function registerEventListeners(oScope, jqElement) {
 
-            oScope.$on(kCBE.DATA_LOADING, function() {
+            listenOnDataLoading(oScope, jqElement);
+            listenOnDataLoaded(oScope, jqElement);
+            listenOnScroll(oScope, jqElement);
+        }
 
-                jqElement.find('.' + kCBCN.LOADING_MASK + ', .' + kCBCN.LOADING_ICON).show();
+        function listenOnDataLoading(oScope, jqElement) {
+
+            oScope.$on(kCBE.CARDS_BOX_DATA_LOADING, function (oEvent) {
+
+                jqElement.find([
+                    '.' + kCBCN.CARDS_LIST + ' ~ .' + kCBCN.LOADING_MASK,
+                    '.' + kCBCN.CARDS_LIST + ' ~ .' + kCBCN.LOADING_ICON
+                ].join()).show();
             });
+        }
 
-            oScope.$on(kCBE.DATA_LOADED, function() {
+        function listenOnDataLoaded(oScope, jqElement) {
 
-                jqElement.find('.' + kCBCN.LOADING_MASK + ', .' + kCBCN.LOADING_ICON).hide();
+            oScope.$on(kCBE.CARDS_BOX_DATA_LOADED, function (oEvent) {
+
+                jqElement.find([
+                    '.' + kCBCN.CARDS_LIST + ' ~ .' + kCBCN.LOADING_MASK,
+                    '.' + kCBCN.CARDS_LIST + ' ~ .' + kCBCN.LOADING_ICON
+                ].join()).hide();
             });
+        }
+
+        function listenOnScroll(oScope, jqElement) {
+
+            if (angular.isUndefined(oScope.sBottomReachedNotification)) {
+
+                if (jqElement.parent().is(angular.element('body'))) {
+
+                    angular.element(window).on('scroll', scrollWithPage);
+                } else {
+
+                    jqElement.parent().on('scroll', scrollWithinParent);
+                }
+            } else if (oScope.sBottomReachedNotification.trim().toLowerCase() !== 'false') {
+
+                if (jqElement.parent(oScope.sBottomReachedNotification).is(jqElement.parent())) {
+
+                    jqElement.parent().on('scroll', scrollWithinParent);
+                } else {
+
+                    jqElement.parents(oScope.sBottomReachedNotification).on('scroll', scrollWithPage);
+                }
+            }
+
+            function scrollWithinParent(oEvent) {
+
+                var jqContent = jqElement.find('.' + kCBCN.CARDS_BOX),
+                    nOffsetTop = jqContent.offset().top,
+                    nTargetHeight = angular.element(oEvent.target).height(),
+                    nContentHeight = jqContent.outerHeight(true);
+
+                if (Math.abs(nOffsetTop) + nTargetHeight >= nContentHeight) {
+
+                    oScope.$emit(kCBE.BOTTOM_REACHED);
+                }
+            }
+
+            function scrollWithPage(oEvent) {
+
+                var jqContent = jqElement.find('.' + kCBCN.CARDS_BOX),
+                    nOffsetTop,
+                    nTargetHeight,
+                    nContentHeight;
+
+                if(angular.element(document).is(oEvent.target)) {
+
+                    nOffsetTop = angular.element(window).scrollTop();
+                    nTargetHeight = angular.element(window).height();
+                    nContentHeight = angular.element(document).outerHeight(true);
+                } else {
+
+                    nOffsetTop = jqContent.offset().top;
+                    nTargetHeight = angular.element(oEvent.target).height();
+                    nContentHeight = jqContent.outerHeight(true);
+                }
+
+                if (Math.abs(nOffsetTop) + nTargetHeight >= nContentHeight) {
+
+                    oScope.$emit(kCBE.BOTTOM_REACHED);
+                }
+            }
         }
     }
 

@@ -23,7 +23,6 @@
  */
 
 (function () {
-
     'use strict';
 
     angular
@@ -31,68 +30,55 @@
         .directive('kCard', kCard);
 
     kCard.$inject = [
-        'kCardsBoxService',
-        '$timeout'
+        'kCardsBoxEvents',
+        'kCardsBoxClassNames',
+        'kCardsBoxService'
     ];
 
-    function kCard(kCBS, $timeout) {
+    function kCard(kCBE, kCBCN, kCBS) {
 
         return {
             link: function (scope, element, attrs, controller) {
 
-                var oTimeoutPromise = null,
-                    nTimeout = kCBS.getDblClickTimeout();
-
-                // Listen on both single click and double click events.
-                element.on('click', function (oEvent) {
-
-                    oEvent.preventDefault();
-
-                    if (oTimeoutPromise === null) {
-                        // single click
-
-                        /**
-                         * Schedule an invocation of a function after a specified timeout in milliseconds.
-                         * If another click event is fired before this times out, it's a double click.
-                         * The scheduled invocation will be canceled. Otherwise, it's a single click.
-                         * The scheduled invocation will be carried out.
-                         * In both cases, the oTimeoutPromise will be cleared at the end.
-                         */
-                        oTimeoutPromise = $timeout(function () {
-
-                            oTimeoutPromise = null;
-                            clickListener.call(element, oEvent);
-
-                        }, nTimeout);
-
-                    } else {
-                        // double click
-
-                        if($timeout.cancel(oTimeoutPromise)) {
-
-                            oTimeoutPromise = null;
-                            dblclickListener.call(element, oEvent);
-                        }
-                    }
-                });
-
-                function clickListener(oEvent) {
-
-                    alert('clicked');
-                }
-
-                function dblclickListener(oEvent) {
-
-                    alert('double clicked');
-                }
+                registerEventListeners(scope, element);
             },
             require: '^^kCardsBox',
             restrict: 'A',
             scope: {
-                oData: '=cardData'
+                oCard: '=cardData',
+                sCardTplUrl: '@cardTplUrl',
+                sDlgTplUrl: '@dlgTplUrl'
             },
             templateUrl: '../templates/ng-k-card.tpl.html'
         };
+
+        function registerEventListeners(oScope, jqElement) {
+
+            listenOnDataLoading(oScope, jqElement);
+            listenOnDataLoaded(oScope, jqElement);
+        }
+
+        function listenOnDataLoading(oScope, jqElement) {
+
+            oScope.$on(kCBE.CARD_DATA_LOADING, function () {
+
+                jqElement.find([
+                    '.' + kCBCN.CARD_CONTAINER + ' ~ .' + kCBCN.LOADING_MASK,
+                    '.' + kCBCN.CARD_CONTAINER + ' ~ .' + kCBCN.LOADING_ICON
+                ].join()).show();
+            });
+        }
+
+        function listenOnDataLoaded(oScope, jqElement) {
+
+            oScope.$on(kCBE.CARD_DATA_LOADED, function () {
+
+                jqElement.find([
+                    '.' + kCBCN.CARD_CONTAINER + ' ~ .' + kCBCN.LOADING_MASK,
+                    '.' + kCBCN.CARD_CONTAINER + ' ~ .' + kCBCN.LOADING_ICON
+                ].join()).hide();
+            });
+        }
     }
 
 }());
