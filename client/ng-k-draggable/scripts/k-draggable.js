@@ -288,9 +288,8 @@
                              * The event handler of the mouseup event.
                              *
                              * @author Kevin Li<klx211@gmail.com>
-                             * @param {Object} oEvent The jQuery's event object.
                              */
-                            onMouseup = function (oEvent) {
+                            onMouseup = function () {
 
                                 $document
                                     .off('mousemove', onMousemove)
