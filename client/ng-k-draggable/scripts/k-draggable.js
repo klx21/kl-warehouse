@@ -56,7 +56,7 @@
         .module('kl.draggable', [])
         .constant('kDraggableEvents', kDraggableEvents)
         .constant('kDraggableClassNames', kDraggableClassNames)
-        .factory('kDraggableService', kDraggableService)
+        .service('kDraggableService', kDraggableService)
         .directive('kDraggable', kDraggable);
 
     kDraggableService.$inject = [
@@ -70,10 +70,6 @@
     ];
 
     function kDraggableService($compile) {
-
-        return {
-            makeDraggable: makeDraggable
-        };
 
         /**
          * Make an HTML element draggable based on the configuration provided.
@@ -93,14 +89,13 @@
          * @throws Will throw an error if the target draggable element selector or the jQuery object did not match any
          * element or matched more than one elements.
          */
-        function makeDraggable(oConfig) {
+        this.makeDraggable = function (oConfig) {
 
             if (!angular.isObject(oConfig)) {
 
                 throw 'k-draggable: The configuration object must be provided.';
 
-            } else if (!angular.isString(oConfig.xDraggable) &&
-                !(oConfig.xDraggable instanceof jQuery) &&
+            } else if (!angular.isString(oConfig.xDraggable) && !(oConfig.xDraggable instanceof jQuery) &&
                 oConfig.xDraggable.nodeType !== Node.ELEMENT_NODE) {
                 // It's not a string,
                 // it's not a jQuery object,
@@ -130,9 +125,8 @@
                     }
                     $compile(jqDraggable)(jqDraggable.scope());
                 }
-
             }
-        }
+        };
     }
 
     function kDraggable(kDE, kDCN, $document) {
