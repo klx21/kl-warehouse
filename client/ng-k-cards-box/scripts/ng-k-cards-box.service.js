@@ -58,7 +58,7 @@
                             oInstance = {};
                             oInstance.ngElement = ngElement;
                             oInstance.oScope = ngElement.find('.' + kCBCN.CARDS_BOX).scope();
-                            decorateInstance(oInstance, oInstance.oScope);
+                            augmentInstance(oInstance, oInstance.oScope);
                             oRegistry[ngElement] = oInstance;
                         }
                     } else {
@@ -77,7 +77,7 @@
             return oInstance;
         };
 
-        function decorateInstance(oInstance) {
+        function augmentInstance(oInstance) {
 
             angular.extend(oInstance, {
                 appendCard: appendCard,
