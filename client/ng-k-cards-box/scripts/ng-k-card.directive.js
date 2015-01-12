@@ -38,7 +38,7 @@
     function kCard(kCBE, kCBCN, kCBS) {
 
         return {
-            link: function (scope, element, attrs, controller) {
+            link: function (scope, element) {
 
                 registerEventListeners(scope, element);
             },
@@ -52,28 +52,28 @@
             templateUrl: '../templates/ng-k-card.tpl.html'
         };
 
-        function registerEventListeners(oScope, jqElement) {
+        function registerEventListeners(oScope, ngElement) {
 
-            listenOnDataLoading(oScope, jqElement);
-            listenOnDataLoaded(oScope, jqElement);
+            listenOnDataLoading(oScope, ngElement);
+            listenOnDataLoaded(oScope, ngElement);
         }
 
-        function listenOnDataLoading(oScope, jqElement) {
+        function listenOnDataLoading(oScope, ngElement) {
 
             oScope.$on(kCBE.CARD_DATA_LOADING, function () {
 
-                jqElement.find([
+                ngElement.find([
                     '.' + kCBCN.CARD_CONTAINER + ' ~ .' + kCBCN.LOADING_MASK,
                     '.' + kCBCN.CARD_CONTAINER + ' ~ .' + kCBCN.LOADING_ICON
                 ].join()).show();
             });
         }
 
-        function listenOnDataLoaded(oScope, jqElement) {
+        function listenOnDataLoaded(oScope, ngElement) {
 
             oScope.$on(kCBE.CARD_DATA_LOADED, function () {
 
-                jqElement.find([
+                ngElement.find([
                     '.' + kCBCN.CARD_CONTAINER + ' ~ .' + kCBCN.LOADING_MASK,
                     '.' + kCBCN.CARD_CONTAINER + ' ~ .' + kCBCN.LOADING_ICON
                 ].join()).hide();
