@@ -39,7 +39,6 @@
 
         return {
             controller: 'KCardsBoxController',
-            controllerAs: 'kcbc',
             link: function (scope, element) {
 
                 checkScopeProperties(scope, element);
@@ -72,11 +71,11 @@
          *
          * @author Kevin Li<huali@tibco-support.com>
          * @param {Object} oScope The directive's scope object.
-         * @param {jQuery} ngElement An HTML element or an array of HTML elements wrapped by jQuery.
+         * @param {jQuery} jqElement An HTML element or an array of HTML elements wrapped by jQuery.
          */
-        function checkScopeProperties(oScope, ngElement) {
+        function checkScopeProperties(oScope, jqElement) {
 
-            oScope.nCardsBoxWidth = ngElement.find('.' + kCBCN.CARDS_LIST).width();
+            oScope.nCardsBoxWidth = jqElement.find('.' + kCBCN.CARDS_LIST).width();
             oScope.nColumnCount = parseInt(oScope.nColumnCount, 10) || kCBD.COLUMN_COUNT;
             oScope.nCardSpacing = parseFloat(oScope.nCardSpacing, 10) || kCBD.CARD_SPACING;
             oScope.nCardRatio = parseFloat(oScope.nCardRatio, 10) || kCBD.CARD_RATIO;
@@ -85,63 +84,63 @@
             oScope.nCardHeight = (oScope.nRowHeight - oScope.nCardSpacing) || (oScope.nCardWidth / oScope.nCardRatio);
         }
 
-        function registerEventListeners(oScope, ngElement) {
+        function registerEventListeners(oScope, jqElement) {
 
-            listenOnDataLoading(oScope, ngElement);
-            listenOnDataLoaded(oScope, ngElement);
-            listenOnScroll(oScope, ngElement);
+            listenOnDataLoading(oScope, jqElement);
+            listenOnDataLoaded(oScope, jqElement);
+            listenOnScroll(oScope, jqElement);
         }
 
-        function listenOnDataLoading(oScope, ngElement) {
+        function listenOnDataLoading(oScope, jqElement) {
 
             oScope.$on(kCBE.CARDS_BOX_DATA_LOADING, function (oEvent) {
 
-                ngElement.find([
+                jqElement.find([
                     '.' + kCBCN.CARDS_LIST + ' ~ .' + kCBCN.LOADING_MASK,
                     '.' + kCBCN.CARDS_LIST + ' ~ .' + kCBCN.LOADING_ICON
                 ].join()).show();
             });
         }
 
-        function listenOnDataLoaded(oScope, ngElement) {
+        function listenOnDataLoaded(oScope, jqElement) {
 
             oScope.$on(kCBE.CARDS_BOX_DATA_LOADED, function (oEvent) {
 
-                ngElement.find([
+                jqElement.find([
                     '.' + kCBCN.CARDS_LIST + ' ~ .' + kCBCN.LOADING_MASK,
                     '.' + kCBCN.CARDS_LIST + ' ~ .' + kCBCN.LOADING_ICON
                 ].join()).hide();
             });
         }
 
-        function listenOnScroll(oScope, ngElement) {
+        function listenOnScroll(oScope, jqElement) {
 
             if (angular.isUndefined(oScope.sBottomReachedNotification)) {
 
-                if (ngElement.parent().is(angular.element('body'))) {
+                if (jqElement.parent().is(angular.element('body'))) {
 
                     angular.element(window).on('scroll', scrollWithPage);
                 } else {
 
-                    ngElement.parent().on('scroll', scrollWithinParent);
+                    jqElement.parent().on('scroll', scrollWithinParent);
                 }
             } else if (oScope.sBottomReachedNotification.trim().toLowerCase() !== 'false') {
 
-                if (ngElement.parent(oScope.sBottomReachedNotification).is(ngElement.parent())) {
+                if (jqElement.parent(oScope.sBottomReachedNotification).is(jqElement.parent())) {
 
-                    ngElement.parent().on('scroll', scrollWithinParent);
+                    jqElement.parent().on('scroll', scrollWithinParent);
                 } else {
 
-                    ngElement.parents(oScope.sBottomReachedNotification).on('scroll', scrollWithPage);
+                    jqElement.parents(oScope.sBottomReachedNotification).on('scroll', scrollWithPage);
                 }
             }
 
             function scrollWithinParent(oEvent) {
 
-                var ngContent = ngElement.find('.' + kCBCN.CARDS_BOX),
-                    nOffsetTop = ngContent.offset().top,
+                var jqContent = jqElement.find('.' + kCBCN.CARDS_BOX),
+                    nOffsetTop = jqContent.offset().top,
                     nTargetHeight = angular.element(oEvent.target).height(),
-                    nContentHeight = ngContent.outerHeight(true);
+                    nContentHeight = jqContent.outerHeight(true);
 
                 if (Math.abs(nOffsetTop) + nTargetHeight >= nContentHeight) {
 
@@ -151,7 +150,7 @@
 
             function scrollWithPage(oEvent) {
 
-                var ngContent = ngElement.find('.' + kCBCN.CARDS_BOX),
+                var jqContent = jqElement.find('.' + kCBCN.CARDS_BOX),
                     nOffsetTop,
                     nTargetHeight,
                     nContentHeight;
@@ -163,9 +162,9 @@
                     nContentHeight = angular.element(document).outerHeight(true);
                 } else {
 
-                    nOffsetTop = ngContent.offset().top;
+                    nOffsetTop = jqContent.offset().top;
                     nTargetHeight = angular.element(oEvent.target).height();
-                    nContentHeight = ngContent.outerHeight(true);
+                    nContentHeight = jqContent.outerHeight(true);
                 }
 
                 if (Math.abs(nOffsetTop) + nTargetHeight >= nContentHeight) {
