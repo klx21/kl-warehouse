@@ -36,7 +36,6 @@
 
     function KCardsBoxController($scope, kCardsBoxService) {
 
-        kCardsBoxService.setScope($scope);
     }
 
 }());

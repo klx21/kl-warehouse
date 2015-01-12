@@ -36,7 +36,8 @@
             COLUMN_COUNT: 3,
             CARD_SPACING: 30,
             CARD_RATIO: 3, // width / height ratio
-            DOUBLE_CLICK_TIMEOUT: 200
+            DOUBLE_CLICK_TIMEOUT: 200,
+            CARDS_BOX_ID_PREFIX: 'k_cards_box_'
         },
         kCardsBoxClassNames = {
             CARDS_BOX: 'k-cards-box',

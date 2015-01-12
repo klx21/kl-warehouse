@@ -27,200 +27,231 @@
 
     angular
         .module('kl.cardsBox')
-        .factory('kCardsBoxService', kCardsBoxService);
+        .service('kCardsBoxService', kCardsBoxService);
 
     kCardsBoxService.$inject = [
-        'kCardsBoxDefaults'
+        'kCardsBoxClassNames'
     ];
 
-    function kCardsBoxService(kCBD) {
+    function kCardsBoxService(kCBCN) {
 
-        var oScope = null,
-            nDblClickTimeout = kCBD.DOUBLE_CLICK_TIMEOUT;
+        var oRegistry = {};
 
-        return {
-            setScope: setScope,
-            setCards: setCards,
-            setCardTplUrl: setCardTplUrl,
-            setDlgTplUrl: setDlgTplUrl,
-            appendCard: appendCard,
-            appendCards: appendCards,
-            prependCard: prependCard,
-            prependCards: prependCards,
-            insertCard: insertCard,
-            insertCards: insertCards,
-            removeCard: removeCard,
-            removeCards: removeCards,
-            removeAllCards: removeAllCards,
-            replaceCard: replaceCard
+        this.getInstance = function(dsElement) {
+
+            var oInstance,
+                ngElement;
+
+            if (angular.isString(dsElement) || angular.isObject(dsElement)) {
+
+                ngElement = angular.element(dsElement);
+
+                if (ngElement.length === 1) {
+
+                    if (ngElement[0].nodeName.toLowerCase() === 'k-cards-box' ||
+                        !angular.isUndefined(ngElement.attr('k-cards-box'))) {
+
+                        if (oRegistry[ngElement]) {
+
+                            oInstance = oRegistry[ngElement];
+                        } else {
+                            oInstance = {};
+                            oInstance.ngElement = ngElement;
+                            oInstance.oScope = ngElement.find('.' + kCBCN.CARDS_BOX).scope();
+                            decorateInstance(oInstance, oInstance.oScope);
+                            oRegistry[ngElement] = oInstance;
+                        }
+                    } else {
+
+                        throw 'The element ' + ngElement +
+                        ' is not the HTML element to which the k-cards-box directive is applied.';
+                    }
+                } else {
+
+                    throw 'Only one element is expected but got ' + ngElement.length + ' elements.';
+                }
+            } else {
+
+                throw 'The only argument is expected to be a string or an HTML element.';
+            }
+            return oInstance;
         };
 
-        /**
-         * Set the scope object of the "cardsBox" directive. This method can be called only once with an argument that
-         * is neither undefined nor null. Successive invocation will raise an error. For this only one time this method
-         * is called by the post link function of the "cardsBox" directive.
-         *
-         * @author Kevin Li<huali@tibco-support.com>
-         * @param {Object} scope The scope object. If this argument is undefined or null the method will do nothing.
-         * @throws Will throw an error if this method is called more than once with an argument that is neither
-         * undefined nor null.
-         */
-        function setScope(scope) {
+        function decorateInstance(oInstance) {
 
-            if(!angular.isUndefined(scope) && scope !== null) {
-
-                if (oScope === null) {
-
-                    oScope = scope;
-
-                } else {
-
-                    throw 'The scope object has already been set for the kCardsBoxService.';
-                }
-            }
-        }
-
-        function setCards(aCards) {
-
-            oScope.$apply(function () {
-
-                oScope.aCards = aCards;
+            angular.extend(oInstance, {
+                appendCard: appendCard,
+                appendCards: appendCards,
+                destroy: destroy,
+                insertCard: insertCard,
+                insertCards: insertCards,
+                prependCard: prependCard,
+                prependCards: prependCards,
+                removeCard: removeCard,
+                removeCards: removeCards,
+                removeAllCards: removeAllCards,
+                replaceCard: replaceCard,
+                setCards: setCards,
+                setCardTplUrl: setCardTplUrl,
+                setDlgTplUrl: setDlgTplUrl
             });
-        }
 
-        function setCardTplUrl(sCardTplUrl) {
+            function appendCard(oCard) {
 
-            if(angular.isString(sCardTplUrl)) {
+                if (!angular.isUndefined(oCard)) {
 
-                oScope.sCardTplUrl = sCardTplUrl;
-            }
-        }
-
-        function setDlgTplUrl(sDlgTplUrl) {
-
-            if(angular.isString(sDlgTplUrl)) {
-
-                oScope.sDlgTplUrl = sDlgTplUrl;
-            }
-        }
-
-        function appendCard(oCard) {
-
-            if(!angular.isUndefined(oCard)) {
-
-                oScope.aCards.push(oCard);
-            }
-        }
-
-        function appendCards(aCards) {
-
-            if(angular.isArray(aCards)) {
-
-                Array.prototype.push.apply(oScope.aCards, aCards);
-            }
-        }
-
-        function prependCard(oCard) {
-
-            if(!angular.isUndefined(oCard)) {
-
-                oScope.aCards.unshift(oCard);
-            }
-        }
-
-        function prependCards(aCards) {
-
-            if(angular.isArray(aCards)) {
-
-                Array.prototype.unshift.apply(oScope.aCards, aCards);
-            }
-        }
-
-        function insertCard(oCard, nIndex) {
-
-            if(!angular.isUndefined(oCard)) {
-
-                if(!angular.isNumber(nIndex) || nIndex >= oScope.aCards.length) {
-
-                    appendCard(oCard);
-
-                } else if(nIndex === 0) {
-
-                    prependCard(oCard);
-
-                } else if(nIndex < 0) {
-
-                    insertCard(oCard, oScope.aCards.length + nIndex);
-
-                } else {
-
-                    oScope.aCards.splice(nIndex, 0, oCard);
+                    this.oScope.aCards.push(oCard);
                 }
             }
-        }
 
-        function insertCards(aCards, nStartIndex) {
+            function appendCards(aCards) {
 
-            if(angular.isArray(aCards)) {
+                if (angular.isArray(aCards)) {
 
-                if(!angular.isNumber(nStartIndex) || nStartIndex >= oScope.aCards.length) {
-
-                    appendCards(aCards);
-
-                } else if(nStartIndex === 0) {
-
-                    prependCards(aCards);
-
-                } else if(nStartIndex < 0) {
-
-                    insertCard(aCards, oScope.aCards.length + nStartIndex);
-
-                } else {
-
-                    Array.prototype.splice.apply(oScope.aCards, aCards.unshift(nStartIndex, 0));
+                    Array.prototype.push.apply(this.oScope.aCards, aCards);
                 }
             }
-        }
 
-        function removeCard(nIndex) {
+            function destroy() {
 
-            if(angular.isNumber(nIndex)) {
+                var that = this;
 
-                if(nIndex >=0 && nIndex < oScope.aCards.length) {
+                angular.forEach(oRegistry, function (oInstance, jqKey) {
 
-                    oScope.aCards.splice(nIndex, 1);
+                    if (angular.equals(that, oInstance)) {
 
-                } else if(nIndex < 0) {
+                        oInstance.ngElement.remove();
+                        delete oRegistry[jqKey];
+                    }
+                });
+            }
 
-                    removeCard(oScope.aCards.length + nIndex);
+            function insertCard(oCard, nIndex) {
+
+                if (!angular.isUndefined(oCard)) {
+
+                    if (!angular.isNumber(nIndex) || nIndex >= this.oScope.aCards.length) {
+
+                        appendCard(oCard);
+
+                    } else if (nIndex === 0) {
+
+                        prependCard(oCard);
+
+                    } else if (nIndex < 0) {
+
+                        insertCard(oCard, this.oScope.aCards.length + nIndex);
+
+                    } else {
+
+                        this.oScope.aCards.splice(nIndex, 0, oCard);
+                    }
                 }
             }
-        }
 
-        function removeCards(aIndexes) {
+            function insertCards(aCards, nStartIndex) {
 
-            aIndexes.forEach(function(nIndex) {
+                if (angular.isArray(aCards)) {
 
-                removeCard(nIndex);
-            });
-        }
+                    if (!angular.isNumber(nStartIndex) || nStartIndex >= this.oScope.aCards.length) {
 
-        function removeAllCards() {
+                        appendCards(aCards);
 
-            oScope.aCards = [];
-        }
+                    } else if (nStartIndex === 0) {
 
-        function replaceCard(oCard, nIndex) {
+                        prependCards(aCards);
 
-            if(!angular.isUndefined(oCard) && angular.isNumber(nIndex)) {
+                    } else if (nStartIndex < 0) {
 
-                if(nIndex >= 0 && nIndex < oScope.aCards.length) {
+                        insertCard(aCards, this.oScope.aCards.length + nStartIndex);
 
-                    oScope.aCards[nIndex] = oCard;
+                    } else {
 
-                } else if(nIndex < 0) {
+                        Array.prototype.splice.apply(this.oScope.aCards, aCards.unshift(nStartIndex, 0));
+                    }
+                }
+            }
 
-                    replaceCard(oCard, oScope.aCards.length + nIndex);
+            function prependCard(oCard) {
+
+                if (!angular.isUndefined(oCard)) {
+
+                    this.oScope.aCards.unshift(oCard);
+                }
+            }
+
+            function prependCards(aCards) {
+
+                if (angular.isArray(aCards)) {
+
+                    Array.prototype.unshift.apply(this.oScope.aCards, aCards);
+                }
+            }
+
+            function removeCard(nIndex) {
+
+                if (angular.isNumber(nIndex)) {
+
+                    if (nIndex >= 0 && nIndex < this.oScope.aCards.length) {
+
+                        this.oScope.aCards.splice(nIndex, 1);
+
+                    } else if (nIndex < 0) {
+
+                        removeCard(this.oScope.aCards.length + nIndex);
+                    }
+                }
+            }
+
+            function removeCards(aIndexes) {
+
+                aIndexes.forEach(function (nIndex) {
+
+                    removeCard(nIndex);
+                });
+            }
+
+            function removeAllCards() {
+
+                this.oScope.aCards = [];
+            }
+
+            function replaceCard(oCard, nIndex) {
+
+                if (!angular.isUndefined(oCard) && angular.isNumber(nIndex)) {
+
+                    if (nIndex >= 0 && nIndex < this.oScope.aCards.length) {
+
+                        this.oScope.aCards[nIndex] = oCard;
+
+                    } else if (nIndex < 0) {
+
+                        replaceCard(oCard, this.oScope.aCards.length + nIndex);
+                    }
+                }
+            }
+
+            function setCards(aCards) {
+
+                this.oScope.$apply(function () {
+
+                    this.oScope.aCards = aCards;
+                });
+            }
+
+            function setCardTplUrl(sCardTplUrl) {
+
+                if (angular.isString(sCardTplUrl)) {
+
+                    this.oScope.sCardTplUrl = sCardTplUrl;
+                }
+            }
+
+            function setDlgTplUrl(sDlgTplUrl) {
+
+                if (angular.isString(sDlgTplUrl)) {
+
+                    this.oScope.sDlgTplUrl = sDlgTplUrl;
                 }
             }
         }

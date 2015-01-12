@@ -107,23 +107,23 @@
 
             } else {
 
-                var jqDraggable = angular.element(oConfig.xDraggable),
+                var ngDraggable = angular.element(oConfig.xDraggable),
                     sDragHandle = angular.isString(oConfig.sDragHandle) && oConfig.sDragHandle.length > 0 ?
                         oConfig.sDragHandle : '';
 
-                if (jqDraggable.length !== 1) {
+                if (ngDraggable.length !== 1) {
 
                     throw 'k-draggable: No draggable element or more than one draggable elements were found.';
 
                 } else {
 
-                    jqDraggable.attr('k-draggable', sDragHandle);
+                    ngDraggable.attr('k-draggable', sDragHandle);
 
                     if (oConfig.bWithAlt === true) {
 
-                        jqDraggable.attr('with-alt', '');
+                        ngDraggable.attr('with-alt', '');
                     }
-                    $compile(jqDraggable)(jqDraggable.scope());
+                    $compile(ngDraggable)(ngDraggable.scope());
                 }
             }
         };
@@ -139,17 +139,17 @@
                 element.addClass(kDCN.DRAGGABLE);
 
                 var sDragHandle = attrs.kDraggable,
-                    jqHandleElement;
+                    ngHandleElement;
 
                 if (angular.isString(sDragHandle) && sDragHandle.length > 0) {
 
-                    jqHandleElement = element.find(sDragHandle);
+                    ngHandleElement = element.find(sDragHandle);
 
-                    if (jqHandleElement.length > 0) {
+                    if (ngHandleElement.length > 0) {
 
                         if (!scope.bWithAlt) {
 
-                            jqHandleElement.addClass(kDCN.HANDLE);
+                            ngHandleElement.addClass(kDCN.HANDLE);
                         }
 
                     } else {
@@ -166,7 +166,7 @@
                     }
                 }
 
-                registerListeners(scope, element, jqHandleElement);
+                registerListeners(scope, element, ngHandleElement);
             },
             restrict: 'AC',
             scope: {}
@@ -177,12 +177,12 @@
          *
          * @author Kevin Li<klx211@gmail.com>
          * @param {Object} oScope The directive's scope object.
-         * @param {jQuery} jqDraggableElement The HTML element which is wrapped by jQuery and is to be dragged.
-         * @param {jQuery} jqHE The HTML element which is wrapped by jQuery and is the handle for dragging.
+         * @param {jQuery} ngDraggableElement The HTML element which is wrapped by jQuery and is to be dragged.
+         * @param {jQuery} ngHE The HTML element which is wrapped by jQuery and is the handle for dragging.
          */
-        function registerListeners(oScope, jqDraggableElement, jqHE) {
+        function registerListeners(oScope, ngDraggableElement, ngHE) {
 
-            jqHE = jqHE || jqDraggableElement;
+            ngHE = ngHE || ngDraggableElement;
 
             if (oScope.bWithAlt) {
 
@@ -191,18 +191,18 @@
 
                         if (oEvent.keyCode === 18) {
                             // The Alt key
-                            jqHE.addClass(kDCN.HANDLE);
+                            ngHE.addClass(kDCN.HANDLE);
                         }
                     })
                     .on('keyup', function (oEvent) {
 
                         if (oEvent.keyCode === 18) {
                             // The Alt key
-                            jqHE.removeClass(kDCN.HANDLE);
+                            ngHE.removeClass(kDCN.HANDLE);
                         }
                     });
             }
-            jqHE.on('mousedown', onMousedown);
+            ngHE.on('mousedown', onMousedown);
             /**
              * The event handler of the mousedown event.
              *
@@ -212,7 +212,7 @@
             function onMousedown(oEvent) {
 
                 if (oEvent.target === this ||
-                    jqHE === jqDraggableElement && jqDraggableElement.find(oEvent.target).length > 0) {
+                    ngHE === ngDraggableElement && ngDraggableElement.find(oEvent.target).length > 0) {
                     // The HTML element on which the mousedown event is triggered must be the handle element itself,
                     // instead of any children of the handle element.
                     // If the handle element is just the draggable element itself, the HTML element on which the
@@ -232,7 +232,7 @@
                          * @author Kevin Li<klx211@gmail.com>
                          * @type {number}
                          */
-                        var nElementLeft = jqDraggableElement.position().left,
+                        var nElementLeft = ngDraggableElement.position().left,
                             /**
                              * The value of top property of the HTML element to be dragged when the mouse button is held
                              * down.
@@ -240,7 +240,7 @@
                              * @author Kevin Li<klx211@gmail.com>
                              * @type {number}
                              */
-                            nElementTop = jqDraggableElement.position().top,
+                            nElementTop = ngDraggableElement.position().top,
                             /**
                              * The X position of the mouse cursor when the mouse button is held down.
                              *
@@ -278,7 +278,7 @@
                                     oScope.$emit(kDE.DRAG_START);
                                 }
 
-                                jqDraggableElement.css({
+                                ngDraggableElement.css({
                                     left: nElementLeft + (oEvent.pageX - nMouseX),
                                     top: nElementTop + (oEvent.pageY - nMouseY)
                                 });
@@ -296,7 +296,7 @@
                                     .off('mouseup', onMouseup);
 
                                 // Remove the box shadows so that it looks like the HTML element has just been put down.
-                                jqDraggableElement.removeClass(kDCN.DRAGGING);
+                                ngDraggableElement.removeClass(kDCN.DRAGGING);
 
                                 // Reset the counter when the mouse button is released.
                                 nCounter = 0;
@@ -320,7 +320,7 @@
                             $document.on('keyup', onKeyup);
                         }
                         // Add box shadows so that it looks like the HTML element has just been lifted up.
-                        jqDraggableElement.addClass(kDCN.DRAGGING);
+                        ngDraggableElement.addClass(kDCN.DRAGGING);
 
                         $document
                             .on('mousemove', onMousemove)
