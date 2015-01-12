@@ -80,7 +80,8 @@
          *     xDraggable: {string|jQuery|Node}, Required. The jQuery selector of the target draggable HTML element, or
          *                                      a jQuery wrapper object of the target draggable HTML element, or the
          *                                      target draggable HTML element itself.
-         *     sDragHandle: {string}, Optional. The jQuery selector for the handle HTML element.
+         *     sDragHandle: {string}, Optional. The jQuery selector for the handle HTML element. If this is omitted, the
+         *                                      dialog itself will be used as the handle.
          *     bWithAlt: {boolean} Optional. Whether the Alt key should be held down during dragging.
          * }
          * @throws Will throw an error if the configuration object is absent.
