@@ -1,0 +1,11 @@
+{
+    "name": "Angular-version-dialog",
+    "version": "1.0.0",
+    "description": "AngularJS version of dialog.",
+    "dependencies": {
+        "angular": "1.3.x",
+        "angular-ui-bootstrap": "0.12.x",
+        "bootstrap": "3.3.x",
+        "jquery": "2.1.x"
+    }
+}

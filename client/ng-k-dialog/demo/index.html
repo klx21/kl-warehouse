@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html ng-app="testApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>KDialog</title>
+    <link href="../assets/ng-k-dialog.css" type="text/css" rel="stylesheet" />
+    <link href="../lib/css/k-draggable.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="../vendor/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="../vendor/angular/angular.js"></script>
+    <script type="text/javascript" src="../vendor/angular-ui-bootstrap/dist/ui-bootstrap-tpls-0.12.0.js"></script>
+    <script type="text/javascript" src="../lib/js/k-draggable.js"></script>
+    <script type="text/javascript" src="../scripts/k-dialog.js"></script>
+    <script type="text/javascript">
+
+        angular
+            .module('testApp', [
+                'kl.dialog'
+            ])
+            .controller('TestController', TestController);
+
+        TestController.$inject = [
+            'kDialogService',
+            '$scope'
+        ];
+
+        function TestController(kDS, $scope) {
+
+//            window.instance = kDS.open({
+//                oScope: $scope,
+//                bDraggable: true,
+//                sTemplateUrl: '../dialog.tpl.html'
+//            });
+        }
+
+    </script>
+</head>
+<body ng-controller="TestController">
+<div k-dialog data-draggable="true" data-template-url="../dialog.tpl.html"></div>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+<p>This is the main page.</p>
+</body>
+</html>

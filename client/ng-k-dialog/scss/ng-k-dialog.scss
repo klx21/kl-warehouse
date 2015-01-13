@@ -1,0 +1,98 @@
+@charset "UTF-8";
+
+@import "includes/mixins";
+
+.k-dialog {
+    @include border-all-radius(5px);
+    @include default-box-shadow(#888888, 3px, 3px);
+    @include transition(opacity 200ms);
+    display: none;
+    opacity: 1;
+    overflow: hidden;
+    padding: 10px;
+    position: fixed;
+    transform-origin: 100% 0;
+    vertical-align: middle;
+    z-index: 1501;
+}
+
+.k-dialog-large {
+    @include centered-dialog(500px, 800px);
+}
+
+.k-dialog-medium {
+    @include centered-dialog(400px, 640px);
+}
+
+.k-dialog-small {
+    @include centered-dialog(300px, 480px);
+}
+
+.k-dialog-mini {
+    @include centered-dialog(200px, 320px);
+}
+
+.k-dialog-content {
+    height: 100%;
+    margin: 0;
+    overflow: auto;
+    padding: 0;
+}
+
+.k-dialog-close-btn {
+    @include transition(opacity 300ms);
+    background-color: #888888;
+    border-bottom-left-radius: 30px;
+    cursor: pointer;
+    height: 30px;
+    margin: 0;
+    opacity: 0;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 30px;
+}
+
+.k-dialog:hover {
+
+    > .k-dialog-close-btn {
+        opacity: 0.7;
+    }
+}
+
+.k-dialog:hover.k-dragging {
+
+    > .k-dialog-close-btn {
+        opacity: 0;
+    }
+}
+
+.k-dialog-mask {
+    @include mask();
+    background-color: #FFFFFF;
+    opacity: 0.5;
+    position: fixed;
+    z-index: 1500;
+}
+
+.loading-mask {
+    @include mask();
+    position: absolute;
+    background-color: #FFFFFF;
+    opacity: 0.7;
+    z-index: 1500;
+}
+
+.loading-icon {
+    @include mask();
+    background: {
+        color: transparent;
+        image: url('images/loading.png');
+        position: 50%;
+        repeat: no-repeat;
+        size: 40px 40px;
+    }
+    position: absolute;
+    z-index: 1501;
+}
