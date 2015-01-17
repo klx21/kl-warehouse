@@ -3,11 +3,9 @@
 @import "includes/mixins";
 
 .k-dialog {
-    @include border-all-radius(5px);
     @include default-box-shadow(#888888, 3px, 3px);
-    @include transition(opacity 200ms);
+    border-radius: 5px;
     display: none;
-    opacity: 1;
     overflow: hidden;
     padding: 10px;
     position: fixed;
@@ -16,20 +14,20 @@
     z-index: 1501;
 }
 
-.k-dialog-large {
-    @include centered-dialog(500px, 800px);
+.k-dialog.large {
+    @include centered-dialog(480px, 780px);
 }
 
-.k-dialog-medium {
-    @include centered-dialog(400px, 640px);
+.k-dialog.medium {
+    @include centered-dialog(380px, 620px);
 }
 
-.k-dialog-small {
-    @include centered-dialog(300px, 480px);
+.k-dialog.small {
+    @include centered-dialog(280px, 460px);
 }
 
-.k-dialog-mini {
-    @include centered-dialog(200px, 320px);
+.k-dialog.mini {
+    @include centered-dialog(180px, 300px);
 }
 
 .k-dialog-content {
@@ -40,8 +38,14 @@
 }
 
 .k-dialog-close-btn {
-    @include transition(opacity 300ms);
-    background-color: #888888;
+    transition: opacity 300ms, filter 200ms;
+    background: {
+        color: #888888;
+        image: url('images/glyphicons-208-remove-2.png');
+        position: 65% 35%;
+        repeat: no-repeat;
+        size: 12px 12px;
+    }
     border-bottom-left-radius: 30px;
     cursor: pointer;
     height: 30px;
@@ -52,6 +56,14 @@
     right: 0;
     top: 0;
     width: 30px;
+}
+
+.k-dialog-close-btn:hover {
+    filter: invert(100%);
+}
+
+.k-dialog-close-btn:focus {
+    filter: none;
 }
 
 .k-dialog:hover {
@@ -71,7 +83,7 @@
 .k-dialog-mask {
     @include mask();
     background-color: #FFFFFF;
-    opacity: 0.5;
+    opacity: 0.7;
     position: fixed;
     z-index: 1500;
 }

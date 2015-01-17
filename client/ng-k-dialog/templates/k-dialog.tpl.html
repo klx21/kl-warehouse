@@ -1,5 +1,5 @@
-<div class="k-dialog k-dialog-{{sSize}}">
-    <section class="k-dialog-content" ng-include="sTplUrl">
+<div class="k-dialog" ng-class="sSize">
+    <section class="k-dialog-content" ng-include="sTemplateUrl">
         <p>Welcom to the k-dialog!</p>
 
         <p>Welcom to the k-dialog!</p>
@@ -42,7 +42,7 @@
 
         <p>Welcom to the k-dialog!</p>
     </section>
-    <div class="k-dialog-close-btn" ng-if="bShowCloseBtn !== 'false'" ng-click="closeDialog($event)">
+    <div class="k-dialog-close-btn" ng-if="bShowCloseBtn !== 'false'" ng-click="close()">
     </div>
     <div class="loading-mask"></div>
     <div class="loading-icon"></div>

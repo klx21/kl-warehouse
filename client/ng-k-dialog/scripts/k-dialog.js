@@ -29,7 +29,8 @@
             DIALOG_OPENED: 'kDialogOpened',
             DIALOG_CLOSED: 'kDialogClosed',
             DIALOG_DATA_LOADING: 'kDialogDataLoading',
-            DIALOG_DATA_LOADED: 'kDialogDataLoaded'
+            DIALOG_DATA_LOADED: 'kDialogDataLoaded',
+            DIALOG_INITIALIZED: 'kDialogInitialized'
         },
         kDialogClassNames = {
             DIALOG: 'k-dialog',
@@ -49,6 +50,12 @@
                 bShowCloseBtn: true,
                 sSize: 'medium'
             }
+        },
+        kDialogSizes = {
+            LARGE: 'large',
+            MEDIUM: 'medium',
+            SMALL: 'small',
+            MINI: 'mini'
         };
 
     angular
@@ -58,106 +65,61 @@
         .constant('kDialogEvents', kDialogEvents)
         .constant('kDialogDefaults', kDialogDefaults)
         .constant('kDialogClassNames', kDialogClassNames)
-        .controller('KDialogController', KDialogController)
-        .service('kInstanceService', kInstanceService)
+        .constant('kDialogSizes', kDialogSizes)
         .service('kDialogService', kDialogService)
         .directive('kDialog', kDialog);
 
-    KDialogController.$inject = [
-        '$scope'
-    ];
-
     kDialogService.$inject = [
         'kDialogDefaults',
-        'kInstanceService',
+        'kDialogEvents',
         '$compile',
-        '$rootScope'
+        '$rootScope',
+        '$q',
+        '$timeout'
     ];
 
     kDialog.$inject = [
         'kDialogClassNames',
         'kDialogEvents',
-        'kInstanceService',
         'kDraggableService',
         '$document'
     ];
 
-    function KDialogController($scope) {
-
-        $scope.sSize = ['large', 'small', 'mini'].indexOf($scope.sSize) >= 0 ? $scope.sSize : 'medium';
-        $scope.sTemplateUrl = angular.isString($scope.sTemplateUrl) ? $scope.sTemplateUrl : '';
-    }
-
-    function kInstanceService() {
+    function kDialogService(kDD,
+                            kDE,
+                            $compile,
+                            $rootScope,
+                            $q,
+                            $timeout) {
 
         var oRegistry = {};
-        /**
-         *
-         * @author Kevin Li<klx211@gmail.com>
-         * @param {Object} oConfig A configuration object.
-         * @param {jQuery} ngElement An AngularJS augmented jQuery wrapper of the directive element.
-         * @returns {Object} An object containing.
-         */
-        this.newInstance = function (oConfig, ngElement) {
+
+        this.initialize = function (oConfig) {
 
             var oInstance = {
-                ngElement: ngElement,
-                oConfig: oConfig
-            };
-            return (oRegistry[ngElement] = oInstance);
+                    oConfig: oConfig
+                },
+                ngElement = setupDirective(checkConfig(oConfig)),
+                oDeferred = $q.defer();
+
+            oInstance.ngElement = ngElement;
+
+            listenOnInitialization(ngElement, oDeferred);
+            augmentInstance(oInstance, oDeferred.promise);
+
+            oRegistry[ngElement] = oInstance;
+
+            if (oConfig.bOpenUponInit !== false) {
+
+                oInstance.open();
+            }
+            return oInstance;
         };
-        /**
-         * Get an instance of the dialog by the directive element.
-         *
-         * @author Kevin Li<klx211@gmail.com>
-         * @param {jQuery} ngElement An AngularJS augmented jQuery wrapper of the directive element.
-         * @returns {Object} The instance of a dialog or undefined if no instance were found.
-         */
+
         this.getInstance = function (ngElement) {
 
             return oRegistry[ngElement];
         };
-
-        this.removeInstance = function (ngElement) {
-
-            return (delete oRegistry[ngElement]);
-        };
-    }
-
-    function kDialogService(kDD, kIS, $compile, $rootScope) {
-
-        /**
-         * Open a dialog according to the configuration object.
-         *
-         * @author Kevin Li<klx211@gmail.com>
-         * @param {Object} oConfig A configuration object. All properties in this object are optional.
-         * @example
-         * {
-         *      bCloseOnEsc: {boolean} - True if the dialog should be closed when the Esc key is pressed down. False if
-         *                              the dialog should not close on Esc press.
-         *      bDraggable: {boolean} - True if the dialog can be dragged with the Alt key held down. False if the
-         *                              dialog can not be moved at all. The default value is false.
-         *      bModal: {boolean} - True if the dialog is modal. False if it is modeless. The default value is true.
-         *      bShowCloseBtn: {boolean} - True if the close button should be shown. False if it should be hidden.
-         *      sDialogClass: {string} - A space separated string of class names to be applied to the dialog.
-         *      sSize: {string} - A descriptor of the size of the dialog. Possible values are "large", "medium", "small"
-         *                              , and "mini". The default value is medium.
-         *      sTemplateUrl: {string} - The URL to the template which will be included into the dialog.
-         * }
-         * @returns {Object} An instance of the dialog which contains some methods to control the dialog.
-         * @throw Will throw an error if the only argument is not an object.
-         */
-        this.open = function open(oConfig) {
-
-            var oConf = checkConfig(oConfig),
-                ngElement = setupDirective(oConf);
-
-            angular.element('body').append(ngElement);
-
-            return kIS.newInstance(oConfig, ngElement);
-        };
-
-        this.getInstance = kIS.getInstance;
 
         function checkConfig(oConfig) {
 
@@ -168,7 +130,6 @@
             if (angular.isUndefined(oConf.oScope)) {
 
                 oConf.oScope = $rootScope;
-
             }
             return oConf;
         }
@@ -202,79 +163,220 @@
                 .attr('size', oConfig.sSize)
                 .attr('template-url', oConfig.sTemplateUrl);
 
-            return $compile(ngElement)(oConfig.oScope);
+            angular.element('body').append(ngElement);
+
+            return $compile(ngElement)(oConfig.oScope.$new());
+        }
+
+        function listenOnInitialization(ngElement, oDeferred) {
+
+            ngElement.scope().$on(kDE.DIALOG_INITIALIZED, function (oEvent, oScope) {
+
+                oEvent.preventDefault();
+                oEvent.stopPropagation();
+
+                oDeferred.resolve(oScope);
+            });
+        }
+
+        function augmentInstance(oInstance, oPromise) {
+
+            angular.extend(oInstance, {
+                close: close,
+                open: open,
+                setCloseOnEsc: setCloseOnEsc,
+                setDialogClass: setDialogClass,
+                setDraggable: setDraggable,
+                setModal: setModal,
+                setShowCloseBtn: setShowCloseBtn,
+                setSize: setSize,
+                setTemplateUrl: setTemplateUrl
+            });
+
+            function close(bDestroy) {
+
+                var aArgs = Array.prototype.slice.call(arguments, 0);
+
+                oPromise.then(function (oScope) {
+
+                    if (bDestroy) {
+
+                        removeInstance(oInstance);
+                    }
+                    $timeout(function () {
+
+                        oScope.close.apply(oInstance, aArgs);
+                    });
+                });
+            }
+
+            function open() {
+
+                oPromise.then(function (oScope) {
+
+                    oScope.open();
+                });
+            }
+
+            function setCloseOnEsc(bCloseOnEsc) {
+
+                oPromise.then(function (oScope) {
+
+                    $timeout(function () {
+
+                        oScope.setCloseOnEsc(bCloseOnEsc);
+                    });
+                });
+            }
+
+            function setDialogClass(sDialogClass) {
+
+                oPromise.then(function (oScope) {
+
+                    $timeout(function () {
+
+                        oScope.setDialogClass(sDialogClass);
+                    });
+                });
+            }
+
+            function setDraggable(bDraggable) {
+
+                oPromise.then(function (oScope) {
+
+                    $timeout(function () {
+
+                        oScope.setDraggable(bDraggable);
+                    });
+                });
+            }
+
+            function setModal(bModal) {
+
+                oPromise.then(function (oScope) {
+
+                    $timeout(function () {
+
+                        oScope.setModal(bModal);
+                    });
+                });
+            }
+
+            function setSize(sSize) {
+
+                oPromise.then(function (oScope) {
+
+                    $timeout(function () {
+
+                        oScope.setSize(sSize);
+                    });
+                });
+            }
+
+            function setShowCloseBtn(bShowCloseBtn) {
+
+                oPromise.then(function (oScope) {
+
+                    $timeout(function () {
+
+                        oScope.setShowCloseBtn(bShowCloseBtn);
+                    });
+                });
+            }
+
+            function setTemplateUrl(sTemplateUrl) {
+
+                oPromise.then(function (oScope) {
+
+                    $timeout(function () {
+
+                        oScope.setTemplateUrl(sTemplateUrl);
+                    });
+                });
+            }
+        }
+
+        function removeInstance(x) {
+
+            if (x instanceof jQuery) {
+
+                return delete oRegistry[x];
+
+            } else {
+
+                var p;
+
+                for (p in oRegistry) {
+
+                    if (oRegistry.hasOwnProperty(p)) {
+
+                        if (angular.equals(oRegistry[p], x)) {
+
+                            return delete oRegistry[p];
+                        }
+                    }
+                }
+            }
         }
     }
 
-    function kDialog(kDCN, kDE, kIS, kDraggableService, $document) {
+    function kDialog(kDCN,
+                     kDE,
+                     kDraggableService,
+                     $document) {
 
         return {
-            controller: 'KDialogController',
-            link: function (scope, element, attrs) {
+            link: function (scope, element) {
 
-                var oInstance = kIS.getInstance(element);
-
-                if (angular.isUndefined(oInstance)) {
-
-                    oInstance = kIS.newInstance({
-                        bCloseOnEsc: attrs.closeOnEsc,
-                        bDraggable: attrs.draggable,
-                        bModal: attrs.modal,
-                        bShowCloseBtn: attrs.showCloseBtn,
-                        sDialogClass: attrs.dialogClass,
-                        sSize: attrs.size,
-                        sTplUrl: attrs.templateUrl
-                    }, element);
-                }
-                augmentInstance(oInstance, scope, element);
-
-                if (scope.bDraggable === 'true') {
-
-                    kDraggableService.makeDraggable({
-                        xDraggable: element.find('.' + kDCN.DIALOG),
-                        bWithAlt: true
-                    });
-                }
-
-                if (!angular.isUndefined(scope.sDialogClass)) {
-
-                    element.children('.' + kDCN.DIALOG).addClass(scope.sDialogClass);
-                }
-
-                scope.openDialog = function () {
-
-                    var ngDialog = element.children('.' + kDCN.DIALOG),
-                        ngDialogMask = element.children('.' + kDCN.DIALOG_MASK);
-
-                    if (angular.equals(ngDialog.css('display'), 'none')) {
-
-                        if (scope.bModal !== 'false') {
-
-                            ngDialogMask.show(0);
-                        }
-                        ngDialog
-                            .show(0)
-                            .css('opacity', 1)
-                            .on('transitionend', function () {
-
-                                angular
-                                    .element(this)
-                                    .off('transitionend');
-
-                                scope.$emit(kDE.DIALOG_OPENED, element);
-                                scope.$broadcast(kDE.DIALOG_OPENED, element);
-                            });
-                    }
-                };
-
-                scope.isOpen = function () {
-
-                    return angular.equals(element.children('.' + kDCN.DIALOG).css('display'), 'block');
-                };
-
+                checkScopeProperties(scope);
+                augmentScope(scope, element);
                 registerEventListeners(scope, element);
 
-                scope.openDialog();
+                scope.$watch('bCloseOnEsc', function (sNewValue) {
+
+                    if (sNewValue === 'false') {
+
+                        $document.off('keydown', onEscKey);
+
+                    } else {
+
+                        $document.on('keydown', onEscKey);
+                    }
+                });
+
+                scope.$watch('bDraggable', function (sNewValue) {
+
+                    if (sNewValue === 'true') {
+
+                        kDraggableService.makeDraggable({
+                            xDraggable: element.children('.' + kDCN.DIALOG),
+                            bWithAlt: true
+                        });
+                    } else {
+
+                        element
+                            .children('.' + kDCN.DIALOG)
+                            .disableDraggable();
+                    }
+                });
+
+                scope.$watch('sDialogClass', function (sNewValue, sOldValue) {
+
+                    element
+                        .children('.' + kDCN.DIALOG)
+                        .removeClass(sOldValue)
+                        .addClass(sNewValue);
+                });
+
+                scope.$emit(kDE.DIALOG_INITIALIZED, scope);
+
+                function onEscKey(oEvent) {
+
+                    if (oEvent.keyCode === 27) {
+                        // The Esc key
+                        scope.close();
+                    }
+                }
             },
             restrict: 'EA',
             scope: {
@@ -284,51 +386,146 @@
                 bShowCloseBtn: '@showCloseBtn',
                 sDialogClass: '@dialogClass',
                 sSize: '@size',
-                sTplUrl: '@templateUrl'
+                sTemplateUrl: '@templateUrl'
             },
-            templateUrl: '../templates/ng-k-dialog.tpl.html'
+            templateUrl: '../templates/k-dialog.tpl.html'
         };
 
-        /**
-         *
-         * @param {Object} oInstance
-         * @param {Object} oScope
-         * @param {jQuery} ngElement
-         */
-        function augmentInstance(oInstance, oScope, ngElement) {
+        function checkScopeProperties(oScope) {
 
-            angular.extend(oInstance, {
-                oScope: oScope,
-                close: function () {
+            oScope.sDialogClass = checkDialogClass(oScope.sDialogClass);
+            oScope.sSize = checkSize(oScope.sSize);
+            oScope.sTemplateUrl = checkTemplateUrl(oScope.sTemplateUrl);
+        }
 
-                    oScope.closeDialog();
-                },
-                destroy: function () {
+        function checkDialogClass(sDialogClass) {
 
-                    oScope.closeDialog(true);
-                    kIS.removeInstance(ngElement);
-                },
-                isOpen: function () {
+            return angular.isString(sDialogClass) ? sDialogClass : '';
+        }
 
-                    return oScope.isOpen();
-                },
-                open: function () {
+        function checkSize(sSize) {
 
-                    oScope.openDialog();
-                }
+            return [kDialogSizes.LARGE, kDialogSizes.SMALL, kDialogSizes.MINI].indexOf(sSize) >= 0 ?
+                sSize :
+                kDialogSizes.MEDIUM;
+        }
+
+        function checkTemplateUrl(sTemplateUrl) {
+
+            return angular.isString(sTemplateUrl) ? sTemplateUrl : '';
+        }
+
+        function augmentScope(oScope, ngElement) {
+
+            angular.extend(oScope, {
+                close: close,
+                open: open,
+                setCloseOnEsc: setCloseOnEsc,
+                setDialogClass: setDialogClass,
+                setDraggable: setDraggable,
+                setModal: setModal,
+                setShowCloseBtn: setShowCloseBtn,
+                setSize: setSize,
+                setTemplateUrl: setTemplateUrl
             });
+            
+            function open() {
+
+                var ngDialog = ngElement.children('.' + kDCN.DIALOG),
+                    ngDialogMask = ngElement.children('.' + kDCN.DIALOG_MASK);
+
+                if (oScope.bModal !== 'false') {
+
+                    ngDialogMask.show();
+                }
+                ngDialog.show(function () {
+
+                    oScope.$emit(kDE.DIALOG_OPENED, ngElement);
+                    oScope.$broadcast(kDE.DIALOG_OPENED, ngElement);
+                });
+            }
+
+            function close(bDestroy) {
+
+                var ngDialog = ngElement.children('.' + kDCN.DIALOG),
+                    ngDialogMask = ngElement.children('.' + kDCN.DIALOG_MASK);
+
+                ngDialog.hide(function () {
+
+                    if (oScope.bModal !== 'false') {
+
+                        ngDialogMask.hide();
+                    }
+
+                    oScope.$emit(kDE.DIALOG_CLOSED, ngElement);
+                    oScope.$broadcast(kDE.DIALOG_CLOSED, ngElement);
+
+                    if (bDestroy) {
+
+                        oScope.$apply(function () {
+
+                            oScope.$destroy();
+                            ngElement.remove();
+                        });
+                    }
+                });
+            }
+
+            function setCloseOnEsc(bCloseOnEsc) {
+
+                oScope.$apply(function () {
+
+                    oScope.bCloseOnEsc = (!!bCloseOnEsc).toString();
+                });
+            }
+
+            function setDialogClass(sDialogClass) {
+
+                oScope.$apply(function () {
+
+                    oScope.sDialogClass = checkDialogClass(sDialogClass);
+                });
+            }
+
+            function setDraggable(bDraggable) {
+
+            }
+
+            function setModal(bModal) {
+
+                // No need to be wrapped in an $apply 'cause bModal is not watched.
+                oScope.bModal = (!!bModal).toString();
+            }
+
+            function setShowCloseBtn(bShowCloseBtn) {
+
+                oScope.$apply(function () {
+
+                    oScope.bShowCloseBtn = (!!bShowCloseBtn).toString();
+                });
+            }
+
+            function setSize(sSize) {
+
+                oScope.$apply(function () {
+
+                    oScope.sSize = checkSize(sSize);
+                });
+            }
+
+            function setTemplateUrl(sTemplateUrl) {
+
+                oScope.$apply(function () {
+
+                    oScope.sTemplateUrl = checkTemplateUrl(sTemplateUrl);
+                });
+            }
         }
 
         function registerEventListeners(oScope, ngElement) {
 
             listenOnDataLoading(oScope, ngElement);
             listenOnDataLoaded(oScope, ngElement);
-            listenOnClick(oScope, ngElement);
-
-            if (oScope.bCloseOnEsc !== 'false') {
-
-                listenOnEscKey(oScope);
-            }
         }
 
         function listenOnDataLoading(oScope, ngElement) {
@@ -350,52 +547,6 @@
                     '.' + kDCN.DIALOG_CONTENT + ' ~ .' + kDCN.LOADING_MASK,
                     '.' + kDCN.DIALOG_CONTENT + ' ~ .' + kDCN.LOADING_ICON
                 ].join()).hide();
-            });
-        }
-
-        function listenOnClick(oScope, ngElement) {
-
-            oScope.closeDialog = function (bDestroy) {
-
-                var ngDialog = ngElement.children('.' + kDCN.DIALOG),
-                    ngDialogMask = ngElement.children('.' + kDCN.DIALOG_MASK);
-
-                if (angular.equals(ngDialog.css('display'), 'block')) {
-
-                    ngDialog
-                        .css('opacity', 0)
-                        .on('transitionend', function () {
-                            angular
-                                .element(this)
-                                .hide(0)
-                                .off('transitionend');
-
-                            if (oScope.bModal !== 'false') {
-
-                                ngDialogMask.hide(0);
-                            }
-
-                            oScope.$emit(kDE.DIALOG_CLOSED, ngElement);
-                            oScope.$broadcast(kDE.DIALOG_CLOSED, ngElement);
-
-                            if (bDestroy) {
-
-                                oScope.$destroy();
-                                ngElement.remove();
-                            }
-                        });
-                }
-            };
-        }
-
-        function listenOnEscKey(oScope) {
-
-            $document.on('keydown', function (oEvent) {
-
-                if (oEvent.keyCode === 27) {
-                    // The Esc key
-                    oScope.closeDialog();
-                }
             });
         }
     }

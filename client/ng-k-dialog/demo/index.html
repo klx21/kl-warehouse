@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>KDialog</title>
     <link href="../assets/k-dialog.css" type="text/css" rel="stylesheet" />
-    <link href="../lib/css/k-draggable.css" type="text/css" rel="stylesheet" />
+    <link href="../lib/assets/k-draggable.css" type="text/css" rel="stylesheet" />
     <script type="text/javascript" src="../vendor/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="../vendor/angular/angular.js"></script>
-    <script type="text/javascript" src="../vendor/angular-ui-bootstrap/dist/ui-bootstrap-tpls-0.12.0.js"></script>
     <script type="text/javascript" src="../lib/js/k-draggable.js"></script>
     <script type="text/javascript" src="../scripts/k-dialog.js"></script>
+    <!--<script type="text/javascript" src="../dist/js/k-dialog.js"></script>-->
     <script type="text/javascript">
 
         angular
@@ -20,22 +20,34 @@
 
         TestController.$inject = [
             'kDialogService',
-            '$scope'
+            '$scope',
+            '$compile'
         ];
 
-        function TestController(kDS, $scope) {
+        function TestController(kDS, $scope, $compile) {
+            window.s = $scope;
+            window.c = $compile;
+            window.kds = kDS;
 
-//            window.instance = kDS.open({
-//                oScope: $scope,
-//                bDraggable: true,
-//                sTemplateUrl: '../dialog.tpl.html'
-//            });
+            kDS.initialize({
+                oScope: $scope,
+                bDraggable: true,
+                bCloseOnEsc: false,
+                sTemplateUrl: '../dialog.tpl.html'
+            });
+            window.instance = kDS.initialize({
+                oScope: $scope,
+                bDraggable: true,
+                bOpenUponInit: false,
+                sSize: 'mini',
+                sTemplateUrl: '../dialog.tpl.html'
+            });
         }
 
     </script>
 </head>
 <body ng-controller="TestController">
-<div k-dialog data-draggable="true" data-template-url="../dialog.tpl.html"></div>
+<!--<div k-dialog data-draggable="true" data-template-url="../dialog.tpl.html"></div>-->
 <p>This is the main page.</p>
 <p>This is the main page.</p>
 <p>This is the main page.</p>
