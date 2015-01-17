@@ -27,31 +27,35 @@
 
     var del = require('del'),
         gulp = require('gulp'),
+        gAutoprefixer = require('gulp-autoprefixer'),
+        gConcat = require('gulp-concat'),
+        gConcatCss = require('gulp-concat-css'),
         gJshint = require('gulp-jshint'),
         gMinifyCSS = require('gulp-minify-css'),
-        gRename = require('gulp-rename'),
         gSass = require('gulp-sass'),
         gUglify = require('gulp-uglify'),
+        gUtil = require('gulp-util'),
         gWebserver = require('gulp-webserver'),
         rimraf = require('rimraf');
 
-    gulp.task('build-minified-css', ['clean-dist'], function () {
+    gulp.task('build-dev-css', ['clean-assets-css'], function () {
 
-        return gulp.src(['./scss/*.scss', './scss/**/*.scss'])
-            .pipe(gSass())
-            .pipe(gMinifyCSS())
-            .pipe(gRename('k-draggable.min.css'))
-            .pipe(gulp.dest('./dist/css'));
+        return buildCss('k-draggable.css');
     });
 
-    gulp.task('build-uglified-js', ['clean-dist'], function () {
+    gulp.task('build-dist-css', ['clean-assets-css'], function () {
 
-        gulp.src('scripts/*.js')
-            .pipe(gUglify({
-                compress: {}
-            }))
-            .pipe(gRename('k-draggable.min.js'))
-            .pipe(gulp.dest('./dist/js'));
+        return buildCss('k-draggable.min.css', true);
+    });
+
+    gulp.task('build-dev-js', function () {
+
+        return buildAllJs('k-draggable.js');
+    });
+
+    gulp.task('build-dist-js', function () {
+
+        return buildAllJs('k-draggable.min.js', true);
     });
 
     gulp.task('clean-dist', function () {
@@ -68,18 +72,18 @@
         });
     });
 
-    gulp.task('compile-sass-to-css', ['clean-assets-css'], function () {
+    gulp.task('copy-assets', ['clean-dist', 'build-dev-css', 'build-dist-css'], function () {
 
-        return gulp.src(['./scss/*.scss', './scss/**/*.scss'])
-            .pipe(gSass())
-            .pipe(gulp.dest('./assets'));
+        return gulp
+            .src(['./assets/*', './assets/**/*'])
+            .pipe(gulp.dest('./dist/assets'));
     });
 
-    gulp.task('copy-js', ['clean-dist'], function () {
+    gulp.task('copy-images', function () {
 
-        gulp.src('scripts/*.js')
-            .pipe(gRename('k-draggable.js'))
-            .pipe(gulp.dest('./dist/js'));
+        return gulp
+            .src('./assets/images/*.png')
+            .pipe(gulp.dest('./dist/assets/images'));
     });
 
     gulp.task('copy-css', ['clean-dist', 'compile-sass-to-css'], function () {
@@ -90,7 +94,7 @@
 
     gulp.task('default', ['dist']);
 
-    gulp.task('dist', ['clean-dist', 'copy-js', 'build-uglified-js', 'copy-css', 'build-minified-css']);
+    gulp.task('dist', ['clean-dist', 'build-dev-js', 'build-dist-js', 'copy-assets']);
 
     gulp.task('jshint', function () {
 
@@ -101,9 +105,10 @@
             }));
     });
 
-    gulp.task('serve-dev', ['compile-sass-to-css', 'watch-sass'], function () {
+    gulp.task('serve-dev', ['build-dev-css', 'watch-sass'], function () {
 
-        gulp.src('.')
+        gulp
+            .src(['.', './demo'])
             .pipe(gWebserver({
                 directoryListing: false,
                 fallback: 'demo/index.html',
@@ -118,7 +123,29 @@
 
     gulp.task('watch-sass', function () {
 
-        gulp.watch('./scss/*.scss', ['compile-sass-to-css']);
+        gulp.watch('./scss/*.scss', ['build-dev-css']);
     });
+
+    function buildAllJs(sFilename, bUglify) {
+
+        return gulp
+            .src('./scripts/*.js')
+            .pipe(gConcat(sFilename))
+            .pipe(bUglify ? gUglify({
+                compress: {}
+            }) : gUtil.noop())
+            .pipe(gulp.dest('./dist/js'));
+    }
+
+    function buildCss(sFilename, bMinify) {
+
+        return gulp
+            .src(['./scss/*.scss', './scss/**/*.scss'])
+            .pipe(gSass())
+            .pipe(gAutoprefixer())
+            .pipe(bMinify ? gMinifyCSS() : gUtil.noop())
+            .pipe(gConcatCss(sFilename))
+            .pipe(gulp.dest('./assets'));
+    }
 
 }());

@@ -23,7 +23,6 @@
  */
 
 (function () {
-
     'use strict';
 
     if (typeof jQuery === 'undefined') {
@@ -82,7 +81,10 @@
          *                                      target draggable HTML element itself.
          *     sDragHandle: {string}, Optional. The jQuery selector for the handle HTML element. If this is omitted, the
          *                                      dialog itself will be used as the handle.
-         *     bWithAlt: {boolean} Optional. Whether the Alt key should be held down during dragging.
+         *     bWithAlt: {boolean} Optional. True if the Alt key should be held down during dragging. False if it should
+         *                                      not.
+         *     bCopy: {boolean} Optional. True if a copy of the draggable element should be created when dragging. False
+         *                                      if no copy should be created.
          * }
          * @throws Will throw an error if the configuration object is absent.
          * @throws Will throw an error if the target draggable element's selector or itself is absent in the
@@ -152,7 +154,6 @@
 
                             ngHandleElement.addClass(kDCN.HANDLE);
                         }
-
                     } else {
 
                         throw 'k-draggable: The selector `' + sDragHandle +
@@ -166,7 +167,6 @@
                         element.addClass(kDCN.HANDLE);
                     }
                 }
-
                 registerListeners(scope, element, ngHandleElement);
             },
             restrict: 'AC',
@@ -178,42 +178,48 @@
          *
          * @author Kevin Li<klx211@gmail.com>
          * @param {Object} oScope The directive's scope object.
-         * @param {jQuery} ngDraggableElement The HTML element which is wrapped by jQuery and is to be dragged.
+         * @param {jQuery} ngDE The HTML element which is wrapped by jQuery and is to be dragged.
          * @param {jQuery} ngHE The HTML element which is wrapped by jQuery and is the handle for dragging.
          */
-        function registerListeners(oScope, ngDraggableElement, ngHE) {
+        function registerListeners(oScope, ngDE, ngHE) {
 
-            ngHE = ngHE || ngDraggableElement;
+            ngHE = ngHE || ngDE;
 
             if (oScope.bWithAlt) {
 
                 $document
-                    .on('keydown', function (oEvent) {
-
-                        if (oEvent.keyCode === 18) {
-                            // The Alt key
-                            ngHE.addClass(kDCN.HANDLE);
-                        }
-                    })
-                    .on('keyup', function (oEvent) {
-
-                        if (oEvent.keyCode === 18) {
-                            // The Alt key
-                            ngHE.removeClass(kDCN.HANDLE);
-                        }
-                    });
+                    .on('keydown', onKeyDown)
+                    .on('keyup', onKeyUp);
             }
-            ngHE.on('mousedown', onMousedown);
+            ngHE.on('mousedown', onMouseDown);
+
+            function onKeyDown(oEvent) {
+
+                if (oEvent.keyCode === 18) {
+                    // The Alt key
+                    ngHE.addClass(kDCN.HANDLE);
+                }
+            }
+
+            function onKeyUp(oEvent) {
+
+                if (oEvent.keyCode === 18) {
+                    // The Alt key
+                    ngHE.removeClass(kDCN.HANDLE);
+                }
+            }
+
             /**
              * The event handler of the mousedown event.
              *
              * @author Kevin Li<klx211@gmail.com>
              * @param {Object} oEvent The jQuery's event object.
              */
-            function onMousedown(oEvent) {
+            function onMouseDown(oEvent) {
 
                 if (oEvent.target === this ||
-                    ngHE === ngDraggableElement && ngDraggableElement.find(oEvent.target).length > 0) {
+                    ngHE === ngDE &&
+                    ngDE.find(oEvent.target).length > 0) {
                     // The HTML element on which the mousedown event is triggered must be the handle element itself,
                     // instead of any children of the handle element.
                     // If the handle element is just the draggable element itself, the HTML element on which the
@@ -233,7 +239,7 @@
                          * @author Kevin Li<klx211@gmail.com>
                          * @type {number}
                          */
-                        var nElementLeft = ngDraggableElement.position().left,
+                        var nElementLeft = ngDE.position().left,
                             /**
                              * The value of top property of the HTML element to be dragged when the mouse button is held
                              * down.
@@ -241,7 +247,7 @@
                              * @author Kevin Li<klx211@gmail.com>
                              * @type {number}
                              */
-                            nElementTop = ngDraggableElement.position().top,
+                            nElementTop = ngDE.position().top,
                             /**
                              * The X position of the mouse cursor when the mouse button is held down.
                              *
@@ -279,7 +285,7 @@
                                     oScope.$emit(kDE.DRAG_START);
                                 }
 
-                                ngDraggableElement.css({
+                                ngDE.css({
                                     left: nElementLeft + (oEvent.pageX - nMouseX),
                                     top: nElementTop + (oEvent.pageY - nMouseY)
                                 });
@@ -289,20 +295,21 @@
                              *
                              * @author Kevin Li<klx211@gmail.com>
                              */
-                            onMouseup = function () {
+                            onMouseUp = function () {
 
                                 $document
                                     .off('mousemove', onMousemove)
-                                    .off('mouseup', onMouseup);
+                                    .off('mouseup', onMouseUp);
 
                                 // Remove the box shadows so that it looks like the HTML element has just been put down.
-                                ngDraggableElement.removeClass(kDCN.DRAGGING);
+                                ngDE.removeClass(kDCN.DRAGGING);
 
                                 // Reset the counter when the mouse button is released.
                                 nCounter = 0;
+
                                 oScope.$emit(kDE.DRAG_END);
                             },
-                            onKeyup = function (oEvent) {
+                            onAltKeyUp = function (oEvent) {
 
                                 oEvent.preventDefault();
                                 oEvent.stopPropagation();
@@ -311,23 +318,40 @@
                                     // The Alt key
                                     $document
                                         .trigger(jQuery.Event('mouseup'))
-                                        .off('keyup', onKeyup);
+                                        .off('keyup', onAltKeyUp);
                                 }
                             };
 
                         if (oScope.bWithAlt) {
                             // The Alt key must be held down in order to start dragging,
-                            $document.on('keyup', onKeyup);
+                            $document.on('keyup', onAltKeyUp);
                         }
                         // Add box shadows so that it looks like the HTML element has just been lifted up.
-                        ngDraggableElement.addClass(kDCN.DRAGGING);
+                        ngDE.addClass(kDCN.DRAGGING);
 
                         $document
                             .on('mousemove', onMousemove)
-                            .on('mouseup', onMouseup);
+                            .on('mouseup', onMouseUp);
                     }
                 }
             }
+
+            /**
+             * Disable the dragging functionality of the draggable element. Remove relevant listeners.
+             *
+             * @author Kevin Li<klx211@gmail.com>
+             */
+            ngDE.disableDraggable = function () {
+
+                ngHE.off('mousedown', onMouseDown);
+
+                if (oScope.bWithAlt) {
+
+                    $document
+                        .off('keydown', onKeyDown)
+                        .off('keyup', onKeyUp);
+                }
+            };
         }
     }
 

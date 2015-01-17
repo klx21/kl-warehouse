@@ -3,8 +3,8 @@
 @import 'includes/mixins';
 
 .k-draggable {
-    @include transition(box-shadow 100ms);
     position: absolute;
+    transition: box-shadow 100ms;
 }
 
 .k-dragging {
