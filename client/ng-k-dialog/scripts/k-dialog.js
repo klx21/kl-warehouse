@@ -94,6 +94,24 @@
 
         var oRegistry = {};
 
+        /**
+         * Initialize a dialog instance and return it.
+         *
+         * @param {Object} oConfig A configuration object.
+         * @example
+         * {
+         *      bCloseOnEsc: {boolean}
+         *      bDraggable: {boolean}
+         *      bModal: {boolean}
+         *      bOpenUponInit: {boolean}
+         *      bShowCloseBtn: {boolean}
+         *      oScope: {Object}
+         *      sDialogClass: {string}
+         *      sSize: {string}
+         *      sTemplateUrl: {string}
+         * }
+         * @returns {Object} A dialog instance.
+         */
         this.initialize = function (oConfig) {
 
             var oInstance = {
@@ -109,7 +127,7 @@
 
             oRegistry[ngElement] = oInstance;
 
-            if (oConfig.bOpenUponInit !== false) {
+            if (oConfig.bOpenUponInit === true) {
 
                 oInstance.open();
             }
@@ -170,13 +188,15 @@
 
         function listenOnInitialization(ngElement, oDeferred) {
 
-            ngElement.scope().$on(kDE.DIALOG_INITIALIZED, function (oEvent, oScope) {
+            ngElement
+                .scope()
+                .$on(kDE.DIALOG_INITIALIZED, function (oEvent, oScope) {
 
-                oEvent.preventDefault();
-                oEvent.stopPropagation();
+                    oEvent.preventDefault();
+                    oEvent.stopPropagation();
 
-                oDeferred.resolve(oScope);
-            });
+                    oDeferred.resolve(oScope);
+                });
         }
 
         function augmentInstance(oInstance, oPromise) {
@@ -354,9 +374,12 @@
                         });
                     } else {
 
-                        element
-                            .children('.' + kDCN.DIALOG)
-                            .disableDraggable();
+                        var ngDraggableElement = element.children('.' + kDCN.DIALOG);
+
+                        if (ngDraggableElement.disableDraggable) {
+
+                            ngDraggableElement.disableDraggable();
+                        }
                     }
                 });
 
@@ -428,7 +451,7 @@
                 setSize: setSize,
                 setTemplateUrl: setTemplateUrl
             });
-            
+
             function open() {
 
                 var ngDialog = ngElement.children('.' + kDCN.DIALOG),
