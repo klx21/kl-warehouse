@@ -15,10 +15,9 @@
     @include cursor(grab);
 }
 
-.k-dragging .k-handle {
-    @include cursor(grabbing);
-}
+.k-dragging {
 
-.k-dragging.k-handle {
-    @include cursor(grabbing);
+    &.k-handle, & .k-handle {
+        @include cursor(grabbing);
+    }
 }

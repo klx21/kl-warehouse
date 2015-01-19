@@ -49,26 +49,33 @@
             DRAGGABLE: 'k-draggable',
             DRAGGING: 'k-dragging',
             HANDLE: 'k-handle'
+        },
+        kDraggableAttributeNames = {
+            DRAGGABLE: 'k-draggable',
+            WITH_ALT: 'with-alt'
         };
 
     angular
         .module('kl.draggable', [])
         .constant('kDraggableEvents', kDraggableEvents)
         .constant('kDraggableClassNames', kDraggableClassNames)
+        .constant('kDraggableAttributeNames', kDraggableAttributeNames)
         .service('kDraggableService', kDraggableService)
         .directive('kDraggable', kDraggable);
 
     kDraggableService.$inject = [
+        'kDraggableAttributeNames',
         '$compile'
     ];
 
     kDraggable.$inject = [
         'kDraggableEvents',
         'kDraggableClassNames',
+        'kDraggableAttributeNames',
         '$document'
     ];
 
-    function kDraggableService($compile) {
+    function kDraggableService(kDAN, $compile) {
 
         /**
          * Make an HTML element draggable based on the configuration provided.
@@ -80,7 +87,7 @@
          *                                      a jQuery wrapper object of the target draggable HTML element, or the
          *                                      target draggable HTML element itself.
          *     sDragHandle: {string}, Optional. The jQuery selector for the handle HTML element. If this is omitted, the
-         *                                      dialog itself will be used as the handle.
+         *                                      draggable element itself will be used as the handle.
          *     bWithAlt: {boolean} Optional. True if the Alt key should be held down during dragging. False if it should
          *                                      not.
          *     bCopy: {boolean} Optional. True if a copy of the draggable element should be created when dragging. False
@@ -98,7 +105,8 @@
 
                 throw 'k-draggable: The configuration object must be provided.';
 
-            } else if (!angular.isString(oConfig.xDraggable) && !(oConfig.xDraggable instanceof jQuery) &&
+            } else if (!angular.isString(oConfig.xDraggable) &&
+                !(oConfig.xDraggable instanceof jQuery) &&
                 oConfig.xDraggable.nodeType !== Node.ELEMENT_NODE) {
                 // It's not a string,
                 // it's not a jQuery object,
@@ -120,11 +128,11 @@
 
                 } else {
 
-                    ngDraggable.attr('k-draggable', sDragHandle);
+                    ngDraggable.attr(kDAN.DRAGGABLE, sDragHandle);
 
                     if (oConfig.bWithAlt === true) {
 
-                        ngDraggable.attr('with-alt', '');
+                        ngDraggable.attr(kDAN.WITH_ALT, '');
                     }
                     $compile(ngDraggable)(ngDraggable.scope());
                 }
@@ -132,7 +140,7 @@
         };
     }
 
-    function kDraggable(kDE, kDCN, $document) {
+    function kDraggable(kDE, kDCN, kDAN, $document) {
 
         return {
             link: function (scope, element, attrs) {
@@ -167,21 +175,22 @@
                         element.addClass(kDCN.HANDLE);
                     }
                 }
-                registerListeners(scope, element, ngHandleElement);
+                registerListeners(kDCN, kDAN, scope, element, ngHandleElement);
             },
-            restrict: 'AC',
-            scope: {}
+            restrict: 'AC'
         };
 
         /**
          * Register all the necessary listeners for dragging an HTML element.
          *
          * @author Kevin Li<klx211@gmail.com>
+         * @param {Object} kDCN An object containing class names.
+         * @param {Object} kDAN An object containing attributes names.
          * @param {Object} oScope The directive's scope object.
          * @param {jQuery} ngDE The HTML element which is wrapped by jQuery and is to be dragged.
          * @param {jQuery} ngHE The HTML element which is wrapped by jQuery and is the handle for dragging.
          */
-        function registerListeners(oScope, ngDE, ngHE) {
+        function registerListeners(kDCN, kDAN, oScope, ngDE, ngHE) {
 
             ngHE = ngHE || ngDE;
 
@@ -192,6 +201,34 @@
                     .on('keyup', onKeyUp);
             }
             ngHE.on('mousedown', onMouseDown);
+
+            oScope.disableDraggable = disableDraggable;
+
+            /**
+             * Disable the dragging functionality of the draggable element. Remove relevant listeners, classes and
+             * variables on the scope.
+             *
+             * @author Kevin Li<klx211@gmail.com>
+             */
+            function disableDraggable() {
+
+                ngHE.off('mousedown', onMouseDown);
+
+                if (oScope.bWithAlt) {
+
+                    $document
+                        .off('keydown', onKeyDown)
+                        .off('keyup', onKeyUp);
+                }
+
+                ngDE
+                    .removeAttr(kDAN.DRAGGABLE)
+                    .removeAttr(kDAN.WITH_ALT)
+                    .removeClass(kDCN.DRAGGABLE);
+
+                delete oScope.disableDraggable;
+                delete oScope.bWithAlt;
+            }
 
             function onKeyDown(oEvent) {
 
@@ -335,23 +372,6 @@
                     }
                 }
             }
-
-            /**
-             * Disable the dragging functionality of the draggable element. Remove relevant listeners.
-             *
-             * @author Kevin Li<klx211@gmail.com>
-             */
-            ngDE.disableDraggable = function () {
-
-                ngHE.off('mousedown', onMouseDown);
-
-                if (oScope.bWithAlt) {
-
-                    $document
-                        .off('keydown', onKeyDown)
-                        .off('keyup', onKeyUp);
-                }
-            };
         }
     }
 

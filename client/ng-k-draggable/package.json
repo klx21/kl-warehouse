@@ -4,7 +4,7 @@
     "description": "AnguarJS version of draggable.",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/KLx21/KL-Warehouse/client/ng-k-draggable"
     },
     "keywords": [
         "AngularJS"
@@ -14,6 +14,9 @@
     "devDependencies": {
         "del": "1.1.x",
         "gulp": "3.8.x",
+        "gulp-autoprefixer": "2.0.x",
+        "gulp-concat": "2.4.x",
+        "gulp-concat-css": "1.1.x",
         "gulp-jasmine": "1.x",
         "gulp-jshint": "1.9.x",
         "gulp-jshint-html-reporter": "0.1.x",
@@ -23,13 +26,16 @@
         "gulp-rename": "1.2.x",
         "gulp-sass": "1.1.x",
         "gulp-uglify": "1.0.x",
+        "gulp-util": "3.0.x",
         "gulp-webserver": "0.9.x",
         "karma": "0.12.x",
         "karma-chrome-launcher": "0.1.x",
         "karma-firefox-launcher": "0.1.x",
         "karma-jasmine": "0.3.x",
         "karma-ng-html2js-preprocessor": "0.1.x",
+        "karma-phantomjs-launcher": "0.1.x",
         "karma-spec-reporter": "0.0.x",
+        "phantomjs": "1.9.x",
         "rimraf": "2.2.x"
     }
 }
