@@ -82,7 +82,7 @@
         });
     });
 
-    gulp.taks('copy-assets', [
+    gulp.task('copy-assets', [
         'copy-css',
         'copy-images'
     ]);
