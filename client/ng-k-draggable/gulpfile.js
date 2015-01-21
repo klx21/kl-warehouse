@@ -38,63 +38,85 @@
         gWebserver = require('gulp-webserver'),
         rimraf = require('rimraf');
 
-    gulp.task('build-dev-css', ['clean-assets-css'], function () {
+    gulp.task('build-dev-css', [
+        'clean-assets-css'
+    ], function () {
 
         return buildCss('k-draggable.css');
     });
 
-    gulp.task('build-dist-css', ['clean-assets-css'], function () {
+    gulp.task('build-dev-js', [
+        'clean-dist'
+    ], function () {
+
+        return buildJs('k-draggable.js');
+    });
+
+    gulp.task('build-dist-css', [
+        'clean-assets-css'
+    ], function () {
 
         return buildCss('k-draggable.min.css', true);
     });
 
-    gulp.task('build-dev-js', function () {
+    gulp.task('build-dist-js', [
+        'clean-dist'
+    ], function () {
 
-        return buildAllJs('k-draggable.js');
+        return buildJs('k-draggable.min.js', true);
     });
 
-    gulp.task('build-dist-js', function () {
+    gulp.task('clean-assets-css', function (cb) {
 
-        return buildAllJs('k-draggable.min.js', true);
-    });
+        del('./assets/*.css', function () {
 
-    gulp.task('clean-dist', function () {
-
-        del.sync('./dist', {
-            force: true
+            cb();
         });
     });
 
-    gulp.task('clean-assets-css', function () {
+    gulp.task('clean-dist', function (cb) {
 
-        del.sync('./assets/*.css', {
-            force: true
+        del('./dist', function () {
+
+            cb();
         });
     });
 
-    gulp.task('copy-assets', ['clean-dist', 'build-dev-css', 'build-dist-css'], function () {
+    gulp.taks('copy-assets', [
+        'copy-css',
+        'copy-images'
+    ]);
+
+    gulp.task('copy-css', [
+        'clean-dist',
+        'build-dev-css',
+        'build-dist-css'
+    ], function () {
 
         return gulp
-            .src(['./assets/*', './assets/**/*'])
+            .src('./assets/*.css')
             .pipe(gulp.dest('./dist/assets'));
     });
 
-    gulp.task('copy-images', function () {
+    gulp.task('copy-images', [
+        'clean-dist'
+    ], function () {
 
         return gulp
             .src('./assets/images/*.png')
             .pipe(gulp.dest('./dist/assets/images'));
     });
 
-    gulp.task('copy-css', ['clean-dist', 'compile-sass-to-css'], function () {
+    gulp.task('default', [
+        'dist'
+    ]);
 
-        gulp.src('./assets/*.css')
-            .pipe(gulp.dest('./dist/css'));
-    });
-
-    gulp.task('default', ['dist']);
-
-    gulp.task('dist', ['clean-dist', 'build-dev-js', 'build-dist-js', 'copy-assets']);
+    gulp.task('dist', [
+        'clean-dist',
+        'build-dev-js',
+        'build-dist-js',
+        'copy-assets'
+    ]);
 
     gulp.task('jshint', function () {
 
@@ -105,10 +127,16 @@
             }));
     });
 
-    gulp.task('serve-dev', ['build-dev-css', 'watch-sass'], function () {
+    gulp.task('serve-dev', [
+        'build-dev-css',
+        'watch-sass'
+    ], function () {
 
         gulp
-            .src(['.', './demo'])
+            .src([
+                '.',
+                './demo'
+            ])
             .pipe(gWebserver({
                 directoryListing: false,
                 fallback: 'demo/index.html',
@@ -123,27 +151,36 @@
 
     gulp.task('watch-sass', function () {
 
-        gulp.watch('./scss/*.scss', ['build-dev-css']);
+        return gulp.watch('./scss/*.scss', [
+            'build-dev-css'
+        ]);
     });
 
-    function buildAllJs(sFilename, bUglify) {
+    function buildJs(sFilename, bUglify) {
 
         return gulp
             .src('./scripts/*.js')
             .pipe(gConcat(sFilename))
-            .pipe(bUglify ? gUglify({
-                compress: {}
-            }) : gUtil.noop())
+            .pipe(bUglify ?
+                gUglify({
+                    compress: {}
+                }) :
+                gUtil.noop())
             .pipe(gulp.dest('./dist/js'));
     }
 
     function buildCss(sFilename, bMinify) {
 
         return gulp
-            .src(['./scss/*.scss', './scss/**/*.scss'])
+            .src([
+                './scss/*.scss',
+                './scss/**/*.scss'
+            ])
             .pipe(gSass())
             .pipe(gAutoprefixer())
-            .pipe(bMinify ? gMinifyCSS() : gUtil.noop())
+            .pipe(bMinify ?
+                gMinifyCSS() :
+                gUtil.noop())
             .pipe(gConcatCss(sFilename))
             .pipe(gulp.dest('./assets'));
     }
