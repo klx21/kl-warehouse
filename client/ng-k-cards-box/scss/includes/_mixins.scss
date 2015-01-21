@@ -1,46 +1,11 @@
 @charset "UTF-8";
 
-.ng-animation-transition {
+@mixin ng-animation-transition {
     transition: 500ms;
 }
 
-@mixin transition($transition...) {
-    transition: $transition;
-    -webkit-transition: $transition;
-    -moz-transition: $transition;
-    -o-transition: $transition;
-    -ms-transition: $transition;
-}
-
-@mixin border-all-radius($radius) {
-    border-bottom-left-radius: $radius;
-    border-bottom-right-radius: $radius;
-    border-top-left-radius: $radius;
-    border-top-right-radius: $radius;
-    -moz-border-radius-bottomleft: $radius;
-    -moz-border-radius-bottomright: $radius;
-    -moz-border-radius-topleft: $radius;
-    -moz-border-radius-topright: $radius;
-    -webkit-border-bottom-left-radius: $radius;
-    -webkit-border-bottom-right-radius: $radius;
-    -webkit-border-top-left-radius: $radius;
-    -webkit-border-top-right-radius: $radius;
-    -o-border-bottom-left-radius: $radius;
-    -o-border-bottom-right-radius: $radius;
-    -o-border-top-left-radius: $radius;
-    -o-border-top-right-radius: $radius;
-    -ms-border-bottom-left-radius: $radius;
-    -ms-border-bottom-right-radius: $radius;
-    -ms-border-top-left-radius: $radius;
-    -ms-border-top-right-radius: $radius;
-}
-
-@mixin default-box-shadow($color: #000000, $spread-radius: 0, $blur-radius: 0, $offset-x: 0, $offset-y: 0) {
-    box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
-    -webkit-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
-    -moz-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
-    -o-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
-    -ms-box-shadow: $offset-x $offset-x $blur-radius $spread-radius $color;
+@mixin box-shadow($color: #000000, $spread-radius: 0, $blur-radius: 0, $offset-x: 0, $offset-y: 0, $inset: '') {
+    box-shadow: #{$inset} $offset-x $offset-y $blur-radius $spread-radius $color;
 }
 
 @mixin loading-mask {

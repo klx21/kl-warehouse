@@ -32,25 +32,38 @@
     kCard.$inject = [
         'kCardsBoxEvents',
         'kCardsBoxClassNames',
-        'kCardsBoxService'
+        'kDialogService'
     ];
 
-    function kCard(kCBE, kCBCN, kCBS) {
+    function kCard(kCBE, kCBCN, kDS) {
 
         return {
-            link: function (scope, element) {
+            link: function (scope, element, attrs, controller) {
 
+                if(angular.isString(scope.sCardClasses)) {
+
+                    element.addClass(scope.sCardClasses);
+                }
+                prepareBtnClicks(scope, element, controller);
                 registerEventListeners(scope, element);
             },
             require: '^^kCardsBox',
             restrict: 'A',
             scope: {
                 oCard: '=cardData',
+                sCardClasses: '@cardClasses',
                 sCardTplUrl: '@cardTplUrl',
-                sDlgTplUrl: '@dlgTplUrl'
+                sDlgTplUrl: '@dlgTplUrl',
+                openDialog: '&openDialog'
             },
             templateUrl: '../templates/ng-k-card.tpl.html'
         };
+
+        function prepareBtnClicks(oScope, ngElement, oController) {
+
+            angular.extend(oScope, {
+            });
+        }
 
         function registerEventListeners(oScope, ngElement) {
 

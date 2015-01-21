@@ -1,11 +1,10 @@
 <div class="k-cards-box">
     <section class="k-header-bar"></section>
     <ul class="k-cards-list">
-        <li class="k-card" ng-style="oCardStyles" ng-repeat="oCard in aCards" k-card data-card-data="oCard" data-card-tpl-url="{{sCardTplUrl}}">
+        <li class="k-card k-card-color-{{$index % 4}}" ng-style="oCardStyles" ng-repeat="oCard in aCards" k-card data-card-data="oCard" data-card-classes="" data-card-tpl-url="{{sCardTplUrl}}" data-open-dialog="openDialog()">
         </li>
     </ul>
     <section class="k-footer-bar"></section>
     <div class="loading-mask"></div>
-    <div class="loading-icon">
-    </div>
+    <div class="loading-icon"></div>
 </div>

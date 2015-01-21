@@ -32,10 +32,11 @@
     kCardsBox.$inject = [
         'kCardsBoxEvents',
         'kCardsBoxDefaults',
-        'kCardsBoxClassNames'
+        'kCardsBoxClassNames',
+        'kDialogService'
     ];
 
-    function kCardsBox(kCBE, kCBD, kCBCN) {
+    function kCardsBox(kCBE, kCBD, kCBCN, kDS) {
 
         return {
             controller: 'KCardsBoxController',
@@ -50,6 +51,7 @@
                 };
 
                 registerEventListeners(scope, element);
+                initializeDialog(scope, kDS);
             },
             restrict: 'EA',
             scope: {
@@ -60,7 +62,7 @@
                 nRowHeight: '@rowHeight',
                 nCardSpacing: '@cardSpacing',
                 nCardRatio: '@cardRatio', // width / height ratio
-                sDlgController: '@dlgController',
+                bDraggable: '@draggable',
                 sBottomReachedNotification: '@bottomReachedNotification'
             },
             templateUrl: '../templates/ng-k-cards-box.tpl.html'
@@ -70,7 +72,7 @@
          * Calculate the numbers regarding the cards layout.
          *
          * @author Kevin Li<huali@tibco-support.com>
-         * @param {Object} oScope The directive's scope object.
+         * @param {Object} oScope The directive's isolate scope object.
          * @param {jQuery} ngElement An HTML element or an array of HTML elements wrapped by jQuery.
          */
         function checkScopeProperties(oScope, ngElement) {
@@ -82,6 +84,7 @@
             oScope.nRowHeight = parseFloat(oScope.nRowHeight, 10);
             oScope.nCardWidth = oScope.nCardsBoxWidth / oScope.nColumnCount - oScope.nCardSpacing;
             oScope.nCardHeight = (oScope.nRowHeight - oScope.nCardSpacing) || (oScope.nCardWidth / oScope.nCardRatio);
+            oScope.bDraggable = oScope.bDraggable === 'true';
         }
 
         function registerEventListeners(oScope, ngElement) {
@@ -93,7 +96,7 @@
 
         function listenOnDataLoading(oScope, ngElement) {
 
-            oScope.$on(kCBE.CARDS_BOX_DATA_LOADING, function (oEvent) {
+            oScope.$on(kCBE.CARDS_BOX_DATA_LOADING, function () {
 
                 ngElement.find([
                     '.' + kCBCN.CARDS_LIST + ' ~ .' + kCBCN.LOADING_MASK,
@@ -104,7 +107,7 @@
 
         function listenOnDataLoaded(oScope, ngElement) {
 
-            oScope.$on(kCBE.CARDS_BOX_DATA_LOADED, function (oEvent) {
+            oScope.$on(kCBE.CARDS_BOX_DATA_LOADED, function () {
 
                 ngElement.find([
                     '.' + kCBCN.CARDS_LIST + ' ~ .' + kCBCN.LOADING_MASK,
@@ -160,6 +163,7 @@
                     nOffsetTop = angular.element(window).scrollTop();
                     nTargetHeight = angular.element(window).height();
                     nContentHeight = angular.element(document).outerHeight(true);
+
                 } else {
 
                     nOffsetTop = ngContent.offset().top;
@@ -172,6 +176,19 @@
                     oScope.$emit(kCBE.BOTTOM_REACHED);
                 }
             }
+        }
+
+        function initializeDialog(oScope, kDS) {
+
+            oScope.oDialogInstance = kDS.initialize({
+                oScope: oScope,
+                sTemplateUrl: oScope.sDlgTplUrl
+            });
+
+            oScope.openDialog = function() {
+
+                this.oDialogInstance.open();
+            };
         }
     }
 

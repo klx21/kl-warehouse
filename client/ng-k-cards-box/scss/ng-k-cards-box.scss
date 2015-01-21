@@ -1,10 +1,15 @@
 @charset "UTF-8";
 
 @import "includes/mixins";
+@import "includes/variables";
 
 .k-cards-box {
     padding: 0;
     position: relative;
+}
+
+.k-cards-box * {
+    box-sizing: content-box !important;
 }
 
 .k-header-bar {
@@ -17,19 +22,19 @@
 }
 
 .k-card {
-    @include border-all-radius(3px);
-    @include transition(box-shadow 200ms);
-    @include default-box-shadow(#888, 1px, 1px);
+    border-radius: 3px;
+    color: #FFFFFF;
     display: inline-block;
     overflow: hidden;
     padding: 0;
     position: relative;
+    transition: box-shadow 200ms;
 }
 
 .k-card:hover {
-    @include default-box-shadow(#888, 5px, 5px);
+    @include box-shadow(#888888, -30px, 10px, 0, 40px);
 
-    .k-card-toolbar {
+    > .k-card-toolbar {
         bottom: 0;
     }
 }
@@ -43,17 +48,74 @@
 }
 
 .k-card-toolbar {
-    @include transition(bottom 200ms);
-    background-color: #AAA;
+    background-color: #444444;
     bottom: -30px;
     display: inline-block;
-    height: 30px;
+    height: 24px;
     left: 0;
     opacity: 0.5;
     padding: 3px;
     position: absolute;
     right: 0;
+    transition: bottom 200ms;
     z-index: 10;
+}
+
+.k-card-btn {
+    border-radius: 12px;
+    background: {
+        color: #FFFFFF;
+        size: 15px;
+    }
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 5px;
+    opacity: 0.5;
+    padding: 0;
+    width: 24px;
+}
+
+.k-card-btn-more {
+    background: {
+        image: url('images/glyphicons-188-more.png');
+        position: 50%;
+        repeat: no-repeat;
+    }
+}
+
+.k-card-btn-remove {
+    background: {
+        image: url('images/glyphicons-208-remove-2.png');
+        position: 50%;
+        repeat: no-repeat;
+    }
+}
+
+.k-card-toolbar > .k-card-btn {
+    transition: transform 100ms;
+}
+
+.k-card-toolbar > .k-card-btn:hover {
+    transform: scale(1.2, 1.2);
+}
+
+.k-card-color-0 {
+    background-color: $blue;
+}
+
+.k-card-color-1 {
+    background-color: $red;
+}
+
+.k-card-color-2 {
+    background-color: $yellow;
+}
+
+.k-card-color-3 {
+    background-color: $green;
 }
 
 .k-footer-bar {
@@ -81,7 +143,7 @@
 
 /* Cards animation start */
 .k-card.ng-enter {
-    @extend .ng-animation-transition;
+    @include ng-animation-transition();
     opacity: 0;
 }
 
@@ -90,7 +152,7 @@
 }
 
 .k-card.ng-leave {
-    @extend .ng-animation-transition;
+    @include ng-animation-transition();
     opacity: 1;
 }
 
@@ -99,7 +161,7 @@
 }
 
 .k-card.ng-move {
-    @extend .ng-animation-transition;
+    @include ng-animation-transition();
     opacity: 0;
 }
 

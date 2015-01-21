@@ -27,6 +27,7 @@
 
     angular
         .module('kl.cardsBox', [
+            'kl.dialog',
             'ng',
             'ngAnimate'
         ]);

@@ -1,4 +1,7 @@
 <article class="k-card-container" ng-include="sCardTplUrl"></article>
-<div class="k-card-toolbar"></div>
+<div class="k-card-toolbar">
+    <button class="k-card-btn k-card-btn-more" ng-click="openDialog()"></button>
+    <button class="k-card-btn k-card-btn-remove" ng-click="removeCard($event)"></button>
+</div>
 <div class="loading-mask"></div>
 <div class="loading-icon"></div>

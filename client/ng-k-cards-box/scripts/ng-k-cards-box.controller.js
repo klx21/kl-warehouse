@@ -29,12 +29,9 @@
         .module('kl.cardsBox')
         .controller('KCardsBoxController', KCardsBoxController);
 
-    KCardsBoxController.$inject = [
-        '$scope',
-        'kCardsBoxService'
-    ];
+    KCardsBoxController.$inject = [];
 
-    function KCardsBoxController($scope, kCardsBoxService) {
+    function KCardsBoxController() {
 
     }
 
