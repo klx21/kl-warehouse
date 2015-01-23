@@ -127,7 +127,7 @@
             }));
     });
 
-    gulp.task('serve-dev', [
+    gulp.task('serve-src', [
         'build-dev-css',
         'watch-sass'
     ], function () {

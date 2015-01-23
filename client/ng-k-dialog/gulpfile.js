@@ -26,12 +26,12 @@
     'use strict';
 
     var del = require('del'),
-        es = require('event-stream'),
         gulp = require('gulp'),
         gAT = require('gulp-angular-templatecache'),
         gAutoprefixer = require('gulp-autoprefixer'),
         gConcat = require('gulp-concat'),
         gConcatCss = require('gulp-concat-css'),
+        gIf = require('gulp-if'),
         gJshint = require('gulp-jshint'),
         gMinifyCSS = require('gulp-minify-css'),
         gSass = require('gulp-sass'),
@@ -128,7 +128,7 @@
             }));
     });
 
-    gulp.task('serve-dev', [
+    gulp.task('serve-src', [
         'build-dev-css',
         'watch-sass'
     ], function () {
@@ -159,14 +159,15 @@
 
     function buildJs(sFilename, bUglify) {
 
-        return es
-            .merge(gulp
-                .src('./scripts/*.js'), gulp
-                .src('./templates/*.tpl.html')
-                .pipe(gAT('templates.js', {
-                    module: 'kl.dialog',
-                    root: '../templates/'
-                })))
+        return gulp
+            .src([
+                './scripts/*.js',
+                './templates/*.tpl.html'
+            ])
+            .pipe(gIf('*.tpl.html', gAT('templates.js', {
+                module: 'kl.dialog',
+                root: '../templates/'
+            })))
             .pipe(gConcat(sFilename))
             .pipe(bUglify ?
                 gUglify({
