@@ -26,9 +26,10 @@ var ClassName = (function() {
 
     'use strict';
 
-    ///////////////////////////////////////////////////////
-    // Here goes the private static members of the class //
-    ///////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
+    // Here goes the private static properties of the class which //
+    // are declared with "var", such as the "aInstances".         //
+    ////////////////////////////////////////////////////////////////
 
     var aInstances,
         /**
@@ -41,15 +42,21 @@ var ClassName = (function() {
 
             var oInstance = {};
 
-            /////////////////////////////////////////////////
-            // Here goes the private members of the class. //
-            /////////////////////////////////////////////////
+            /////////////////////////////////////////////
+            // Here goes the private properties of the //
+            // class which are declared with "var".    //
+            /////////////////////////////////////////////
 
-            Object.assign(oInstance, /* Other instances */ {
+            Object.assign(oInstance, /* Other instances to inherit from */ {
                 ////////////////////////////////////////////////
                 // Here goes the public members of the class. //
                 ////////////////////////////////////////////////
             });
+
+            ///////////////////////////////////////////////////////
+            // Public member function expressions can go here as //
+            // they are detailed information and can be hoisted. //
+            ///////////////////////////////////////////////////////
 
             return oInstance;
     };
@@ -61,6 +68,11 @@ var ClassName = (function() {
         isInstanceOf: isInstanceOf,
         newInstance: newInstance
     };
+
+    /////////////////////////////////////////////////////////////////
+    // Other public static member function expressions can go here //
+    // as they are detailed information and can be hoisted.        //
+    /////////////////////////////////////////////////////////////////
 
     /**
      * Tell whether the given object is an instance of the ClassName.
