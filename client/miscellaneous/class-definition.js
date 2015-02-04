@@ -58,24 +58,29 @@ var ClassName = (function() {
         ///////////////////////////////////////////////////////
         // Here goes the public static members of the class. //
         ///////////////////////////////////////////////////////
-        /**
-         * Tell whether the given object is an instance of the ClassName.
-         *
-         * @author Kevin Li<klx211@gmail.com>
-         * @param {Object} oInstance The object to be checked for whether it's an instance of the ClassName.
-         * @returns {Boolean} True if the object is an instance of the ClassName. False otherwise.
-         */
-        isInstanceOf: function(oInstance) {},
-        /**
-         * A factory function to create a new instance of the ClassName. Any number of arguments can be passed in.
-         *
-         * @param {...} args Any number of arguments can be passed in.
-         */
-        newInstance: function () {
-            var instance = factory.apply(null, Array.prototype.slice.call(arguments, 0));
-            aInstances.push(instance);
-            return instance;
-        }
+        isInstanceOf: isInstanceOf,
+        newInstance: newInstance
     };
+
+    /**
+     * Tell whether the given object is an instance of the ClassName.
+     *
+     * @author Kevin Li<klx211@gmail.com>
+     * @param {Object} oInstance The object to be checked for whether it's an instance of the ClassName.
+     * @returns {Boolean} True if the object is an instance of the ClassName. False otherwise.
+     */
+    function isInstanceOf() {}
+
+    /**
+     * A factory function to create a new instance of the ClassName. Any number of arguments can be passed in.
+     *
+     * @param {...} args Any number of arguments can be passed in.
+     */
+    function newInstance() {
+
+        var instance = factory.apply(null, Array.prototype.slice.call(arguments, 0));
+
+        return aInstances[aInstances.length] = instance;
+    }
 
 }());
