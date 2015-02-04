@@ -66,10 +66,13 @@ var ClassName = (function() {
      * Tell whether the given object is an instance of the ClassName.
      *
      * @author Kevin Li<klx211@gmail.com>
-     * @param {Object} oInstance The object to be checked for whether it's an instance of the ClassName.
+     * @param {Object} oInstance The object to be checked for whether it's an instance of the ClassName or not.
      * @returns {Boolean} True if the object is an instance of the ClassName. False otherwise.
      */
-    function isInstanceOf() {}
+    function isInstanceOf(oInstance) {
+
+        return aInstances.indexOf(oInstance) > -1;
+    }
 
     /**
      * A factory function to create a new instance of the ClassName. Any number of arguments can be passed in.
