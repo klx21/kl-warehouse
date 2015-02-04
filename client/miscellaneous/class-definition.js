@@ -90,6 +90,7 @@ var ClassName = (function() {
      * A factory function to create a new instance of the ClassName. Any number of arguments can be passed in.
      *
      * @param {...} args Any number of arguments can be passed in.
+     * @returns {Object} An instance of the ClassName class.
      */
     function newInstance() {
 

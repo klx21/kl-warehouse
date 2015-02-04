@@ -349,6 +349,7 @@ var KAsync = (function () {
      *
      * @author Kevin Li<klx211@gmail.com>
      * @param {...} args Any number of arguments can be passed in.
+     * @returns {Object} An instance of the KAsync class.
      */
     function newInstance() {
 
