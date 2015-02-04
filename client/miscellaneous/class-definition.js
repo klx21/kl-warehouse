@@ -37,6 +37,7 @@ var ClassName = (function() {
          *
          * @constructor
          * @param {...} args Any number of arguments.
+         * @returns {Object} An instance of the ClassName class.
          */
         factory = function () {
 
