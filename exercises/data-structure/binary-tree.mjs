@@ -1,4 +1,4 @@
-export const TREE_DIRECTION = {
+export const SERIALIZATION_DIRECTION = {
   BREADTH: 0,
   DEPTH: 1
 };
@@ -9,6 +9,11 @@ export const DEPTH_FIRST_ORDER = {
   PRE_ORDER: 2
 }
 
+export const INSERTION_MODE = {
+  BREADTH_FIRST: 0,
+  IN_ORDER: 1
+}
+
 export class TreeNode {
   constructor(value, left, right) {
     this.value = value;
@@ -17,7 +22,7 @@ export class TreeNode {
   }
 }
 
-export class BinarySearchTree {
+export class BinaryTree {
   constructor(root) {
     this.root = root || null;
   }
@@ -26,7 +31,7 @@ export class BinarySearchTree {
    * Create a binary search tree from the given array.
    *
    * @param {Array<number|string>} array An breadth first array of tree node values. Empty node is represented by '#'.
-   * @return {BinarySearchTree} A binary search tree.
+   * @return {BinaryTree} A binary search tree.
    */
   deserializeBreadthFirst(array) {
     if (!this.root && array.length > 0 && array[0] !== '#') {
@@ -79,6 +84,35 @@ export class BinarySearchTree {
     }
 
     return this;
+  }
+
+  /**
+   * Check whether this is a valid binary search tree.
+   *
+   * @returns {boolean} True if this is a valid binary search tree. False otherwise.
+   */
+  isValidBst() {
+    const stack = [];
+    let node = this.root;
+    let current = Number.NEGATIVE_INFINITY;
+
+    while (stack.length > 0 || node) {
+      while (node) {
+        stack.push(node);
+        node = node.left;
+      }
+
+      node = stack.pop();
+
+      if (node.val <= current) {
+        return false;
+      }
+
+      current = node.val;
+      node = node.right;
+    }
+
+    return true;
   }
 
   isSymmetric() {
@@ -146,9 +180,9 @@ export class BinarySearchTree {
 
   serializeToArray(treeDirection, depthFirstOrder) {
     switch (treeDirection) {
-      case TREE_DIRECTION.BREADTH:
-        return this.serializeBreadth();
-      case TREE_DIRECTION.DEPTH:
+      case SERIALIZATION_DIRECTION.BREADTH:
+        return this.serializeBreadthFirst();
+      case SERIALIZATION_DIRECTION.DEPTH:
         return this.serializeDepth(depthFirstOrder || DEPTH_FIRST_ORDER.IN_ORDER);
       default:
         return [];
@@ -160,7 +194,7 @@ export class BinarySearchTree {
    * @param currentNode
    * @param newNode
    * @param allowDuplicate
-   * @returns {BinarySearchTree}
+   * @returns {BinaryTree}
    */
   addSideInOrder(currentNode, newNode, allowDuplicate) {
     if (allowDuplicate || currentNode.value !== newNode.value) {
@@ -188,13 +222,10 @@ export class BinarySearchTree {
   }
 
   checkNodesSymmetry(node1, node2) {
-    if (node1 === null && node2 === null) {
+    if (!node1 && !node2) {
       return true;
     }
-    if (node1 === null || node2 === null) {
-      return false;
-    }
-    if (node1.val !== node2.val) {
+    if (!node1 || !node2 || node1.val !== node2.val) {
       return false;
     }
 
@@ -215,19 +246,25 @@ export class BinarySearchTree {
    * @private
    * @returns {Array}
    */
-  serializeBreadth() {
+  serializeBreadthFirst() {
     const queue = [this.root];
     const visited = [];
     let current;
 
     do {
       current = queue.shift();
-      visited.push(current.value);
-      if (current.left) {
-        queue.push(current.left);
-      }
-      if (current.right) {
-        queue.push(current.right);
+      visited.push(current === '#' ? '#' : current.value);
+      if (current !== '#') {
+        if (current.left) {
+          queue.push(current.left);
+        } else {
+          queue.push('#');
+        }
+        if (current.right) {
+          queue.push(current.right);
+        } else {
+          queue.push('#');
+        }
       }
     } while (queue.length);
 

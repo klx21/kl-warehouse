@@ -12,35 +12,35 @@ export function calculate(exp) {
   if (isPureNumber(compactExp)) {
     return compactExp;
   }
-  // There are parentheses in the expression
-  if (compactExp.search(/[()]/) > -1) {
+
+  if (compactExp.search(/[()]/) > -1) { // There are parentheses in the expression
     let noParenthesesExp = '';
-    let expCache = [];
-    let openParentheses = 0;
+    let expCache = []; // Cache of expressions inside parentheses.
 
     [...compactExp].forEach(char => {
-      if (char === '(') {
-        expCache[++openParentheses] = '';
+      if (char === '(') { // Open parenthesis. Push a new string to the expressions cache.
+        expCache.push('');
       }
-      if (char === ')') {
-        let expInParentheses = expCache.splice(openParentheses--, 1)[0];
+      if (char === ')') { // Close parenthesis. Calculate the result of the expression inside the parentheses.
+        let expInParentheses = expCache.pop();
         let resultOfParentheses = doASMD(expInParentheses);
-        if (openParentheses > 0) {
-          expCache[openParentheses] += resultOfParentheses;
-        } else {
+        if (expCache.length > 0) { // There are still expressions inside parentheses to calculate.
+          expCache[expCache.length - 1] += resultOfParentheses;
+        } else { // All parentheses expressions have been worked out.
           noParenthesesExp += resultOfParentheses;
         }
       }
-      if (/[0-9+*/-]+/.test(char)) {
-        if (openParentheses > 0) {
-          expCache[openParentheses] += char;
-        } else {
+      if (/[0-9+*/-]+/.test(char)) { // Numbers or operators. Append to either the last element in the expressions cache or the main string.
+        if (expCache.length > 0) { // Append to the last element in the expressions cache.
+          expCache[expCache.length - 1] += char;
+        } else { // Append to the main string.
           noParenthesesExp += char;
         }
       }
     });
 
-    // console.log('no parentheses expression is ', noParenthesesExp);
+    console.log(noParenthesesExp);
+
     return doASMD(noParenthesesExp);
   } else {
     return doASMD(compactExp);
@@ -54,15 +54,12 @@ function doASMD(exp) {
   if (isPureNumber(exp)) {
     return parseInt(exp, 10);
   }
-  // console.log('exp in doASMD is ', exp);
   const plusRegex = /\+[0-9*/]+/g;
   const minusRegex = /-[0-9*/]+/g;
-  const firstNum = parseInt(exp.substring(0, exp.search(/[+-]/)), 10);
+  const firstNum = exp.substring(0, exp.search(/[+-]/));
   const plusItems = exp.match(plusRegex);
   const minusItems = exp.match(minusRegex);
-  // console.log('plus items are ', plusItems);
-  // console.log('minus items are ', minusItems);
-  const plusResult = firstNum + (
+  const plusResult = (firstNum ? doMD(firstNum) : 0) + (
     plusItems ? plusItems.reduce((accumulator, current) => {
       return accumulator + doMD(current.substring(1));
     }, 0) : 0
@@ -70,8 +67,6 @@ function doASMD(exp) {
   const minusResult = minusItems ? minusItems.reduce((accumulator, current) => {
     return accumulator + doMD(current.substring(1));
   }, 0) : 0;
-  // console.log('plus result is ', plusResult);
-  // console.log('minus result is ', minusResult);
 
   return plusResult - minusResult;
 }
@@ -88,8 +83,6 @@ function doMD(exp) {
   const firstNum = parseInt(exp.substring(0, exp.search(/[*/]/)), 10);
   const multiplyItems = exp.match(multiplyRegex);
   const divideItems = exp.match(divideRegex);
-  // console.log('multiply items are ', multiplyItems);
-  // console.log('divide items are ', divideItems);
   const multiplyResult = firstNum * (
     multiplyItems ? multiplyItems.reduce((accumulator, current) => {
       return accumulator * parseInt(current.substring(1), 10);
@@ -98,8 +91,6 @@ function doMD(exp) {
   const divideResult = divideItems ? divideItems.reduce((accumulator, current) => {
     return accumulator * parseInt(current.substring(1), 10);
   }, 1) : 1;
-  // console.log('multiply result is ', multiplyResult);
-  // console.log('divide result is ', divideResult);
 
   return multiplyResult / divideResult;
 }
