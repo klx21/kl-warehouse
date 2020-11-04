@@ -36,7 +36,6 @@ export class BinaryTree {
   deserializeBreadthFirst(array) {
     if (!this.root && array.length > 0 && array[0] !== '#') {
       if (array.length === 1) {
-
         this.root = new TreeNode(array.pop());
       } else {
         const nodes = array.map(element => element === '#' ? '#' : new TreeNode(parseInt(element, 10)));
@@ -166,7 +165,7 @@ export class BinaryTree {
       } else {
         queue.push('#');
       }
-      if (visited.length === this.getGeometricSum(level)) {
+      if (visited.length === this.getLevelNodesCount(level)) {
         if (this.allHashes(queue)) {
           return visited
             .join(';')
@@ -229,17 +228,11 @@ export class BinaryTree {
       return false;
     }
 
-    return check(node1.left, node2.right) && check(node1.right, node2.left);
+    return this.checkNodesSymmetry(node1.left, node2.right) && check(node1.right, node2.left);
   }
 
-  getGeometricSum(level) {
+  getLevelNodesCount(level) {
     return Math.pow(2, level + 1) - 1;
-  }
-
-  isArraySymmetric(array) {
-    const firstHalf = array.slice(0, array.length / 2);
-    const secondHalf = array.slice(array.length / 2);
-    return firstHalf.join('') === secondHalf.reverse().join('');
   }
 
   /**

@@ -1,8 +1,8 @@
 export class Node {
-  constructor(value, left, right) {
+  constructor(value, prev, next) {
     this.value = value;
-    this.left = left || null;
-    this.right = right || null;
+    this.prev = prev || null;
+    this.next = next || null;
   }
 }
 
@@ -11,14 +11,26 @@ export class LinkedList {
     if (typeof value === 'undefined') {
       throw 'At least one value should be provided in order to construct a linked list.';
     }
-    this.current = new Node(value);
+    if (typeof value === 'object' && value.constructor === Array) {
+      this.deserialize(value);
+    } else {
+      this.current = new Node(value);
+    }
   }
 
   append(value) {
     const last = this.findLast();
     const newNode = new Node(value, last);
-    last.right = newNode;
+    last.next = newNode;
     this.current = newNode;
+    return this;
+  }
+
+  deserialize(array) {
+    this.current = null;
+    for (let i = array.length - 1; i >= 0; i--) {
+      this.current = new Node(array[i], null, this.current);
+    }
     return this;
   }
 
@@ -29,8 +41,8 @@ export class LinkedList {
   findFirst() {
     let current = this.current;
 
-    while (current.left) {
-      current = current.left;
+    while (current.prev) {
+      current = current.prev;
     }
 
     return current;
@@ -39,8 +51,8 @@ export class LinkedList {
   findLast() {
     let current = this.current;
 
-    while (current.right) {
-      current = current.right;
+    while (current.next) {
+      current = current.next;
     }
 
     return current;
@@ -65,7 +77,7 @@ export class LinkedList {
   prepend(value) {
     const first = this.findFirst();
     const newNode = new Node(value, null, first);
-    first.left = newNode;
+    first.prev = newNode;
     this.current = newNode;
     return this;
   }
@@ -74,9 +86,9 @@ export class LinkedList {
     const serialization = [];
     let current = this.findFirst();
 
-    while (current.right) {
+    while (current) {
       serialization.push(current.value);
-      current = current.right;
+      current = current.next;
     }
 
     return serialization;
@@ -86,9 +98,9 @@ export class LinkedList {
     let current = this.findFirst();
     let counter = 1;
 
-    while (current.right) {
+    while (current.next) {
       counter++;
-      current = current.right;
+      current = current.next;
     }
 
     return counter;
@@ -104,15 +116,15 @@ export class LinkedList {
     const targetNode = this.findByValue(target);
     if (targetNode) {
       const newNode = new Node(value);
-      if (!targetNode.right) {
-        targetNode.right = newNode;
-        newNode.left = targetNode;
+      if (!targetNode.next) {
+        targetNode.next = newNode;
+        newNode.prev = targetNode;
       } else {
-        const nextNode = targetNode.right;
-        targetNode.right = newNode;
-        newNode.left = targetNode;
-        newNode.right = nextNode;
-        nextNode.left = newNode;
+        const nextNode = targetNode.next;
+        targetNode.next = newNode;
+        newNode.prev = targetNode;
+        newNode.next = nextNode;
+        nextNode.prev = newNode;
       }
     }
     return this;
@@ -128,15 +140,15 @@ export class LinkedList {
     const targetNode = this.findByValue(target);
     if (targetNode) {
       const newNode = new Node(value);
-      if (!targetNode.left) {
-        targetNode.left = newNode;
-        newNode.right = targetNode;
+      if (!targetNode.prev) {
+        targetNode.prev = newNode;
+        newNode.next = targetNode;
       } else {
-        const previousNode = target.left;
-        targetNode.left = newNode;
-        newNode.right = targetNode;
-        newNode.left = previousNode;
-        previousNode.right = newNode;
+        const previousNode = target.prev;
+        targetNode.prev = newNode;
+        newNode.next = targetNode;
+        newNode.prev = previousNode;
+        previousNode.next = newNode;
       }
     }
     return this;
