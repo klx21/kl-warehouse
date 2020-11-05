@@ -24,8 +24,9 @@
       });
 
     /**
+     * Add the head bar at the top of the page
      *
-     * @param {Array<number>} groupIds
+     * @param {Array<number>} groupIds Group IDs.
      */
     function addListHead(groupIds) {
       const html = [];
@@ -41,9 +42,10 @@
     }
 
     /**
+     * Append a group of items to div#items.
      *
      * @param {Array} items
-     * @param {number} groupIndex
+     * @param {number} groupIndex The index of groups. This index starts from 1.
      */
     function appendList(items, groupIndex) {
       const html = [`<ul class="col-xl col-lg col-md-6 col-sm-12 list-group list-group-flush">`];
@@ -58,19 +60,9 @@
     }
 
     /**
+     * Get the list of items from the API `/api/v1/hiring-list`.`
      *
-     */
-    function renderErrorPage() {
-      const html = ['<div class="row error"><div class="col">'];
-      html.push('<i class="fas fa-exclamation-triangle"></i>');
-      html.push('Error occurred while retrieving data. Please try again later.');
-      html.push('</div></div>');
-      $('#root').append(html.join(''));
-    }
-
-    /**
-     *
-     * @return {Promise<Object>}
+     * @return {Promise<Array>} A promise which resolves to an array of items.
      */
     function getList() {
       const url = 'http://localhost:3333/api/v1/hiring-list';
@@ -91,9 +83,11 @@
     }
 
     /**
+     * Group the list of data by `listId` and put them in a map. The `listId` is used as the key in the map. The value
+     * is an array of items.
      *
-     * @param {Array} list
-     * @return {Map<number, Array>}
+     * @param {Array} list An array of items.
+     * @return {Map<number, Array>} A map with grouped items.
      */
     function listToMap(list) {
       return list.reduce((accu, curr) => {
@@ -111,9 +105,21 @@
     }
 
     /**
+     * Append the error handling elements to div#root.
+     */
+    function renderErrorPage() {
+      const html = ['<div class="row error"><div class="col">'];
+      html.push('<i class="fas fa-exclamation-triangle"></i>');
+      html.push('Error occurred while retrieving data. Please try again later.');
+      html.push('</div></div>');
+      $('#root').append(html.join(''));
+    }
+
+    /**
+     * Sort the items in each array that's stored as the value in the map.
      *
-     * @param {Map} map
-     * @return {Map}
+     * @param {Map} map A map with grouped items.
+     * @return {Map} A map with sorted grouped items.
      */
     function sortValues(map) {
       map.forEach((values, key, map) => {
