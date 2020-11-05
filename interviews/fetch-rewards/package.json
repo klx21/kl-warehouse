@@ -1,0 +1,17 @@
+{
+  "name": "hiring-list-server",
+  "version": "0.1.0",
+  "description": "",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node ./server/app.js",
+    "test-error-page": "node ./server/app-error.js"
+  },
+  "author": "Huan Li <klx211@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.17.1",
+    "helmet": "^4.2.0"
+  }
+}

@@ -42,6 +42,3 @@ client/bower_components
 
 # Experiment folders
 lab
-
-# Compiled CSS files
-**/assets/*.css

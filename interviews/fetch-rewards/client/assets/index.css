@@ -1,0 +1,75 @@
+#root {
+  font-family: 'Times New Roman', 'serif';
+}
+
+#root .loading {
+  background-color: rgba(136, 136, 136, 0.5);
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+
+#root .loading img {
+  left: 50%;
+  margin-left: -100px;
+  margin-top: -100px;
+  position: fixed;
+  top: 50%;
+}
+
+#root .error {
+  font-size: 2rem;
+  height: 4rem;
+  line-height: 4rem;
+  margin-top: 23rem;
+  text-align: center;
+}
+
+#root .error i {
+  color: #dc3545;
+  margin-right: 0.5rem;
+}
+
+#root ul li {
+  list-style: none;
+}
+
+#root .group-1 {
+  background-color: rgba(230, 20, 60, 0.3);
+}
+
+#root .group-2 {
+  background-color: rgba(186, 249, 231, 0.3);
+}
+
+#root .group-3 {
+  background-color: rgba(255, 247, 0, 0.3);
+}
+
+#root .group-4 {
+  background-color: rgba(75, 0, 130, 0.3);
+}
+
+#head {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 0.1rem;
+  padding: 0;
+}
+
+#head li {
+  margin-right: 0.9rem;
+  padding-bottom: 1.2rem;
+  padding-left: 0.8rem;
+  padding-top: 1.2rem;
+}
+
+#items {
+  font-size: 18px;
+}
+
+#items ul li.item i {
+  margin-right: 10px;
+}
