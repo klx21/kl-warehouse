@@ -1,10 +1,5 @@
-export class Node {
-  constructor(value, prev, next) {
-    this.value = value;
-    this.prev = prev || null;
-    this.next = next || null;
-  }
-}
+// TODO: make changes according to `LinkedListNode`
+import { LinkedListNode } from './base';
 
 export class LinkedList {
   constructor(value) {
@@ -14,13 +9,13 @@ export class LinkedList {
     if (typeof value === 'object' && value.constructor === Array) {
       this.deserialize(value);
     } else {
-      this.current = new Node(value);
+      this.current = new LinkedListNode(value);
     }
   }
 
   append(value) {
     const last = this.findLast();
-    const newNode = new Node(value, last);
+    const newNode = new LinkedListNode(value);
     last.next = newNode;
     this.current = newNode;
     return this;
@@ -29,23 +24,15 @@ export class LinkedList {
   deserialize(array) {
     this.current = null;
     for (let i = array.length - 1; i >= 0; i--) {
-      this.current = new Node(array[i], null, this.current);
+      const newNode = new LinkedListNode(array[i]);
+      newNode.next = this.current;
+      this.current = newNode;
     }
     return this;
   }
 
   findByValue(value) {
     return this.nodes.find(nodeValue => nodeValue === value);
-  }
-
-  findFirst() {
-    let current = this.current;
-
-    while (current.prev) {
-      current = current.prev;
-    }
-
-    return current;
   }
 
   findLast() {
@@ -76,8 +63,8 @@ export class LinkedList {
 
   prepend(value) {
     const first = this.findFirst();
-    const newNode = new Node(value, null, first);
-    first.prev = newNode;
+    const newNode = new LinkedListNode(value);
+    newNode.next = first;
     this.current = newNode;
     return this;
   }
@@ -115,16 +102,13 @@ export class LinkedList {
   insertAfter(value, target) {
     const targetNode = this.findByValue(target);
     if (targetNode) {
-      const newNode = new Node(value);
+      const newNode = new LinkedListNode(value);
       if (!targetNode.next) {
         targetNode.next = newNode;
-        newNode.prev = targetNode;
       } else {
         const nextNode = targetNode.next;
         targetNode.next = newNode;
-        newNode.prev = targetNode;
         newNode.next = nextNode;
-        nextNode.prev = newNode;
       }
     }
     return this;
@@ -137,9 +121,12 @@ export class LinkedList {
    * @returns {LinkedList}
    */
   insertBefore(value, target) {
+
+
+
     const targetNode = this.findByValue(target);
     if (targetNode) {
-      const newNode = new Node(value);
+      const newNode = new LinkedListNode(value);
       if (!targetNode.prev) {
         targetNode.prev = newNode;
         newNode.next = targetNode;

@@ -1,4 +1,5 @@
-import { DEPTH_FIRST_ORDER, BinaryTree, SERIALIZATION_DIRECTION } from './binary-tree.mjs';
+// TODO: get rid of this file and move all test cases to the spec files.
+import { DEPTH_FIRST_ORDER, BinaryTree, SERIALIZATION_DIRECTION } from './binary-tree.mjs.bak';
 import { strict as assert } from 'assert';
 
 const tree = new BinaryTree();

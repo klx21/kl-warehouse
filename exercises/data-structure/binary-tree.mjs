@@ -1,337 +1,151 @@
-export const SERIALIZATION_DIRECTION = {
-  BREADTH: 0,
-  DEPTH: 1
-};
-
-export const DEPTH_FIRST_ORDER = {
-  IN_ORDER: 0,
-  POST_ORDER: 1,
-  PRE_ORDER: 2
-}
-
-export const INSERTION_MODE = {
-  BREADTH_FIRST: 0,
-  IN_ORDER: 1
-}
-
-export class TreeNode {
-  constructor(value, left, right) {
-    this.value = value;
-    this.left = left || null;
-    this.right = right || null;
-  }
-}
+import { BinaryTreeNode } from './base';
 
 export class BinaryTree {
+  static DEPTH_FIRST_ORDER = {
+    PRE_ORDER: 0,
+    IN_ORDER: 1,
+    POST_ORDER: 2
+  };
+
+  static deserializeBreadthFirst(array) {
+    if (array && array.length > 0 && array[0] !== null) {
+      const root = new BinaryTreeNode(array.shift());
+      const cache = [root];
+
+      while (array.length > 0) {
+        const leftValue = array.shift();
+        const rightValue = array.shift();
+        const leftNode = typeof leftValue !== 'undefined' && leftValue !== null ? new BinaryTreeNode(leftValue) : null;
+        const rightNode = typeof rightValue !== 'undefined' && rightValue !== null ? new BinaryTreeNode(rightValue) : null;
+        const parent = cache.shift();
+
+        parent.left = leftNode;
+        parent.right = rightNode;
+        if (leftValue !== null) {
+          cache.push(leftNode);
+        }
+        if (rightValue !== null) {
+          cache.push(rightNode);
+        }
+      }
+
+      return root;
+    } else {
+      return null;
+    }
+  }
+
   constructor(root) {
-    this.root = root || null;
+    this.root = root instanceof BinaryTreeNode ? root : null;
+    this.left = this.right = null;
   }
 
-  /**
-   * Create a binary search tree from the given array.
-   *
-   * @param {Array<number|string>} array An breadth first array of tree node values. Empty node is represented by '#'.
-   * @return {BinaryTree} A binary search tree.
-   */
-  deserializeBreadthFirst(array) {
-    if (!this.root && array.length > 0 && array[0] !== '#') {
-      if (array.length === 1) {
-        this.root = new TreeNode(array.pop());
-      } else {
-        const nodes = array.map(element => element === '#' ? '#' : new TreeNode(parseInt(element, 10)));
-        const tree = [[]];
-        let level = 0;
+  getDepth(value) {
+    const depth = _getDepth(value, this.root);
 
-        while (nodes.length > 0) {
-          const currentNode = nodes.shift();
-          const levelIndex = tree[level].length;
-
-          if (level > 0 && currentNode !== '#') {
-            const parentLevel = level - 1;
-            const parentIndex = Math.floor(levelIndex / 2);
-            const parentNode = tree[parentLevel][parentIndex];
-
-            if (parentNode === '#') {
-              throw 'Parent node is empty. The array may be wrong.';
-            }
-
-            const childKey = levelIndex % 2 === 0 ? 'left' : 'right';
-            parentNode[childKey] = currentNode;
-          }
-
-          tree[level].push(currentNode);
-
-          if (levelIndex === Math.pow(2, level) - 1) {
-            tree[++level] = [];
-          }
-        }
-
-        this.root = tree[0][0];
-      }
-    }
-
-    return this;
+    return typeof depth === 'number' ? depth : -1;
   }
 
-  insertInOrder(value, allowDuplicate) {
-    const newNode = new TreeNode(value);
+  getHeight(value) {
+    const node = _findNode(value, this.root);
 
-    if (!this.root) {
-      this.root = newNode;
-    } else {
-      this.addSideInOrder(this.root, newNode, allowDuplicate);
-    }
-
-    return this;
+    return node ? _getHeight(node) : -1;
   }
 
-  /**
-   * Check whether this is a valid binary search tree.
-   *
-   * @returns {boolean} True if this is a valid binary search tree. False otherwise.
-   */
-  isValidBst() {
-    const stack = [];
-    let node = this.root;
-    let current = Number.NEGATIVE_INFINITY;
-
-    while (stack.length > 0 || node) {
-      while (node) {
-        stack.push(node);
-        node = node.left;
-      }
-
-      node = stack.pop();
-
-      if (node.val <= current) {
-        return false;
-      }
-
-      current = node.val;
-      node = node.right;
-    }
-
-    return true;
-  }
-
-  isSymmetric() {
-    if (!this.root) {
-      return true;
-    } else {
-      return this.checkNodesSymmetry(this.root.left, this.root.right);
-    }
-  }
-
-  searchBreadthFirst(target) {
-    const queue = [this.root];
-    let current;
-
-    while (queue.length) {
-      current = queue.shift();
-      if (target === current.value) {
-        return current;
-      } else {
-        if (current.left) {
-          queue.push(current.left);
-        }
-        if (current.right) {
-          queue.push(current.right);
-        }
-      }
-    }
-
-    return null;
-  }
-
-  searchDepthFirst(target, depthFirstOrder) {
-    return this.traverseFor(target, this.root, depthFirstOrder || DEPTH_FIRST_ORDER.IN_ORDER) || null;
-  }
-
-  serializeWithHashes() {
-    const visited = [];
-    const queue = [this.root];
-    let level = 0;
-
-    do {
-      const current = queue.shift();
-      visited.push(current === '#' ? '#' : current.value);
-      if (current.left) {
-        queue.push(current.left);
-      } else {
-        queue.push('#');
-      }
-      if (current.right) {
-        queue.push(current.right);
-      } else {
-        queue.push('#');
-      }
-      if (visited.length === this.getLevelNodesCount(level)) {
-        if (this.allHashes(queue)) {
-          return visited
-            .join(';')
-            .replace(/(;#)+$/, '')
-            .split(';');
-        }
-        level++;
-      }
-    } while (queue.length > 0);
-  }
-
-  serializeToArray(treeDirection, depthFirstOrder) {
-    switch (treeDirection) {
-      case SERIALIZATION_DIRECTION.BREADTH:
-        return this.serializeBreadthFirst();
-      case SERIALIZATION_DIRECTION.DEPTH:
-        return this.serializeDepth(depthFirstOrder || DEPTH_FIRST_ORDER.IN_ORDER);
-      default:
-        return [];
-    }
-  }
-
-  /**
-   * @private
-   * @param currentNode
-   * @param newNode
-   * @param allowDuplicate
-   * @returns {BinaryTree}
-   */
-  addSideInOrder(currentNode, newNode, allowDuplicate) {
-    if (allowDuplicate || currentNode.value !== newNode.value) {
-      const side = newNode.value <= currentNode.value ? 'left' : 'right';
-      if (!currentNode[side]) {
-        currentNode[side] = newNode;
-        return this;
-      } else {
-        return this.addSideInOrder(currentNode[side], newNode);
-      }
-    } else {
-      return this;
-    }
-  }
-
-  allHashes(visited) {
-    if (visited.length === 0) {
-      return false;
-    } else {
-      return visited
-        .join('')
-        .replace(/#/g, '')
-        .length === 0;
-    }
-  }
-
-  checkNodesSymmetry(node1, node2) {
-    if (!node1 && !node2) {
-      return true;
-    }
-    if (!node1 || !node2 || node1.val !== node2.val) {
-      return false;
-    }
-
-    return this.checkNodesSymmetry(node1.left, node2.right) && check(node1.right, node2.left);
-  }
-
-  getLevelNodesCount(level) {
-    return Math.pow(2, level + 1) - 1;
-  }
-
-  /**
-   * @private
-   * @returns {Array}
-   */
   serializeBreadthFirst() {
+    const visited = [];
     const queue = [this.root];
-    const visited = [];
-    let current;
 
-    do {
-      current = queue.shift();
-      visited.push(current === '#' ? '#' : current.value);
-      if (current !== '#') {
-        if (current.left) {
-          queue.push(current.left);
-        } else {
-          queue.push('#');
-        }
-        if (current.right) {
-          queue.push(current.right);
-        } else {
-          queue.push('#');
-        }
+    while (queue.length > 0) {
+      const node = queue.shift();
+      if (node) {
+        visited.push(node.value);
+        queue.push(node.left);
+        queue.push(node.right);
+      } else {
+        visited.push(null);
       }
-    } while (queue.length);
+    }
+
+    // remove trailing nulls
+    while (visited.length > 0) {
+      if (visited[visited.length - 1] === null) {
+        visited.pop();
+      } else {
+        break;
+      }
+    }
 
     return visited;
   }
 
-  /**
-   * @private
-   * @returns {Array}
-   */
-  serializeDepth(depthFirstOrder) {
-    const visited = [];
-    this.traverse(visited, this.root, depthFirstOrder);
-    return visited;
+  serializeDepthFirst(order = BinaryTree.DEPTH_FIRST_ORDER.IN_ORDER) {
+    const result = [];
+
+    _serializeDepthFirst(result, this.root, order);
+
+    while (result.length > 0) {
+      if (result[result.length - 1] === null) {
+        result.pop();
+      } else {
+        break;
+      }
+    }
+
+    return result;
   }
+}
 
-  /**
-   * @private
-   */
-  traverse(visited, node, depthFirstOrder) {
-    if (depthFirstOrder === DEPTH_FIRST_ORDER.PRE_ORDER) {
-      visited.push(node.value);
+function _findNode(value, node) {
+  if (node) {
+    if (value === node.value) {
+      return node;
     }
-    if (node.left) {
-      this.traverse(visited, node.left, depthFirstOrder);
-    }
-    if (depthFirstOrder === DEPTH_FIRST_ORDER.IN_ORDER) {
-      visited.push(node.value);
-    }
-    if (node.right) {
-      this.traverse(visited, node.right, depthFirstOrder);
-    }
-    if (depthFirstOrder === DEPTH_FIRST_ORDER.POST_ORDER) {
-      visited.push(node.value);
+    return _findNode(value, node.left) || _findNode(value, node.right);
+  }
+}
+
+function _getDepth(value, node) {
+  if (node) {
+    if (value === node.value) {
+      return 0;
+    } else {
+      const left = _getDepth(value, node.left);
+      const right = _getDepth(value, node.right);
+
+      if (typeof left === 'number') {
+        return left + 1;
+      }
+      if (typeof right === 'number') {
+        return right + 1;
+      }
     }
   }
+}
 
-  /**
-   * @private
-   * @param target
-   * @param node
-   * @param depthFirstOrder
-   * @returns {TreeNode|undefined}
-   */
-  traverseFor(target, node, depthFirstOrder) {
-    const currentResult = target === node.value && node;
-    const leftResult = node.left && this.traverseFor(target, node.left, depthFirstOrder);
-    const rightResult = node.right && this.traverseFor(target, node.right, depthFirstOrder);
-    let results = [];
+function _getHeight(node) {
+  if (!node) {
+    return -1;
+  }
+  const left = _getHeight(node.left);
+  const right = _getHeight(node.right);
+  return Math.max(left, right) + 1;
+}
 
-    switch (depthFirstOrder) {
-      case DEPTH_FIRST_ORDER.PRE_ORDER:
-        results = [
-          currentResult,
-          leftResult,
-          rightResult
-        ];
-        break;
-      case DEPTH_FIRST_ORDER.IN_ORDER:
-        results = [
-          leftResult,
-          currentResult,
-          rightResult
-        ];
-        break;
-      case DEPTH_FIRST_ORDER.POST_ORDER:
-        results = [
-          leftResult,
-          rightResult,
-          currentResult
-        ];
-        break;
-    }
-
-    return results.filter(value => value)[0];
+function _serializeDepthFirst(visited, node, order) {
+  if (order === BinaryTree.DEPTH_FIRST_ORDER.PRE_ORDER) {
+    visited.push(node ? node.value : null);
+  }
+  if (node) {
+    _serializeDepthFirst(visited, node.left, order);
+  }
+  if (order === BinaryTree.DEPTH_FIRST_ORDER.IN_ORDER) {
+    visited.push(node ? node.value : null);
+  }
+  if (node) {
+    _serializeDepthFirst(visited, node.right, order);
+  }
+  if (order === BinaryTree.DEPTH_FIRST_ORDER.POST_ORDER) {
+    visited.push(node ? node.value : null);
   }
 }
