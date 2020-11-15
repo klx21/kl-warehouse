@@ -1,4 +1,4 @@
-import { BinaryTreeNode } from './base';
+import { BinaryTreeNode } from './base.mjs';
 
 export class BinaryTree {
   static DEPTH_FIRST_ORDER = {
@@ -7,6 +7,11 @@ export class BinaryTree {
     POST_ORDER: 2
   };
 
+  /**
+   *
+   * @param {Array<number|null>} array
+   * @returns {BinaryTreeNode}
+   */
   static deserializeBreadthFirst(array) {
     if (array && array.length > 0 && array[0] !== null) {
       const root = new BinaryTreeNode(array.shift());
@@ -35,26 +40,80 @@ export class BinaryTree {
     }
   }
 
-  constructor(root) {
-    this.root = root instanceof BinaryTreeNode ? root : null;
-    this.left = this.right = null;
-  }
-
-  getDepth(value) {
-    const depth = _getDepth(value, this.root);
-
+  static getDepth(root, value) {
+    const depth = _getDepth(value, root);
     return typeof depth === 'number' ? depth : -1;
   }
 
-  getHeight(value) {
+  static getHeight(root, value) {
     const node = _findNode(value, this.root);
-
     return node ? _getHeight(node) : -1;
   }
 
-  serializeBreadthFirst() {
+  static getVerticalOrder(root) {
+    if (!root) {
+      return [];
+    }
+
+    const columnsMap = new Map();
+    const nodes = []; // queue
+    const columnNums = []; // queue
+    const cRoot = 0;
+    let minColumn = 0;
+
+    columnsMap.set(cRoot, [
+      root.value
+    ]);
+    if (root.left || root.right) {
+      columnNums.push(cRoot);
+      nodes.push(root.left, root.right);
+    }
+
+    while (nodes.length > 0) {
+      const left = nodes.shift();
+      const right = nodes.shift();
+      const cParent = columnNums.shift();
+      const cLeft = cParent - 1;
+      const cRight = cParent + 1;
+
+      if (left) {
+        _handleNode(cLeft, left);
+        if (cLeft < minColumn) {
+          minColumn = cLeft;
+        }
+      }
+      if (right) {
+        _handleNode(cRight, right);
+      }
+    }
+
+    return _output();
+
+    function _handleNode(column, node) {
+      if (!columnsMap.has(column)) {
+        columnsMap.set(column, []);
+      }
+      columnsMap.get(column)
+        .push(node.value);
+      if (node.left || node.right) {
+        columnNums.push(column);
+        nodes.push(node.left, node.right);
+      }
+    }
+
+    function _output() {
+      const result = [];
+      const maxColumn = columnsMap.size + minColumn - 1;
+      for (let i = minColumn; i <= maxColumn; i++) {
+        result.push(columnsMap.get(i));
+      }
+      return result;
+    }
+  }
+
+  static serializeBreadthFirst(root) {
     const visited = [];
-    const queue = [this.root];
+    const queue = [root];
 
     while (queue.length > 0) {
       const node = queue.shift();
@@ -79,10 +138,10 @@ export class BinaryTree {
     return visited;
   }
 
-  serializeDepthFirst(order = BinaryTree.DEPTH_FIRST_ORDER.IN_ORDER) {
+  static serializeDepthFirst(root, order = BinaryTree.DEPTH_FIRST_ORDER.IN_ORDER) {
     const result = [];
 
-    _serializeDepthFirst(result, this.root, order);
+    _serializeDepthFirst(result, root, order);
 
     while (result.length > 0) {
       if (result[result.length - 1] === null) {
