@@ -1,60 +1,118 @@
 import { BinaryTree } from './binary-tree';
 
-export class BinarySearchTree extends BinaryTree {
-  insert(value) {
+export class BinarySearchTree {
+
+  static getDiameter(root) {
+    if (!root) {
+      return 0;
+    }
+
+    let max = Number.NEGATIVE_INFINITY;
+    _findLongest(root);
+    return max;
+
+    function _findLongest(node) {
+      let left = 0;
+      let right = 0;
+      let both = 0;
+
+      if (node.left) {
+        left = _findLongest(node.left) + 1;
+        both = both + left;
+      }
+      if (node.right) {
+        right = _findLongest(node.right) + 1;
+        both = both + right;
+      }
+
+      max = Math.max(max, left, right, both);
+      return Math.max(left, right, 0);
+    }
+  }
+
+  static insert(root, value) {
     // if (this.root === null) {
     //   this.root = new BinaryTreeNode(value);
     // } else {
     //   doInsertion(this.root, value);
     // }
-    this.root = doInsertion(this.root, value);
-    return this;
+    return _insert(root, value);
   }
 
-  remove(value) {
-    this.root = doRemoval(this.root, value);
-    return this;
+  static isValid(root) {
+    if (!root) {
+      return false;
+    }
+    if (!root.left && !root.right) {
+      return true;
+    }
+
+    const stack = [];
+    let node = root;
+    let inOrder = Number.NEGATIVE_INFINITY;
+
+    while (node || stack.length > 0) {
+      while (node) {
+        stack.push(node);
+        node = node.left;
+      }
+
+      node = node.left;
+
+      if (node.value <= inOrder) {
+        return false;
+      }
+
+      inOrder = node.val;
+      node = node.right;
+    }
+
+    return true;
   }
 
-  search(value) {
-    return doSearch(this.root, value);
+  static remove(root, value) {
+    return _remove(root, value);
+  }
+
+  static search(root, value) {
+    return _search(root, value);
   }
 }
 
-function doInsertion(node, value) {
-  if (node === null) {
+function _insert(node, value) {
+  if (!node) {
     return new BinarySearchTree(value);
   }
   if (value < node.value) {
-    node.left = doInsertion(node.left, value);
+    node.left = _insert(node.left, value);
   } else if (value > node.value) {
-    node.right = doInsertion(node.right, value);
+    node.right = _insert(node.right, value);
   }
   return node;
 }
 
-function doRemoval(node, value) {
-  if (node !== null) {
+function _remove(node, value) {
+  if (node) {
     if (value < node.value) {
-      node.left = doRemoval(node.left, value);
+      node.left = _remove(node.left, value);
     } else if (value > node.value) {
-      node.right = doRemoval(node.right, value);
+      node.right = _remove(node.right, value);
     } else {
-      if (node.left === null) {
+      if (!node.left) {
         return node.right;
       }
-      if (node.right === null) {
+      if (!node.right) {
         return node.left;
       }
 
-      node.value = findMinValue(node.right);
-      node.right = doRemoval(node.right, node.value);
+      node.value = _findMinValue(node.right);
+      node.right = _remove(node.right, node.value);
     }
     return node;
   }
 }
 
-function findMinValue(node) {
+function _findMinValue(node) {
   let minValue = node.value;
   while (node.left) {
     node = node.left;
@@ -63,13 +121,13 @@ function findMinValue(node) {
   return minValue;
 }
 
-function doSearch(node, value) {
-  if (node === null) {
+function _search(node, value) {
+  if (!node) {
     return null;
   } else if (value < node.value) {
-    return doSearch(node.left, value);
+    return _search(node.left, value);
   } else if (value > node.value) {
-    return doSearch(node.right, value);
+    return _search(node.right, value);
   } else {
     return node;
   }
