@@ -98,7 +98,7 @@ export class BinaryTree {
       return 0;
     }
 
-    const node = _findNode(value, this.root);
+    const node = _findNode(value, root);
     return node ? _getHeight(node) : -1;
   }
 
@@ -116,6 +116,7 @@ export class BinaryTree {
     columnsMap.set(cRoot, [
       root.value
     ]);
+
     if (root.left || root.right) {
       columnNums.push(cRoot);
       nodes.push(root.left, root.right);

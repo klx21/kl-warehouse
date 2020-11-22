@@ -1,4 +1,4 @@
-import { BinaryTree } from './binary-tree';
+import { BinaryTreeNode } from './base.mjs';
 
 export class BinarySearchTree {
 
@@ -31,11 +31,6 @@ export class BinarySearchTree {
   }
 
   static insert(root, value) {
-    // if (this.root === null) {
-    //   this.root = new BinaryTreeNode(value);
-    // } else {
-    //   doInsertion(this.root, value);
-    // }
     return _insert(root, value);
   }
 
@@ -57,13 +52,13 @@ export class BinarySearchTree {
         node = node.left;
       }
 
-      node = node.left;
+      node = stack.pop();
 
       if (node.value <= inOrder) {
         return false;
       }
 
-      inOrder = node.val;
+      inOrder = node.value;
       node = node.right;
     }
 
@@ -81,7 +76,7 @@ export class BinarySearchTree {
 
 function _insert(node, value) {
   if (!node) {
-    return new BinarySearchTree(value);
+    return new BinaryTreeNode(value);
   }
   if (value < node.value) {
     node.left = _insert(node.left, value);
