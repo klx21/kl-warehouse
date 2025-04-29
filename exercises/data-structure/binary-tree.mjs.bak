@@ -5,7 +5,7 @@ export const SERIALIZATION_DIRECTION = {
   DEPTH: 1
 };
 
-export const DEPTH_FIRST_ORDER = {
+export const DepthFirstOrder = {
   IN_ORDER: 0,
   POST_ORDER: 1,
   PRE_ORDER: 2
@@ -138,7 +138,7 @@ export class BinaryTree {
   }
 
   searchDepthFirst(target, depthFirstOrder) {
-    return this.traverseFor(target, this.root, depthFirstOrder || DEPTH_FIRST_ORDER.IN_ORDER) || null;
+    return this.traverseFor(target, this.root, depthFirstOrder || DepthFirstOrder.IN_ORDER) || null;
   }
 
   serializeWithHashes() {
@@ -176,7 +176,7 @@ export class BinaryTree {
       case SERIALIZATION_DIRECTION.BREADTH:
         return this.serializeBreadthFirst();
       case SERIALIZATION_DIRECTION.DEPTH:
-        return this.serializeDepth(depthFirstOrder || DEPTH_FIRST_ORDER.IN_ORDER);
+        return this.serializeDepth(depthFirstOrder || DepthFirstOrder.IN_ORDER);
       default:
         return [];
     }
@@ -272,19 +272,19 @@ export class BinaryTree {
    * @private
    */
   traverse(visited, node, depthFirstOrder) {
-    if (depthFirstOrder === DEPTH_FIRST_ORDER.PRE_ORDER) {
+    if (depthFirstOrder === DepthFirstOrder.PRE_ORDER) {
       visited.push(node.value);
     }
     if (node.left) {
       this.traverse(visited, node.left, depthFirstOrder);
     }
-    if (depthFirstOrder === DEPTH_FIRST_ORDER.IN_ORDER) {
+    if (depthFirstOrder === DepthFirstOrder.IN_ORDER) {
       visited.push(node.value);
     }
     if (node.right) {
       this.traverse(visited, node.right, depthFirstOrder);
     }
-    if (depthFirstOrder === DEPTH_FIRST_ORDER.POST_ORDER) {
+    if (depthFirstOrder === DepthFirstOrder.POST_ORDER) {
       visited.push(node.value);
     }
   }
@@ -303,21 +303,21 @@ export class BinaryTree {
     let results = [];
 
     switch (depthFirstOrder) {
-      case DEPTH_FIRST_ORDER.PRE_ORDER:
+      case DepthFirstOrder.PRE_ORDER:
         results = [
           currentResult,
           leftResult,
           rightResult
         ];
         break;
-      case DEPTH_FIRST_ORDER.IN_ORDER:
+      case DepthFirstOrder.IN_ORDER:
         results = [
           leftResult,
           currentResult,
           rightResult
         ];
         break;
-      case DEPTH_FIRST_ORDER.POST_ORDER:
+      case DepthFirstOrder.POST_ORDER:
         results = [
           leftResult,
           rightResult,

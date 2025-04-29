@@ -1,7 +1,6 @@
-import { BinaryTreeNode } from './base.mjs';
+import { BinaryTreeNode } from './base';
 
 export class BinarySearchTree {
-
   static getDiameter(root) {
     if (!root) {
       return 0;
