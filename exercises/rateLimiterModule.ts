@@ -6,7 +6,7 @@ export type StartFunction = () => void;
 
 export type Task = () => Promise<any>;
 
-export function getRateLimiter(rateLimit: number, burstLimit: number): RateLimiter {
+export function getRateLimiter(rateLimit: number, burstLimit: number, onAllDone?: () => void): RateLimiter {
   const config: RateLimiterConfig = {
     burstLimit,
     rateLimit,
@@ -14,7 +14,8 @@ export function getRateLimiter(rateLimit: number, burstLimit: number): RateLimit
     taskIdCounter: 0,
     taskIdPrefix: `taskId-${Math.round(Math.random() * Math.pow(10, 8))}-`,
     taskQ: [],
-    taskStartTimes: []
+    taskStartTimes: [],
+    onAllDone
   };
 
   return {
@@ -44,6 +45,7 @@ type RateLimiterConfig = {
   taskIdPrefix: string;
   taskQ: TaskObject[];
   taskStartTimes: number[];
+  onAllDone?: () => void
 };
 
 function nQ(config: RateLimiterConfig, task: Task, shouldStartNow = false): void {
@@ -62,7 +64,7 @@ function nQ(config: RateLimiterConfig, task: Task, shouldStartNow = false): void
 }
 
 function dQ(config: RateLimiterConfig): void {
-  const { burstLimit, runningTaskCounter, taskQ, taskStartTimes } = config;
+  const { burstLimit, runningTaskCounter, taskQ, taskStartTimes, onAllDone } = config;
 
   if (taskQ.length === 0) {
     return;
@@ -72,7 +74,7 @@ function dQ(config: RateLimiterConfig): void {
     // @ts-ignore
     const taskObj: TaskObject = taskQ.shift();
     const { task } = taskObj;
-    console.log('start task', taskObj.id);
+    // console.log('start task', taskObj.id);
     const startTime: number = Date.now();
 
     ++config.runningTaskCounter;
@@ -83,7 +85,12 @@ function dQ(config: RateLimiterConfig): void {
     task().finally(() => {
       taskObj.endTime = Date.now();
       runningTaskCounter > 0 && --config.runningTaskCounter;
-      console.log('done............................');
+
+      if (runningTaskCounter === 0 && taskQ.length === 0) {
+        onAllDone?.();
+      }
+      
+      // console.log('done............................');
       dQ(config);
     });
 
@@ -91,7 +98,7 @@ function dQ(config: RateLimiterConfig): void {
       dQ(config);
     }
   } else {
-    console.log('throttled');
+    // console.log('throttled');
     if (runningTaskCounter < burstLimit) {
       setTimeout(() => dQ(config), 1000 - (Date.now() - taskStartTimes[0]));
     }
