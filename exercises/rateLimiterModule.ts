@@ -84,7 +84,7 @@ function dQ(config: RateLimiterConfig): void {
 
     task().finally(() => {
       taskObj.endTime = Date.now();
-      runningTaskCounter > 0 && --config.runningTaskCounter;
+      config.runningTaskCounter > 0 && --config.runningTaskCounter;
 
       if (runningTaskCounter === 0 && taskQ.length === 0) {
         onAllDone?.();
