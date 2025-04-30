@@ -1,6 +1,8 @@
 export type RateLimiter = {
-  run: (tasks: Task[], immediately?: boolean) => void | StartFunction;
+  run: (tasks: Task[], options?: RunFunctionOptions) => void | StartFunction;
 };
+
+export type RunFunctionOptions = { immediately?: boolean; onAllDoneOverride?: () => void };
 
 export type StartFunction = () => void;
 
@@ -12,20 +14,25 @@ export function getRateLimiter(rateLimit: number, burstLimit: number, onAllDone?
     rateLimit,
     runningTaskCounter: 0,
     taskIdCounter: 0,
-    taskIdPrefix: `taskId-${Math.round(Math.random() * Math.pow(10, 8))}-`,
+    taskIdPrefix: `taskId-${Math.round(Math.random() * 10 ** 8)}-`,
     taskQ: [],
     taskStartTimes: [],
-    onAllDone
+    onAllDone,
   };
 
   return {
-    run: (tasks: Task[], immediately = true): void | StartFunction => {
-      tasks.forEach((task: Task): void => nQ(config, task, immediately));
+    run: (tasks: Task[], { immediately = true, onAllDoneOverride }: RunFunctionOptions = {}): void | StartFunction => {
+      const newConfig: RateLimiterConfig = {
+        ...config,
+        onAllDone: onAllDoneOverride ?? onAllDone,
+      };
+
+      tasks.forEach((task: Task): void => nQ(newConfig, task, immediately));
 
       if (!immediately) {
-        return (): void => dQ(config);
+        return (): void => dQ(newConfig);
       }
-    }
+    },
   };
 }
 
@@ -45,7 +52,7 @@ type RateLimiterConfig = {
   taskIdPrefix: string;
   taskQ: TaskObject[];
   taskStartTimes: number[];
-  onAllDone?: () => void
+  onAllDone?: () => void;
 };
 
 function nQ(config: RateLimiterConfig, task: Task, shouldStartNow = false): void {
@@ -53,7 +60,7 @@ function nQ(config: RateLimiterConfig, task: Task, shouldStartNow = false): void
   const taskObj: TaskObject = {
     id: `${taskIdPrefix}${config.taskIdCounter++}`,
     task,
-    createTime: Date.now()
+    createTime: Date.now(),
   };
 
   taskQ.push(taskObj);
@@ -86,10 +93,12 @@ function dQ(config: RateLimiterConfig): void {
       taskObj.endTime = Date.now();
       config.runningTaskCounter > 0 && --config.runningTaskCounter;
 
-      if (runningTaskCounter === 0 && taskQ.length === 0) {
+      // All done
+      if (config.runningTaskCounter === 0 && taskQ.length === 0) {
+        // console.log("All done............................");
         onAllDone?.();
       }
-      
+
       // console.log('done............................');
       dQ(config);
     });
@@ -122,7 +131,7 @@ function shouldStartAnother(config: RateLimiterConfig): boolean {
   // console.log('burstLimit:', burstLimit);
   // console.log('is lower than burst limit:', isLowerThanBurstLimit);
   if (isLowerThanRateLimit && isLowerThanBurstLimit) {
-    if (typeof baseTime === 'number') {
+    if (typeof baseTime === "number") {
       taskStartTimes.shift();
     }
 
