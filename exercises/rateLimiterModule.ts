@@ -1,11 +1,7 @@
 /**
- * This rate limiter was created to handle the throttling issue when calling the Organizations API to attach/detach
- * policies because the SDK doesn't provide out-of-the-box support for handling throttling. The SDK only do retries and
- * sometimes don't even retry if the HTTP code in the response is not right.
- *
- * It is used to limit the number of concurrent requests to an API. It takes into account both the rate limit and the
- * burst limit of a specific API and makes sure that we don't go over the limits while exploiting the assigned limits to
- * the most. It also provides a callback function to be invoked when all tasks are done.
+ * This rate limiter is used to limit the number of concurrent requests to an API. It takes into account both the rate
+ * limit and the burst limit of a specific API and makes sure that we don't go over the limits while exploiting the
+ * assigned limits to the most. It also provides a callback function to be invoked when all tasks are done.
  *
  * @example
  * const rateLimiter: RateLimiter = getRateLimiter(10, 20, () => console.log('All tasks are done!'));
